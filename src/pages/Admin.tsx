@@ -50,6 +50,17 @@ export default function Admin() {
     else toast({ title: "Configuración guardada" });
   }
 
+  async function guardarAutoresYPolitica() {
+    if (!config) return;
+    const { error } = await supabase.from("config_publica").update({
+      autores: config.autores,
+      politica_privacidad_md: config.politica_privacidad_md,
+      manual_uso_md: config.manual_uso_md,
+    }).eq("id", config.id);
+    if (error) toast({ variant: "destructive", title: error.message });
+    else toast({ title: "Autores y política guardados" });
+  }
+
   async function generarDemo() {
     if (!confirm("Esto creará el centro IES Demo Lovable y 100 alumnos demo. ¿Continuar?")) return;
     setBusy(true);
@@ -102,6 +113,7 @@ export default function Admin() {
         <TabsList>
           <TabsTrigger value="demo"><Database className="h-4 w-4 mr-1.5" /> Datos demo</TabsTrigger>
           <TabsTrigger value="config">Página pública</TabsTrigger>
+          <TabsTrigger value="autores">Autores y política</TabsTrigger>
           <TabsTrigger value="baremos">Baremos</TabsTrigger>
           <TabsTrigger value="procs"><BookOpen className="h-4 w-4 mr-1.5" /> Procedimientos</TabsTrigger>
         </TabsList>
