@@ -5,7 +5,7 @@ import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Building2, Users, ClipboardList, ShieldCheck, LogOut,
+  LayoutDashboard, Building2, Users, GraduationCap, ShieldCheck, LogOut,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -31,7 +31,7 @@ export function AppLayout() {
     { to: "/app", icon: LayoutDashboard, label: t("nav.dashboard"), end: true },
     { to: "/app/centros", icon: Building2, label: t("nav.centros") },
     { to: "/app/grupos", icon: Users, label: t("nav.grupos") },
-    { to: "/app/baterias", icon: ClipboardList, label: t("nav.baterias") },
+    { to: "/app/alumnos", icon: GraduationCap, label: t("nav.alumnos") },
   ];
 
   return (

@@ -17,7 +17,8 @@ import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import Centros from "./pages/app/Centros";
 import Grupos from "./pages/app/Grupos";
-import Baterias from "./pages/app/Baterias";
+import Alumnos from "./pages/app/Alumnos";
+import Pruebas from "./pages/app/Pruebas";
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,8 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="centros" element={<Centros />} />
               <Route path="grupos" element={<Grupos />} />
-              <Route path="baterias" element={<Baterias />} />
+              <Route path="alumnos" element={<Alumnos />} />
+              <Route path="pruebas/:alumnoId" element={<Pruebas />} />
             </Route>
 
             <Route path="/admin" element={<AppLayout />}>

@@ -1,24 +1,146 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
 import { BarChart3 } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+} from "recharts";
 
 export default function Publico() {
   const { t } = useTranslation();
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.rpc("get_stats_publicas").then(({ data }) => setStats(data));
+  }, []);
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <PublicHeader />
+        <main className="container py-12 flex-1 text-center text-muted-foreground">Cargando…</main>
+      </div>
+    );
+  }
+
+  const eurofitData = [
+    { prueba: "Wells", media: stats.eurofit?.wells, dt: stats.eurofit?.wells_dt, unidad: "cm" },
+    { prueba: "Salto vertical", media: stats.eurofit?.salto, dt: stats.eurofit?.salto_dt, unidad: "cm" },
+    { prueba: "Abdominales", media: stats.eurofit?.abdo, dt: stats.eurofit?.abdo_dt, unidad: "n" },
+    { prueba: "Lanz. hombros", media: stats.eurofit?.lanz, dt: stats.eurofit?.lanz_dt, unidad: "m" },
+    { prueba: "Sprint 50m", media: stats.eurofit?.sprint, dt: stats.eurofit?.sprint_dt, unidad: "s" },
+    { prueba: "Cooper", media: stats.eurofit?.cooper, dt: stats.eurofit?.cooper_dt, unidad: "m" },
+  ];
+
+  const cfsData = [
+    { prueba: "Thomas", media: stats.cfs?.thomas, dt: stats.cfs?.thomas_dt, unidad: "°" },
+    { prueba: "Biering-S.", media: stats.cfs?.biering, dt: stats.cfs?.biering_dt, unidad: "s" },
+    { prueba: "SJ", media: stats.cfs?.sj, dt: stats.cfs?.sj_dt, unidad: "cm" },
+    { prueba: "CMJ", media: stats.cfs?.cmj, dt: stats.cfs?.cmj_dt, unidad: "cm" },
+    { prueba: "Lanz. der.", media: stats.cfs?.lanz_der, dt: stats.cfs?.lanz_der_dt, unidad: "m" },
+    { prueba: "Sprint 30m", media: stats.cfs?.sprint30, dt: stats.cfs?.sprint30_dt, unidad: "s" },
+    { prueba: "Rockport", media: stats.cfs?.rockport, dt: stats.cfs?.rockport_dt, unidad: "min" },
+  ];
+
+  const radar = [
+    { capacidad: "Flexibilidad", eurofit: stats.eurofit?.wells / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
+    { capacidad: "Salto", eurofit: stats.eurofit?.salto / 5, cfs: stats.cfs?.cmj / 5 },
+    { capacidad: "Lanzamiento", eurofit: stats.eurofit?.lanz, cfs: stats.cfs?.lanz_der },
+    { capacidad: "Velocidad (inv)", eurofit: 12 - (stats.eurofit?.sprint ?? 9), cfs: 8 - (stats.cfs?.sprint30 ?? 5) },
+    { capacidad: "Resistencia", eurofit: (stats.eurofit?.cooper ?? 2000) / 300, cfs: 18 - (stats.cfs?.rockport ?? 13) },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-soft">
       <PublicHeader />
-      <main className="container py-12 flex-1">
-        <h1 className="font-display text-3xl font-bold">{t("nav.public")}</h1>
-        <p className="text-muted-foreground mt-1">Estadísticas anónimas agregadas de toda la comunidad educativa.</p>
-        <Card className="mt-8 border-dashed bg-accent/30">
-          <CardContent className="p-12 text-center text-muted-foreground">
-            <BarChart3 className="h-12 w-12 mx-auto mb-3 opacity-40" />
-            <p className="font-medium text-foreground mb-1">Próxima entrega</p>
-            <p className="text-sm max-w-md mx-auto">Las gráficas con medias, desviaciones típicas, comparativas por curso/sexo y diferencias entre baterías llegarán en el siguiente bloque, junto con los datos demo de 100 alumnos.</p>
+      <main className="container py-10 flex-1 space-y-6">
+        <div>
+          <h1 className="font-display text-3xl font-bold flex items-center gap-2">
+            <BarChart3 className="h-7 w-7 text-secondary" /> {t("nav.public")}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Estadísticas anónimas agregadas — {stats.total_alumnos ?? 0} alumnos en la muestra demo.
+          </p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader><CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle></CardHeader>
+            <CardContent style={{ height: 280 }}>
+              <ResponsiveContainer>
+                <BarChart data={eurofitData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
+                  <YAxis />
+                  <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
+                  <Bar dataKey="media" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="font-display text-base">Medias batería CFS</CardTitle></CardHeader>
+            <CardContent style={{ height: 280 }}>
+              <ResponsiveContainer>
+                <BarChart data={cfsData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
+                  <YAxis />
+                  <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
+                  <Bar dataKey="media" fill="hsl(var(--secondary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader><CardTitle className="font-display text-base">Comparativa de capacidades (Eurofit vs CFS)</CardTitle></CardHeader>
+          <CardContent style={{ height: 360 }}>
+            <ResponsiveContainer>
+              <RadarChart data={radar}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="capacidad" />
+                <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
+                <Radar dataKey="eurofit" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} name="Eurofit" />
+                <Radar dataKey="cfs" stroke="hsl(var(--secondary))" fill="hsl(var(--secondary))" fillOpacity={0.3} name="CFS" />
+                <Legend />
+                <Tooltip />
+              </RadarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="font-display text-base">Antropometría media</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <Stat label="IMC" value={stats.antropometria?.imc} dt={stats.antropometria?.imc_dt} />
+            <Stat label="Envergadura (cm)" value={stats.antropometria?.env} dt={stats.antropometria?.env_dt} />
+            <Stat label="Biacromial (cm)" value={stats.antropometria?.bia} dt={stats.antropometria?.bia_dt} />
+            <Stat label="Long. pierna (cm)" value={stats.antropometria?.pierna} dt={stats.antropometria?.pierna_dt} />
+          </CardContent>
+        </Card>
+
+        <p className="text-xs text-muted-foreground text-center pt-4 border-t">
+          Datos agregados de la muestra demo. Baremos provisionales basados en Eurofit (Council of Europe, 1988) y ALPHA-Fitness (Ruiz et al., 2011).
+        </p>
       </main>
+    </div>
+  );
+}
+
+function Stat({ label, value, dt }: { label: string; value: any; dt?: any }) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="font-semibold font-mono">
+        {value != null ? Number(value).toFixed(2) : "—"}
+        {dt != null && <span className="text-muted-foreground font-normal"> ± {Number(dt).toFixed(2)}</span>}
+      </p>
     </div>
   );
 }
