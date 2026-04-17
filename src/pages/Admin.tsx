@@ -73,7 +73,8 @@ export default function Admin() {
 
   async function actualizarBaremo(id: string, campo: "valor_min" | "valor_max", v: string) {
     const num = v === "" ? null : Number(v);
-    const { error } = await supabase.from("baremos").update({ [campo]: num }).eq("id", id);
+    const update: any = { [campo]: num };
+    const { error } = await supabase.from("baremos").update(update).eq("id", id);
     if (error) toast({ variant: "destructive", title: error.message });
     else {
       setBaremos((prev) => prev.map((b) => b.id === id ? { ...b, [campo]: num } : b));
