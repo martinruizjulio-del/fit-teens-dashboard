@@ -7,6 +7,7 @@
   "nav": {
     "home": "Inicio",
     "public": "Estadísticas públicas",
+    "centrosPublico": "Centros adheridos",
     "login": "Acceso profesores",
     "studentAccess": "Acceso alumnos",
     "dashboard": "Panel",
