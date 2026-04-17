@@ -94,7 +94,12 @@
     "phone": "Teléfono",
     "createdOk": "Centro registrado correctamente",
     "updatedOk": "Centro actualizado",
-    "noCentros": "Aún no hay centros registrados"
+    "noCentros": "Aún no hay centros registrados",
+    "anonimoLabel": "Mostrar mi centro de forma anónima",
+    "anonimoHelp": "Si lo activas, en las estadísticas públicas tu centro aparecerá únicamente con un código (p. ej. CFA-A1B2C). El nombre real solo será visible para ti.",
+    "mostrarPublicoLabel": "Aparecer en estadísticas públicas",
+    "mostrarPublicoHelp": "Permite que los datos agregados (siempre anónimos a nivel de alumno) de tu centro contribuyan a las estadísticas comparativas de la comunidad.",
+    "publicAs": "Público como"
   },
   "grupos": {
     "title": "Grupos de clase",

@@ -94,7 +94,12 @@
     "phone": "Telèfon",
     "createdOk": "Centre registrat correctament",
     "updatedOk": "Centre actualitzat",
-    "noCentros": "Encara no hi ha centres registrats"
+    "noCentros": "Encara no hi ha centres registrats",
+    "anonimoLabel": "Mostrar el meu centre de manera anònima",
+    "anonimoHelp": "Si l'actives, en les estadístiques públiques el teu centre apareixerà només amb un codi (p. ex. CFA-A1B2C). El nom real només serà visible per a tu.",
+    "mostrarPublicoLabel": "Aparéixer en les estadístiques públiques",
+    "mostrarPublicoHelp": "Permet que les dades agregades (sempre anònimes a nivell d'alumne) del teu centre contribuïsquen a les estadístiques comparatives de la comunitat.",
+    "publicAs": "Públic com"
   },
   "grupos": {
     "title": "Grups de classe",

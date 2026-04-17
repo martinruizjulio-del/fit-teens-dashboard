@@ -94,7 +94,12 @@
     "phone": "Phone",
     "createdOk": "School registered",
     "updatedOk": "School updated",
-    "noCentros": "No schools registered yet"
+    "noCentros": "No schools registered yet",
+    "anonimoLabel": "Show my school anonymously",
+    "anonimoHelp": "When enabled, your school appears in public stats only with an opaque code (e.g. CFA-A1B2C). The real name remains visible only to you.",
+    "mostrarPublicoLabel": "Appear in public statistics",
+    "mostrarPublicoHelp": "Allow your school's aggregated data (always anonymised at student level) to contribute to community comparisons.",
+    "publicAs": "Public as"
   },
   "grupos": {
     "title": "Class groups",
