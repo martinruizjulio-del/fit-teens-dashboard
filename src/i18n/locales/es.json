@@ -7,6 +7,7 @@
   "nav": {
     "home": "Inicio",
     "public": "Estadísticas públicas",
+    "centrosPublico": "Centros adheridos",
     "login": "Acceso profesores",
     "studentAccess": "Acceso alumnos",
     "dashboard": "Panel",
@@ -205,5 +206,17 @@
   "footer": {
     "developedBy": "Aplicación desarrollada por",
     "rights": "Todos los derechos reservados"
+  },
+  "centrosPublico": {
+    "title": "Centros que utilizan la aplicación",
+    "subtitle": "Centros educativos adheridos al proyecto. Aquellos que han optado por el anonimato aparecen identificados solo con su código de adhesión.",
+    "totalCentros": "Centros adheridos",
+    "totalProvincias": "Provincias",
+    "totalAnonimos": "Centros anónimos",
+    "distribucion": "Distribución por provincia",
+    "anonimo": "Anónimo",
+    "ubicacionOculta": "Ubicación no divulgada",
+    "vacio": "Aún no hay centros públicos.",
+    "aviso": "Los centros se muestran únicamente si han marcado expresamente la opción de aparición pública al darse de alta."
   }
 }

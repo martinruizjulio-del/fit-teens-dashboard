@@ -7,6 +7,7 @@
   "nav": {
     "home": "Home",
     "public": "Public stats",
+    "centrosPublico": "Participating schools",
     "login": "Teacher login",
     "studentAccess": "Student access",
     "dashboard": "Dashboard",
@@ -205,5 +206,17 @@
   "footer": {
     "developedBy": "Application developed by",
     "rights": "All rights reserved"
+  },
+  "centrosPublico": {
+    "title": "Schools using the application",
+    "subtitle": "Educational centers participating in the project. Those that opted for anonymity appear identified only by their adhesion code.",
+    "totalCentros": "Participating schools",
+    "totalProvincias": "Provinces",
+    "totalAnonimos": "Anonymous schools",
+    "distribucion": "Distribution by province",
+    "anonimo": "Anonymous",
+    "ubicacionOculta": "Location not disclosed",
+    "vacio": "No public schools yet.",
+    "aviso": "Schools are only displayed if they explicitly opted in for public listing during registration."
   }
 }

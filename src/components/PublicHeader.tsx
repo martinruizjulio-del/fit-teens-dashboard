@@ -24,6 +24,9 @@ export function PublicHeader() {
           <Link to="/publico">
             <Button variant="ghost" size="sm">{t("nav.public")}</Button>
           </Link>
+          <Link to="/centros-publico">
+            <Button variant="ghost" size="sm">{t("nav.centrosPublico")}</Button>
+          </Link>
           <Link to="/alumno">
             <Button variant="ghost" size="sm">{t("nav.studentAccess")}</Button>
           </Link>

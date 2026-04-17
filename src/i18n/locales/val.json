@@ -7,6 +7,7 @@
   "nav": {
     "home": "Inici",
     "public": "Estadístiques públiques",
+    "centrosPublico": "Centres adherits",
     "login": "Accés professorat",
     "studentAccess": "Accés alumnes",
     "dashboard": "Tauler",
@@ -205,5 +206,17 @@
   "footer": {
     "developedBy": "Aplicació desenvolupada per",
     "rights": "Tots els drets reservats"
+  },
+  "centrosPublico": {
+    "title": "Centres que utilitzen l'aplicació",
+    "subtitle": "Centres educatius adherits al projecte. Aquells que han optat per l'anonimat apareixen identificats només amb el seu codi d'adhesió.",
+    "totalCentros": "Centres adherits",
+    "totalProvincias": "Províncies",
+    "totalAnonimos": "Centres anònims",
+    "distribucion": "Distribució per província",
+    "anonimo": "Anònim",
+    "ubicacionOculta": "Ubicació no divulgada",
+    "vacio": "Encara no hi ha centres públics.",
+    "aviso": "Els centres es mostren únicament si han marcat expressament l'opció d'aparició pública en donar-se d'alta."
   }
 }
