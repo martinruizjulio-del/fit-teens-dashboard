@@ -164,6 +164,36 @@ export default function Centros() {
                   <Input value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })} />
                 </div>
               </div>
+
+              <div className="rounded-md border border-border/70 bg-muted/30 p-3 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <Label htmlFor="anonimo-switch" className="text-sm font-medium cursor-pointer">
+                      {t("centros.anonimoLabel")}
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t("centros.anonimoHelp")}</p>
+                  </div>
+                  <Switch
+                    id="anonimo-switch"
+                    checked={form.anonimo}
+                    onCheckedChange={(v) => setForm({ ...form, anonimo: v })}
+                  />
+                </div>
+                <div className="flex items-start justify-between gap-3 pt-2 border-t border-border/50">
+                  <div className="flex-1">
+                    <Label htmlFor="publico-switch" className="text-sm font-medium cursor-pointer">
+                      {t("centros.mostrarPublicoLabel")}
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t("centros.mostrarPublicoHelp")}</p>
+                  </div>
+                  <Switch
+                    id="publico-switch"
+                    checked={form.mostrar_publico}
+                    onCheckedChange={(v) => setForm({ ...form, mostrar_publico: v })}
+                  />
+                </div>
+              </div>
+
               <Button type="submit" className="w-full mt-2">{t("common.save")}</Button>
             </form>
           </DialogContent>
@@ -186,6 +216,11 @@ export default function Centros() {
                   <Building2 className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                   <span className="line-clamp-2">{c.nombre}</span>
                 </CardTitle>
+                {c.anonimo && c.codigo_anonimo && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                    <EyeOff className="h-3 w-3" /> {t("centros.publicAs")} <span className="font-mono font-semibold text-foreground">{c.codigo_anonimo}</span>
+                  </p>
+                )}
               </CardHeader>
               <CardContent className="space-y-1.5 text-sm text-muted-foreground">
                 {(c.ciudad || c.provincia) && (
