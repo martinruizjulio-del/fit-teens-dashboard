@@ -1,16 +1,85 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PublicHeader } from "@/components/PublicHeader";
+import { Logo } from "@/components/Logo";
+import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight } from "lucide-react";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  const { t } = useTranslation();
+
+  const features = [
+    { icon: Activity, title: t("landing.feature1Title"), desc: t("landing.feature1Desc") },
+    { icon: ShieldCheck, title: t("landing.feature2Title"), desc: t("landing.feature2Desc") },
+    { icon: KeyRound, title: t("landing.feature3Title"), desc: t("landing.feature3Desc") },
+    { icon: BarChart3, title: t("landing.feature4Title"), desc: t("landing.feature4Desc") },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen flex flex-col">
+      <PublicHeader />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
+        <div className="absolute inset-0 opacity-10" aria-hidden="true">
+          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-secondary blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-primary-glow blur-3xl" />
+        </div>
+        <div className="container relative py-20 md:py-28 flex flex-col items-center text-center animate-fade-in">
+          <Logo size={72} className="mb-6" />
+          <h1 className="font-display text-4xl md:text-6xl font-bold max-w-4xl leading-tight">
+            {t("landing.heroTitle")}
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg md:text-xl text-primary-foreground/85">
+            {t("landing.heroSubtitle")}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/auth">
+              <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-energy text-base px-7">
+                {t("landing.ctaTeacher")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/alumno">
+              <Button size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white text-base px-7">
+                {t("landing.ctaStudent")}
+              </Button>
+            </Link>
+            <Link to="/publico">
+              <Button size="lg" variant="ghost" className="text-white hover:bg-white/10 hover:text-white text-base px-7">
+                {t("landing.ctaPublic")}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="container py-16 md:py-24">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {features.map((f, i) => (
+            <Card
+              key={i}
+              className="p-6 border-border/50 hover:shadow-elevated hover:-translate-y-1 transition-smooth bg-card"
+            >
+              <div className="inline-flex p-3 rounded-lg bg-gradient-primary text-primary-foreground mb-4 shadow-glow">
+                <f.icon className="h-5 w-5" />
+              </div>
+              <h3 className="font-display font-semibold text-lg text-foreground mb-2">{f.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <footer className="border-t border-border/50 bg-muted/30 py-8">
+        <div className="container text-center text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">{t("app.name")}</p>
+          <p className="mt-1">{t("app.tagline")}</p>
+        </div>
+      </footer>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
