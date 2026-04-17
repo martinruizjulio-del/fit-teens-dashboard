@@ -9,6 +9,7 @@
     "public": "Estadístiques públiques",
     "centrosPublico": "Centres adherits",
     "login": "Accés professorat",
+    "loginTeacherAdmin": "Professor / Admin",
     "studentAccess": "Accés alumnes",
     "dashboard": "Tauler",
     "centros": "Centres",
@@ -31,7 +32,19 @@
     "feature3Title": "Cada alumne, el seu codi",
     "feature3Desc": "Cada estudiant pot consultar els seus resultats amb un codi personal, sense necessitat de compte.",
     "feature4Title": "Estadístiques anònimes",
-    "feature4Desc": "Compara el teu centre i el teu grup amb resultats agregats de tota la comunitat educativa."
+    "feature4Desc": "Compara el teu centre i el teu grup amb resultats agregats de tota la comunitat educativa.",
+    "accessTitle": "Accedeix al sistema",
+    "accessSubtitle": "Tres formes d'entrar segons el teu rol. Professors i administradors comparteixen el mateix accés: el rol s'assigna automàticament segons el correu.",
+    "accessTeacherTitle": "Soc professor/a",
+    "accessTeacherDesc": "Crea el teu compte o inicia sessió amb el teu correu professional. Tindràs el teu propi tauler per gestionar centres, grups, alumnes i proves.",
+    "accessTeacherCta": "Entrar / Crear compte",
+    "accessStudentTitle": "Soc alumne/a",
+    "accessStudentDesc": "Consulta els teus resultats amb el codi personal que t'ha lliurat el teu professor/a. No necessites compte.",
+    "accessStudentCta": "Accedir amb codi",
+    "accessAdminBadge": "Només personal autoritzat",
+    "accessAdminTitle": "Soc administrador",
+    "accessAdminDesc": "Inicia sessió a /auth amb el correu julio.martin@ucv.es. El rol d'administració s'assigna automàticament. Una vegada dins, accedeix al tauler des de la barra lateral o anant a /admin.",
+    "accessAdminCta": "Anar a l'accés"
   },
   "auth": {
     "title": "Accés professorat",
