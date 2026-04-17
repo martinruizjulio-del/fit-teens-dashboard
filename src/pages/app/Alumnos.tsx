@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2, ClipboardList, KeyRound, Copy, Search } from "lucide-react";
 import { calcularEdad } from "@/lib/pruebas";
+import { ImportarAlumnosDialog } from "@/components/ImportarAlumnosDialog";
 
 interface Alumno {
   id: string; grupo_id: string; id_aula: number;
@@ -152,6 +153,11 @@ export default function Alumnos() {
               ))}
             </SelectContent>
           </Select>
+          <ImportarAlumnosDialog
+            grupoId={grupoId || null}
+            grupoNombre={grupos.find((g) => g.id === grupoId) ? `${grupos.find((g) => g.id === grupoId)!.curso.replace("ESO", "º ESO")} ${grupos.find((g) => g.id === grupoId)!.letra}` : undefined}
+            onImported={() => void cargarAlumnos()}
+          />
           <Button onClick={openNew} disabled={!grupoId} className="bg-gradient-energy text-secondary-foreground shadow-energy hover:opacity-95">
             <Plus className="h-4 w-4 mr-1" /> Nuevo alumno
           </Button>
