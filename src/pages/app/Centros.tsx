@@ -40,6 +40,7 @@ export default function Centros() {
   const [form, setForm] = useState({
     nombre: "", direccion: "", codigo_postal: "", ciudad: "",
     provincia: "", email: "", telefono: "",
+    anonimo: false, mostrar_publico: true,
   });
 
   useEffect(() => { void load(); }, []);
@@ -65,6 +66,8 @@ export default function Centros() {
         provincia: c.provincia,
         email: c.email ?? "",
         telefono: c.telefono ?? "",
+        anonimo: c.anonimo ?? false,
+        mostrar_publico: c.mostrar_publico ?? true,
       });
     }
   }
@@ -80,7 +83,7 @@ export default function Centros() {
     }
     toast({ title: t("centros.createdOk") });
     setOpen(false);
-    setForm({ nombre: "", direccion: "", codigo_postal: "", ciudad: "", provincia: "", email: "", telefono: "" });
+    setForm({ nombre: "", direccion: "", codigo_postal: "", ciudad: "", provincia: "", email: "", telefono: "", anonimo: false, mostrar_publico: true });
     setSelectedExisting("");
     void load();
   }
