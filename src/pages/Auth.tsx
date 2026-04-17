@@ -1,0 +1,251 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/Logo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const signUpSchema = z.object({
+  fullName: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(255),
+  password: z.string().min(8).max(128),
+});
+
+type Stage = "credentials" | "otp";
+
+export default function Auth() {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [stage, setStage] = useState<Stage>("credentials");
+  const [emailForOtp, setEmailForOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Sign in
+  const [siEmail, setSiEmail] = useState("");
+  const [siPassword, setSiPassword] = useState("");
+
+  // Sign up
+  const [suName, setSuName] = useState("");
+  const [suEmail, setSuEmail] = useState("");
+  const [suPassword, setSuPassword] = useState("");
+
+  // OTP
+  const [otp, setOtp] = useState("");
+
+  if (user && stage === "credentials") {
+    navigate("/app", { replace: true });
+  }
+
+  async function handleSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Paso 1: validar contraseña
+      const { error: pwError } = await supabase.auth.signInWithPassword({
+        email: siEmail.trim(),
+        password: siPassword,
+      });
+      if (pwError) throw pwError;
+
+      // Cierra sesión inmediatamente y exige OTP por email para 2FA
+      await supabase.auth.signOut();
+
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: siEmail.trim(),
+        options: { shouldCreateUser: false },
+      });
+      if (otpError) throw otpError;
+
+      setEmailForOtp(siEmail.trim());
+      setStage("otp");
+      toast({ title: t("auth.otpTitle"), description: t("auth.otpDesc") });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: t("auth.errors.generic"),
+        description: err?.message?.includes("Invalid") ? t("auth.errors.invalidCreds") : err?.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSignUp(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const parsed = signUpSchema.safeParse({ fullName: suName, email: suEmail, password: suPassword });
+      if (!parsed.success) {
+        const msg = parsed.error.issues[0]?.path[0] === "password"
+          ? t("auth.errors.weakPassword")
+          : t("auth.errors.generic");
+        throw new Error(msg);
+      }
+
+      const redirectUrl = `${window.location.origin}/app`;
+      const { error } = await supabase.auth.signUp({
+        email: parsed.data.email,
+        password: parsed.data.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: { full_name: parsed.data.fullName },
+        },
+      });
+      if (error) throw error;
+
+      toast({ title: t("auth.tabSignUp"), description: t("auth.checkEmail") });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: t("auth.errors.generic"), description: err?.message });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    if (otp.length !== 6) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: emailForOtp,
+        token: otp,
+        type: "email",
+      });
+      if (error) throw error;
+      navigate("/app", { replace: true });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: t("auth.errors.invalidOtp"),
+        description: err?.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function resendOtp() {
+    setLoading(true);
+    try {
+      await supabase.auth.signInWithOtp({ email: emailForOtp, options: { shouldCreateUser: false } });
+      toast({ title: t("auth.otpResend") });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-hero flex flex-col">
+      <header className="container flex items-center justify-between py-4">
+        <Link to="/" className="flex items-center gap-2 text-primary-foreground">
+          <Logo size={32} />
+          <span className="font-display font-bold">CFA</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground text-sm flex items-center gap-1">
+            <ArrowLeft className="h-4 w-4" /> {t("common.back")}
+          </Link>
+          <div className="text-primary-foreground"><LanguageSwitcher /></div>
+        </div>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-elevated animate-scale-in">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-2 inline-flex p-3 rounded-full bg-gradient-primary">
+              <ShieldCheck className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <CardTitle className="font-display text-2xl">{t("auth.title")}</CardTitle>
+            <CardDescription>{t("app.tagline")}</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {stage === "otp" ? (
+              <form onSubmit={handleVerifyOtp} className="space-y-5">
+                <div className="text-center text-sm text-muted-foreground">
+                  <p className="font-medium text-foreground">{t("auth.otpTitle")}</p>
+                  <p className="mt-1">{t("auth.otpDesc")}</p>
+                  <p className="mt-2 font-mono text-xs">{emailForOtp}</p>
+                </div>
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                    <InputOTPGroup>
+                      {[0,1,2,3,4,5].map((i) => <InputOTPSlot key={i} index={i} />)}
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <Button type="submit" className="w-full" disabled={loading || otp.length !== 6}>
+                  {t("auth.otpVerify")}
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={resendOtp} disabled={loading}>
+                  {t("auth.otpResend")}
+                </Button>
+              </form>
+            ) : (
+              <Tabs defaultValue="signin">
+                <TabsList className="grid grid-cols-2 w-full mb-4">
+                  <TabsTrigger value="signin">{t("auth.tabSignIn")}</TabsTrigger>
+                  <TabsTrigger value="signup">{t("auth.tabSignUp")}</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="si-email">{t("auth.email")}</Label>
+                      <Input id="si-email" type="email" required value={siEmail} onChange={(e) => setSiEmail(e.target.value)} autoComplete="email" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="si-pwd">{t("auth.password")}</Label>
+                      <Input id="si-pwd" type="password" required value={siPassword} onChange={(e) => setSiPassword(e.target.value)} autoComplete="current-password" />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {t("auth.signIn")}
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      🔒 {t("auth.otpDesc").substring(0, 80)}…
+                    </p>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="su-name">{t("auth.fullName")}</Label>
+                      <Input id="su-name" required value={suName} onChange={(e) => setSuName(e.target.value)} maxLength={100} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="su-email">{t("auth.email")}</Label>
+                      <Input id="su-email" type="email" required value={suEmail} onChange={(e) => setSuEmail(e.target.value)} maxLength={255} autoComplete="email" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="su-pwd">{t("auth.password")}</Label>
+                      <Input id="su-pwd" type="password" required value={suPassword} onChange={(e) => setSuPassword(e.target.value)} minLength={8} autoComplete="new-password" />
+                      <p className="text-xs text-muted-foreground">{t("auth.passwordHint")}</p>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {t("auth.signUp")}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,118 @@
+{
+  "app": {
+    "name": "Condició Física Adolescents",
+    "short": "CFA",
+    "tagline": "Avaluació de la condició física a Educació Secundària"
+  },
+  "nav": {
+    "home": "Inici",
+    "public": "Estadístiques públiques",
+    "login": "Accés professorat",
+    "studentAccess": "Accés alumnes",
+    "dashboard": "Tauler",
+    "centros": "Centres",
+    "grupos": "Grups",
+    "alumnos": "Alumnes",
+    "baterias": "Bateries",
+    "admin": "Administració",
+    "logout": "Tancar sessió"
+  },
+  "landing": {
+    "heroTitle": "Mesura, avalua i millora la condició física del teu alumnat",
+    "heroSubtitle": "Plataforma educativa per a professorat d'Educació Física a Secundària. Bateries Eurofit i CFS amb barems oficials, percepció de l'esforç Omni-Res, informes PDF i estadístiques comparatives.",
+    "ctaTeacher": "Entrar com a professor",
+    "ctaStudent": "Accés d'alumne",
+    "ctaPublic": "Veure estadístiques públiques",
+    "feature1Title": "Dues bateries validades",
+    "feature1Desc": "Eurofit i CFS amb 6 proves cadascuna. Notes calculades automàticament per edat i sexe.",
+    "feature2Title": "Accés segur amb doble factor",
+    "feature2Desc": "Verificació en dos passos per codi de correu — sense apps addicionals, accessible per a tot el professorat.",
+    "feature3Title": "Cada alumne, el seu codi",
+    "feature3Desc": "Cada estudiant pot consultar els seus resultats amb un codi personal, sense necessitat de compte.",
+    "feature4Title": "Estadístiques anònimes",
+    "feature4Desc": "Compara el teu centre i el teu grup amb resultats agregats de tota la comunitat educativa."
+  },
+  "auth": {
+    "title": "Accés professorat",
+    "tabSignIn": "Iniciar sessió",
+    "tabSignUp": "Crear compte",
+    "fullName": "Nom complet",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "passwordHint": "Mínim 8 caràcters",
+    "signIn": "Entrar",
+    "signUp": "Crear compte",
+    "otpTitle": "Verificació en dos passos",
+    "otpDesc": "Hem enviat un codi de 6 dígits al teu correu. Introdueix-lo per completar l'accés.",
+    "otpCode": "Codi de verificació",
+    "otpVerify": "Verificar",
+    "otpResend": "Reenviar codi",
+    "checkEmail": "Revisa el teu correu per confirmar el compte i després inicia sessió.",
+    "signOutOk": "Sessió tancada",
+    "errors": {
+      "generic": "S'ha produït un error. Torna-ho a intentar.",
+      "invalidCreds": "Correu o contrasenya incorrectes.",
+      "weakPassword": "La contrasenya ha de tindre almenys 8 caràcters.",
+      "invalidOtp": "Codi incorrecte o caducat."
+    }
+  },
+  "studentLogin": {
+    "title": "Accés de l'alumne",
+    "subtitle": "Introdueix el teu codi personal per veure els teus resultats",
+    "code": "Codi personal",
+    "enter": "Veure els meus resultats",
+    "notFound": "No s'ha trobat cap alumne amb aquest codi."
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancel·lar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Tornar",
+    "loading": "Carregant…",
+    "noData": "Sense dades",
+    "actions": "Accions",
+    "search": "Cercar",
+    "yes": "Sí",
+    "no": "No",
+    "male": "Xic",
+    "female": "Xica",
+    "select": "Selecciona…"
+  },
+  "centros": {
+    "title": "Centres educatius",
+    "subtitle": "Selecciona un centre existent o registra'n un de nou",
+    "selectExisting": "Centre existent",
+    "createNew": "Registrar nou centre",
+    "name": "Nom del centre",
+    "address": "Adreça",
+    "postalCode": "Codi postal",
+    "city": "Ciutat",
+    "province": "Província",
+    "email": "Correu",
+    "phone": "Telèfon",
+    "createdOk": "Centre registrat correctament",
+    "updatedOk": "Centre actualitzat",
+    "noCentros": "Encara no hi ha centres registrats"
+  },
+  "grupos": {
+    "title": "Grups de classe",
+    "newGroup": "Nou grup",
+    "centro": "Centre",
+    "curso": "Curs",
+    "letra": "Lletra",
+    "anio": "Any escolar",
+    "students": "alumnes",
+    "createdOk": "Grup creat",
+    "noGrupos": "Encara no tens grups. Crea el primer per començar."
+  },
+  "dashboard": {
+    "title": "Tauler del professor",
+    "welcome": "Hola",
+    "myCentros": "Els meus centres",
+    "myGrupos": "Els meus grups",
+    "myAlumnos": "Els meus alumnes",
+    "quickActions": "Accions ràpides"
+  }
+}
