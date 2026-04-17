@@ -507,7 +507,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_borrar_demo: { Args: never; Returns: string }
+      admin_seed_demo: { Args: never; Returns: string }
+      borrar_demo: { Args: never; Returns: string }
+      calcular_nota: {
+        Args: {
+          _bateria: string
+          _edad: number
+          _prueba: string
+          _sexo: Database["public"]["Enums"]["sexo_enum"]
+          _valor: number
+        }
+        Returns: number
+      }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
+      get_stats_publicas: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -516,6 +530,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      seed_demo_alumnos: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "teacher"
