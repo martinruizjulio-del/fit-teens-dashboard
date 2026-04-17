@@ -114,5 +114,57 @@
     "myGrupos": "Mis grupos",
     "myAlumnos": "Mis alumnos",
     "quickActions": "Acciones rápidas"
+  },
+  "manual": {
+    "button": "Manual de uso",
+    "title": "Manual de uso de la aplicación",
+    "subtitle": "Guía rápida para sacar el máximo partido a CFA en tus clases.",
+    "footnote": "Para dudas adicionales, contacta con el administrador o consulta la documentación completa en el panel de administración.",
+    "sections": [
+      {
+        "title": "Primeros pasos",
+        "items": [
+          "Crea tu cuenta de profesor con tu correo y verifica el código de doble factor que recibirás por email.",
+          "Acepta la política de privacidad y registra (o selecciona) tu centro educativo.",
+          "Indica si quieres que tu centro aparezca con su nombre real o con un código anónimo en las estadísticas públicas."
+        ]
+      },
+      {
+        "title": "Crea grupos y alumnos",
+        "items": [
+          "Desde 'Grupos' añade tus clases (curso, letra y año escolar).",
+          "Dentro de cada grupo, da de alta a tus alumnos: nombre, apellidos, fecha de nacimiento, sexo y nº de aula.",
+          "Cada alumno recibe automáticamente un código personal para consultar sus resultados sin necesidad de cuenta."
+        ]
+      },
+      {
+        "title": "Registra las pruebas",
+        "items": [
+          "Elige la batería: Eurofit (6 pruebas) o CFS (6 pruebas).",
+          "Introduce los valores de cada prueba; las notas se calculan automáticamente por edad y sexo según los baremos oficiales.",
+          "Anota la percepción del esfuerzo Omni-Res (0-10) tras cada prueba para hacer un seguimiento real de la carga."
+        ]
+      },
+      {
+        "title": "Informes y estadísticas",
+        "items": [
+          "Genera informes PDF individuales por alumno con todas sus pruebas, notas y gráficas de evolución.",
+          "Consulta el dashboard del grupo para ver medias, dispersión y comparativa con la comunidad.",
+          "El alumnado puede acceder con su código personal desde 'Acceso alumnos' para ver sus resultados de forma privada."
+        ]
+      },
+      {
+        "title": "Buenas prácticas",
+        "items": [
+          "Realiza un calentamiento estandarizado antes de cualquier batería.",
+          "Mantén las mismas condiciones (espacio, material, hora) entre tomas para que la comparación sea fiable.",
+          "Comparte con el alumnado el sentido formativo de las pruebas: no se trata de competir, sino de mejorar."
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "developedBy": "Aplicación desarrollada por",
+    "rights": "Todos los derechos reservados"
   }
 }
