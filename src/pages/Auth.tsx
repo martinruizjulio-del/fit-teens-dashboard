@@ -16,6 +16,7 @@ import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PrivacyPolicyDialog } from "@/components/PrivacyPolicyDialog";
 import { ImplantacionDialog } from "@/components/ImplantacionDialog";
+import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, ArrowLeft, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 

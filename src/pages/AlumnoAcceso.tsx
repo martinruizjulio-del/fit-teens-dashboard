@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { PublicHeader } from "@/components/PublicHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { GraduationCap, KeyRound, FileDown } from "lucide-react";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip } from "recharts";
 import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, calcularEdad, valorParaBaremo, formateaValor } from "@/lib/pruebas";
@@ -172,6 +173,7 @@ export default function AlumnoAcceso() {
           </div>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }
