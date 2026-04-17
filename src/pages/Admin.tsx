@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen } from "lucide-react";
+import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen, FileDown, Award } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
+import { generarEvidenciasPDF } from "@/lib/evidencias-pdf";
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -92,6 +93,68 @@ export default function Admin() {
     }
   }
 
+  async function descargarEvidencias() {
+    setBusy(true);
+    try {
+      const [statsR, centrosR, alumnosR, profesR, eurR, cfsR] = await Promise.all([
+        supabase.rpc("get_stats_publicas_filtradas", { _sexo: "all", _curso: "all" }),
+        supabase.from("centros").select("nombre, provincia, ciudad, anonimo, codigo_anonimo").eq("mostrar_publico", true).order("provincia"),
+        supabase.from("alumnos").select("id", { count: "exact", head: true }),
+        supabase.from("user_roles").select("user_id", { count: "exact", head: true }).eq("role", "teacher"),
+        supabase.from("pruebas_eurofit").select("id", { count: "exact", head: true }),
+        supabase.from("pruebas_cfs").select("id", { count: "exact", head: true }),
+      ]);
+      const stats: any = statsR.data ?? {};
+
+      // Captura del dashboard público vía iframe oculto
+      let capturaSelector: string | undefined;
+      const iframe = document.createElement("iframe");
+      iframe.src = `${window.location.origin}/publico`;
+      iframe.style.cssText = "position:fixed;left:-9999px;top:0;width:1280px;height:1800px;border:0;";
+      document.body.appendChild(iframe);
+      await new Promise<void>((resolve) => {
+        iframe.onload = () => setTimeout(resolve, 2500);
+      });
+      try {
+        const node = iframe.contentDocument?.querySelector("main");
+        if (node) {
+          (node as HTMLElement).id = "evidencias-capture";
+          // Inyectamos el nodo capturado como hijo temporal del propio doc para html2canvas
+          const clone = node.cloneNode(true) as HTMLElement;
+          clone.id = "evidencias-capture-clone";
+          clone.style.cssText = "position:fixed;left:-9999px;top:0;width:1280px;background:#fff;";
+          document.body.appendChild(clone);
+          capturaSelector = "#evidencias-capture-clone";
+        }
+      } catch (e) {
+        console.warn("No se pudo acceder al iframe", e);
+      }
+
+      await generarEvidenciasPDF({
+        autores: config?.autores ?? "Julio Martín-Ruiz",
+        totalAlumnos: alumnosR.count ?? 0,
+        totalCentros: (centrosR.data ?? []).length,
+        totalProfesores: profesR.count ?? 0,
+        totalPruebas: (eurR.count ?? 0) + (cfsR.count ?? 0),
+        eurofit: stats.eurofit,
+        cfs: stats.cfs,
+        antropometria: stats.antropometria,
+        centros: centrosR.data ?? [],
+        capturaSelector,
+        urlPublica: `${window.location.origin}/publico`,
+      });
+
+      // Limpieza
+      document.getElementById("evidencias-capture-clone")?.remove();
+      iframe.remove();
+      toast({ title: "PDF de evidencias generado" });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Error generando PDF", description: e?.message });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function guardarProc(p: any) {
     const { error } = await supabase.from("procedimientos").update({
       procedimiento_md: p.procedimiento_md, referencia_apa: p.referencia_apa,
@@ -114,9 +177,36 @@ export default function Admin() {
           <TabsTrigger value="demo"><Database className="h-4 w-4 mr-1.5" /> Datos demo</TabsTrigger>
           <TabsTrigger value="config">Página pública</TabsTrigger>
           <TabsTrigger value="autores">Autores y política</TabsTrigger>
+          <TabsTrigger value="evidencias"><Award className="h-4 w-4 mr-1.5" /> Evidencias CV</TabsTrigger>
           <TabsTrigger value="baremos">Baremos</TabsTrigger>
           <TabsTrigger value="procs"><BookOpen className="h-4 w-4 mr-1.5" /> Procedimientos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="evidencias" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display text-base flex items-center gap-2">
+                <Award className="h-5 w-5 text-secondary" /> PDF de evidencias para CV
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Genera un documento PDF oficial con: estadísticas globales agregadas, captura del panel público, listado de centros adheridos y certificado de uso firmado con tu autoría.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <ul className="text-sm space-y-1.5 text-muted-foreground list-disc pl-5">
+                <li>Portada con certificado y resumen de impacto (centros, profesores, alumnos, pruebas)</li>
+                <li>Tablas de medias y desviación típica de Eurofit, CFS y antropometría</li>
+                <li>Captura automática del panel público de estadísticas</li>
+                <li>Listado completo de centros adheridos (anonimizados cuando proceda)</li>
+                <li>Enlace permanente de verificación pública</li>
+              </ul>
+              <Button onClick={descargarEvidencias} disabled={busy} className="bg-gradient-energy text-secondary-foreground shadow-energy">
+                <FileDown className="h-4 w-4 mr-1.5" /> {busy ? "Generando…" : "Descargar PDF de evidencias"}
+              </Button>
+              <p className="text-xs text-muted-foreground">La generación tarda unos segundos porque incluye una captura real del panel público.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="demo" className="mt-4">
           <Card>
