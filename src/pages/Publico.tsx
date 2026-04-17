@@ -184,7 +184,7 @@ export default function Publico() {
                   <RadarChart data={radar}>
                     <PolarGrid />
                     <PolarAngleAxis dataKey="capacidad" />
-                    <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
+                    <PolarRadiusAxis angle={30} />
                     <Radar dataKey="eurofit" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} name="Eurofit" />
                     <Radar dataKey="cfs" stroke="hsl(var(--secondary))" fill="hsl(var(--secondary))" fillOpacity={0.3} name="CFS" />
                     <Legend />
