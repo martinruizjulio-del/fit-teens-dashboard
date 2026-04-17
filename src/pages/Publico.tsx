@@ -124,6 +124,11 @@ export default function Publico() {
           <Card><CardContent className="p-12 text-center text-muted-foreground">{t("publico.noResults")}</CardContent></Card>
         ) : (
           <>
+            <div className="grid gap-4 md:grid-cols-2">
+              <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} color="primary" />
+              <NotaGlobalCard titulo="Nota global CFS" nota={stats.nota_cfs} color="secondary" />
+            </div>
+
             <div className="grid gap-4 lg:grid-cols-2">
               <Card>
                 <CardHeader>
