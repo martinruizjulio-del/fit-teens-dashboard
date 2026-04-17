@@ -9,6 +9,7 @@
     "public": "Public stats",
     "centrosPublico": "Participating schools",
     "login": "Teacher login",
+    "loginTeacherAdmin": "Teacher / Admin",
     "studentAccess": "Student access",
     "dashboard": "Dashboard",
     "centros": "Schools",
@@ -31,7 +32,19 @@
     "feature3Title": "Every student, their own code",
     "feature3Desc": "Each student can check their own results with a personal code — no account needed.",
     "feature4Title": "Anonymous analytics",
-    "feature4Desc": "Compare your school and group with aggregated results from the whole community."
+    "feature4Desc": "Compare your school and group with aggregated results from the whole community.",
+    "accessTitle": "Sign in to the system",
+    "accessSubtitle": "Three ways to access depending on your role. Teachers and administrators share the same login: the role is assigned automatically by email.",
+    "accessTeacherTitle": "I'm a teacher",
+    "accessTeacherDesc": "Create an account or sign in with your professional email. You'll get your own dashboard to manage schools, groups, students and tests.",
+    "accessTeacherCta": "Sign in / Sign up",
+    "accessStudentTitle": "I'm a student",
+    "accessStudentDesc": "Check your results with the personal code your teacher gave you. No account needed.",
+    "accessStudentCta": "Access with code",
+    "accessAdminBadge": "Authorised staff only",
+    "accessAdminTitle": "I'm an administrator",
+    "accessAdminDesc": "Sign in at /auth with the email julio.martin@ucv.es. The admin role is assigned automatically. Once inside, open the panel from the sidebar or go to /admin.",
+    "accessAdminCta": "Go to login"
   },
   "auth": {
     "title": "Teacher login",
