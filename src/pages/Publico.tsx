@@ -3,7 +3,10 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
-import { BarChart3 } from "lucide-react";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { BarChart3, Filter } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -12,16 +15,25 @@ import {
 export default function Publico() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<any>(null);
+  const [sexo, setSexo] = useState<string>("all");
+  const [curso, setCurso] = useState<string>("all");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.rpc("get_stats_publicas").then(({ data }) => setStats(data));
-  }, []);
+    setLoading(true);
+    supabase.rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: curso })
+      .then(({ data }) => {
+        setStats(data);
+        setLoading(false);
+      });
+  }, [sexo, curso]);
 
   if (!stats) {
     return (
       <div className="min-h-screen flex flex-col">
         <PublicHeader />
-        <main className="container py-12 flex-1 text-center text-muted-foreground">Cargando…</main>
+        <main className="container py-12 flex-1 text-center text-muted-foreground">{t("common.loading")}</main>
+        <SiteFooter />
       </div>
     );
   }
@@ -46,12 +58,14 @@ export default function Publico() {
   ];
 
   const radar = [
-    { capacidad: "Flexibilidad", eurofit: stats.eurofit?.wells / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
-    { capacidad: "Salto", eurofit: stats.eurofit?.salto / 5, cfs: stats.cfs?.cmj / 5 },
-    { capacidad: "Lanzamiento", eurofit: stats.eurofit?.lanz, cfs: stats.cfs?.lanz_der },
+    { capacidad: "Flexibilidad", eurofit: (stats.eurofit?.wells ?? 0) / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
+    { capacidad: "Salto", eurofit: (stats.eurofit?.salto ?? 0) / 5, cfs: (stats.cfs?.cmj ?? 0) / 5 },
+    { capacidad: "Lanzamiento", eurofit: stats.eurofit?.lanz ?? 0, cfs: stats.cfs?.lanz_der ?? 0 },
     { capacidad: "Velocidad (inv)", eurofit: 12 - (stats.eurofit?.sprint ?? 9), cfs: 8 - (stats.cfs?.sprint30 ?? 5) },
     { capacidad: "Resistencia", eurofit: (stats.eurofit?.cooper ?? 2000) / 300, cfs: 18 - (stats.cfs?.rockport ?? 13) },
   ];
+
+  const total = stats.total_alumnos ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-soft">
@@ -62,73 +76,113 @@ export default function Publico() {
             <BarChart3 className="h-7 w-7 text-secondary" /> {t("nav.public")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Estadísticas anónimas agregadas — {stats.total_alumnos ?? 0} alumnos en la muestra demo.
+            {t("publico.summary", { count: total })}
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader><CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle></CardHeader>
-            <CardContent style={{ height: 280 }}>
-              <ResponsiveContainer>
-                <BarChart data={eurofitData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
-                  <YAxis />
-                  <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
-                  <Bar dataKey="media" fill="hsl(var(--primary))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader><CardTitle className="font-display text-base">Medias batería CFS</CardTitle></CardHeader>
-            <CardContent style={{ height: 280 }}>
-              <ResponsiveContainer>
-                <BarChart data={cfsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
-                  <YAxis />
-                  <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
-                  <Bar dataKey="media" fill="hsl(var(--secondary))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-
         <Card>
-          <CardHeader><CardTitle className="font-display text-base">Comparativa de capacidades (Eurofit vs CFS)</CardTitle></CardHeader>
-          <CardContent style={{ height: 360 }}>
-            <ResponsiveContainer>
-              <RadarChart data={radar}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="capacidad" />
-                <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
-                <Radar dataKey="eurofit" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} name="Eurofit" />
-                <Radar dataKey="cfs" stroke="hsl(var(--secondary))" fill="hsl(var(--secondary))" fillOpacity={0.3} name="CFS" />
-                <Legend />
-                <Tooltip />
-              </RadarChart>
-            </ResponsiveContainer>
+          <CardContent className="p-4 flex flex-wrap items-end gap-3">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground mr-2">
+              <Filter className="h-4 w-4 text-primary" /> {t("publico.filters")}
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("publico.filterSex")}</Label>
+              <Select value={sexo} onValueChange={setSexo}>
+                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("publico.all")}</SelectItem>
+                  <SelectItem value="M">{t("common.male")}</SelectItem>
+                  <SelectItem value="F">{t("common.female")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("publico.filterGrade")}</Label>
+              <Select value={curso} onValueChange={setCurso}>
+                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("publico.all")}</SelectItem>
+                  <SelectItem value="1ESO">1º ESO</SelectItem>
+                  <SelectItem value="2ESO">2º ESO</SelectItem>
+                  <SelectItem value="3ESO">3º ESO</SelectItem>
+                  <SelectItem value="4ESO">4º ESO</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="font-display text-base">Antropometría media</CardTitle></CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <Stat label="IMC" value={stats.antropometria?.imc} dt={stats.antropometria?.imc_dt} />
-            <Stat label="Envergadura (cm)" value={stats.antropometria?.env} dt={stats.antropometria?.env_dt} />
-            <Stat label="Biacromial (cm)" value={stats.antropometria?.bia} dt={stats.antropometria?.bia_dt} />
-            <Stat label="Long. pierna (cm)" value={stats.antropometria?.pierna} dt={stats.antropometria?.pierna_dt} />
-          </CardContent>
-        </Card>
+        {total === 0 ? (
+          <Card><CardContent className="p-12 text-center text-muted-foreground">{t("publico.noResults")}</CardContent></Card>
+        ) : (
+          <>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Card>
+                <CardHeader><CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle></CardHeader>
+                <CardContent style={{ height: 280 }}>
+                  <ResponsiveContainer>
+                    <BarChart data={eurofitData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
+                      <YAxis />
+                      <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
+                      <Bar dataKey="media" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader><CardTitle className="font-display text-base">Medias batería CFS</CardTitle></CardHeader>
+                <CardContent style={{ height: 280 }}>
+                  <ResponsiveContainer>
+                    <BarChart data={cfsData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
+                      <YAxis />
+                      <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
+                      <Bar dataKey="media" fill="hsl(var(--secondary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-base">Comparativa de capacidades (Eurofit vs CFS)</CardTitle></CardHeader>
+              <CardContent style={{ height: 360 }}>
+                <ResponsiveContainer>
+                  <RadarChart data={radar}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="capacidad" />
+                    <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
+                    <Radar dataKey="eurofit" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} name="Eurofit" />
+                    <Radar dataKey="cfs" stroke="hsl(var(--secondary))" fill="hsl(var(--secondary))" fillOpacity={0.3} name="CFS" />
+                    <Legend />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-base">Antropometría media</CardTitle></CardHeader>
+              <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <Stat label="IMC" value={stats.antropometria?.imc} dt={stats.antropometria?.imc_dt} />
+                <Stat label="Envergadura (cm)" value={stats.antropometria?.env} dt={stats.antropometria?.env_dt} />
+                <Stat label="Biacromial (cm)" value={stats.antropometria?.bia} dt={stats.antropometria?.bia_dt} />
+                <Stat label="Long. pierna (cm)" value={stats.antropometria?.pierna} dt={stats.antropometria?.pierna_dt} />
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         <p className="text-xs text-muted-foreground text-center pt-4 border-t">
-          Datos agregados de la muestra demo. Baremos provisionales basados en Eurofit (Council of Europe, 1988) y ALPHA-Fitness (Ruiz et al., 2011).
+          Datos agregados anónimos. Baremos provisionales basados en Eurofit (Council of Europe, 1988) y ALPHA-Fitness (Ruiz et al., 2011).
         </p>
       </main>
+      <SiteFooter />
     </div>
   );
 }
