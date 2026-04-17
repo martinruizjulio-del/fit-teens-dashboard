@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +7,21 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { BarChart3, Filter } from "lucide-react";
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-} from "recharts";
+
+type StatItem = {
+  prueba: string;
+  media: number | null | undefined;
+  dt?: number | null | undefined;
+  unidad: string;
+  ref: number;
+  pct: number;
+};
+
+type RadarItem = {
+  capacidad: string;
+  eurofit: number;
+  cfs: number;
+};
 
 export default function Publico() {
   const { t } = useTranslation();
@@ -21,12 +32,66 @@ export default function Publico() {
 
   useEffect(() => {
     setLoading(true);
-    supabase.rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: curso })
+    supabase
+      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: curso })
       .then(({ data }) => {
         setStats(data);
         setLoading(false);
       });
   }, [sexo, curso]);
+
+  const eurofitData = useMemo<StatItem[]>(() => {
+    if (!stats) return [];
+
+    const raw = [
+      { prueba: "Wells", media: stats.eurofit?.wells, dt: stats.eurofit?.wells_dt, unidad: "cm", ref: 30 },
+      { prueba: "Salto vertical", media: stats.eurofit?.salto, dt: stats.eurofit?.salto_dt, unidad: "cm", ref: 40 },
+      { prueba: "Abdominales", media: stats.eurofit?.abdo, dt: stats.eurofit?.abdo_dt, unidad: "reps", ref: 40 },
+      { prueba: "Lanz. hombros", media: stats.eurofit?.lanz, dt: stats.eurofit?.lanz_dt, unidad: "m", ref: 8 },
+      { prueba: "Sprint 50m", media: stats.eurofit?.sprint, dt: stats.eurofit?.sprint_dt, unidad: "s", ref: 10 },
+      { prueba: "Cooper", media: stats.eurofit?.cooper, dt: stats.eurofit?.cooper_dt, unidad: "m", ref: 2500 },
+    ];
+
+    return raw.map((d) => ({
+      ...d,
+      pct: d.media != null ? Math.min(120, (Number(d.media) / d.ref) * 100) : 0,
+    }));
+  }, [stats]);
+
+  const cfsData = useMemo<StatItem[]>(() => {
+    if (!stats) return [];
+
+    const raw = [
+      { prueba: "Thomas", media: stats.cfs?.thomas, dt: stats.cfs?.thomas_dt, unidad: "°", ref: 20 },
+      { prueba: "Biering-S.", media: stats.cfs?.biering, dt: stats.cfs?.biering_dt, unidad: "s", ref: 180 },
+      { prueba: "SJ", media: stats.cfs?.sj, dt: stats.cfs?.sj_dt, unidad: "cm", ref: 35 },
+      { prueba: "CMJ", media: stats.cfs?.cmj, dt: stats.cfs?.cmj_dt, unidad: "cm", ref: 40 },
+      { prueba: "Lanz. der.", media: stats.cfs?.lanz_der, dt: stats.cfs?.lanz_der_dt, unidad: "m", ref: 8 },
+      { prueba: "Sprint 30m", media: stats.cfs?.sprint30, dt: stats.cfs?.sprint30_dt, unidad: "s", ref: 6 },
+      { prueba: "Rockport", media: stats.cfs?.rockport, dt: stats.cfs?.rockport_dt, unidad: "min", ref: 18 },
+    ];
+
+    return raw.map((d) => ({
+      ...d,
+      pct: d.media != null ? Math.min(120, (Number(d.media) / d.ref) * 100) : 0,
+    }));
+  }, [stats]);
+
+  const radar = useMemo<RadarItem[]>(() => {
+    if (!stats) return [];
+
+    return [
+      { capacidad: "Flexibilidad", eurofit: (stats.eurofit?.wells ?? 0) / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
+      { capacidad: "Salto", eurofit: (stats.eurofit?.salto ?? 0) / 5, cfs: (stats.cfs?.cmj ?? 0) / 5 },
+      { capacidad: "Lanzamiento", eurofit: stats.eurofit?.lanz ?? 0, cfs: stats.cfs?.lanz_der ?? 0 },
+      { capacidad: "Velocidad", eurofit: 12 - (stats.eurofit?.sprint ?? 9), cfs: 8 - (stats.cfs?.sprint30 ?? 5) },
+      { capacidad: "Resistencia", eurofit: (stats.eurofit?.cooper ?? 2000) / 300, cfs: 18 - (stats.cfs?.rockport ?? 13) },
+    ].map((item) => ({
+      ...item,
+      eurofit: clamp(item.eurofit, 0, 10),
+      cfs: clamp(item.cfs, 0, 10),
+    }));
+  }, [stats]);
 
   if (!stats) {
     return (
@@ -38,40 +103,6 @@ export default function Publico() {
     );
   }
 
-  // Valor de referencia (≈ percentil alto esperable) para normalizar cada prueba a una escala 0-100.
-  // Así pruebas con escalas dispares (Cooper en m, Wells en cm, Sprint en s...) se ven comparables.
-  const eurofitRaw = [
-    { prueba: "Wells",         media: stats.eurofit?.wells,   dt: stats.eurofit?.wells_dt,   unidad: "cm",  ref: 30 },
-    { prueba: "Salto vertical",media: stats.eurofit?.salto,   dt: stats.eurofit?.salto_dt,   unidad: "cm",  ref: 40 },
-    { prueba: "Abdominales",   media: stats.eurofit?.abdo,    dt: stats.eurofit?.abdo_dt,    unidad: "reps",ref: 40 },
-    { prueba: "Lanz. hombros", media: stats.eurofit?.lanz,    dt: stats.eurofit?.lanz_dt,    unidad: "m",   ref: 8 },
-    { prueba: "Sprint 50m",    media: stats.eurofit?.sprint,  dt: stats.eurofit?.sprint_dt,  unidad: "s",   ref: 10 },
-    { prueba: "Cooper",        media: stats.eurofit?.cooper,  dt: stats.eurofit?.cooper_dt,  unidad: "m",   ref: 2500 },
-  ];
-  const cfsRaw = [
-    { prueba: "Thomas",     media: stats.cfs?.thomas,    dt: stats.cfs?.thomas_dt,    unidad: "°",  ref: 20 },
-    { prueba: "Biering-S.", media: stats.cfs?.biering,   dt: stats.cfs?.biering_dt,   unidad: "s",  ref: 180 },
-    { prueba: "SJ",         media: stats.cfs?.sj,        dt: stats.cfs?.sj_dt,        unidad: "cm", ref: 35 },
-    { prueba: "CMJ",        media: stats.cfs?.cmj,       dt: stats.cfs?.cmj_dt,        unidad: "cm", ref: 40 },
-    { prueba: "Lanz. der.", media: stats.cfs?.lanz_der,  dt: stats.cfs?.lanz_der_dt,  unidad: "m",  ref: 8 },
-    { prueba: "Sprint 30m", media: stats.cfs?.sprint30,  dt: stats.cfs?.sprint30_dt,  unidad: "s",  ref: 6 },
-    { prueba: "Rockport",   media: stats.cfs?.rockport,  dt: stats.cfs?.rockport_dt,  unidad: "min",ref: 18 },
-  ];
-  const normaliza = (d: any) => ({
-    ...d,
-    pct: d.media != null ? Math.min(120, (Number(d.media) / d.ref) * 100) : 0,
-  });
-  const eurofitData = eurofitRaw.map(normaliza);
-  const cfsData = cfsRaw.map(normaliza);
-
-  const radar = [
-    { capacidad: "Flexibilidad", eurofit: (stats.eurofit?.wells ?? 0) / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
-    { capacidad: "Salto", eurofit: (stats.eurofit?.salto ?? 0) / 5, cfs: (stats.cfs?.cmj ?? 0) / 5 },
-    { capacidad: "Lanzamiento", eurofit: stats.eurofit?.lanz ?? 0, cfs: stats.cfs?.lanz_der ?? 0 },
-    { capacidad: "Velocidad (inv)", eurofit: 12 - (stats.eurofit?.sprint ?? 9), cfs: 8 - (stats.cfs?.sprint30 ?? 5) },
-    { capacidad: "Resistencia", eurofit: (stats.eurofit?.cooper ?? 2000) / 300, cfs: 18 - (stats.cfs?.rockport ?? 13) },
-  ];
-
   const total = stats.total_alumnos ?? 0;
 
   return (
@@ -82,9 +113,7 @@ export default function Publico() {
           <h1 className="font-display text-3xl font-bold flex items-center gap-2">
             <BarChart3 className="h-7 w-7 text-secondary" /> {t("nav.public")}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {t("publico.summary", { count: total })}
-          </p>
+          <p className="text-muted-foreground mt-1">{t("publico.summary", { count: total })}</p>
         </div>
 
         <Card>
@@ -125,74 +154,26 @@ export default function Publico() {
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-2">
-              <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} color="primary" />
-              <NotaGlobalCard titulo="Nota global CFS" nota={stats.nota_cfs} color="secondary" />
+              <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} colorVar="--primary" />
+              <NotaGlobalCard titulo="Nota global CFS" nota={stats.nota_cfs} colorVar="--secondary" />
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle>
-                  <p className="text-xs text-muted-foreground">Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real en el tooltip.</p>
-                </CardHeader>
-                <CardContent style={{ height: 320 }}>
-                  <ResponsiveContainer>
-                    <BarChart data={eurofitData} margin={{ top: 10, right: 10, left: 0, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                      <YAxis domain={[0, 120]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10 }} />
-                      <Tooltip
-                        formatter={(_v: any, _n, p) => {
-                          const d: any = p.payload;
-                          return [`${Number(d.media ?? 0).toFixed(2)} ${d.unidad} (${Number(d.pct).toFixed(0)}% ref ${d.ref})`, "Media"];
-                        }}
-                      />
-                      <Bar dataKey="pct" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-display text-base">Medias batería CFS</CardTitle>
-                  <p className="text-xs text-muted-foreground">Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real en el tooltip.</p>
-                </CardHeader>
-                <CardContent style={{ height: 320 }}>
-                  <ResponsiveContainer>
-                    <BarChart data={cfsData} margin={{ top: 10, right: 10, left: 0, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                      <YAxis domain={[0, 120]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10 }} />
-                      <Tooltip
-                        formatter={(_v: any, _n, p) => {
-                          const d: any = p.payload;
-                          return [`${Number(d.media ?? 0).toFixed(2)} ${d.unidad} (${Number(d.pct).toFixed(0)}% ref ${d.ref})`, "Media"];
-                        }}
-                      />
-                      <Bar dataKey="pct" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              <NormalizedBarsCard
+                title="Medias batería Eurofit"
+                description="Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real visible junto a cada barra."
+                data={eurofitData}
+                colorVar="--primary"
+              />
+              <NormalizedBarsCard
+                title="Medias batería CFS"
+                description="Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real visible junto a cada barra."
+                data={cfsData}
+                colorVar="--secondary"
+              />
             </div>
 
-            <Card>
-              <CardHeader><CardTitle className="font-display text-base">Comparativa de capacidades (Eurofit vs CFS)</CardTitle></CardHeader>
-              <CardContent style={{ height: 360 }}>
-                <ResponsiveContainer>
-                  <RadarChart data={radar}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="capacidad" />
-                    <PolarRadiusAxis angle={30} />
-                    <Radar dataKey="eurofit" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} name="Eurofit" />
-                    <Radar dataKey="cfs" stroke="hsl(var(--secondary))" fill="hsl(var(--secondary))" fillOpacity={0.3} name="CFS" />
-                    <Legend />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            <CapabilityRadarCard data={radar} />
 
             <Card>
               <CardHeader><CardTitle className="font-display text-base">Antropometría media</CardTitle></CardHeader>
@@ -215,6 +196,191 @@ export default function Publico() {
   );
 }
 
+function NormalizedBarsCard({
+  title,
+  description,
+  data,
+  colorVar,
+}: {
+  title: string;
+  description: string;
+  data: StatItem[];
+  colorVar: "--primary" | "--secondary";
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-display text-base">{title}</CardTitle>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {data.map((item) => (
+          <div key={item.prueba} className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm font-medium text-foreground">{item.prueba}</span>
+              <span className="text-xs text-muted-foreground text-right whitespace-nowrap">
+                {item.media != null ? `${Number(item.media).toFixed(2)} ${item.unidad}` : "—"}
+                {item.dt != null ? ` ± ${Number(item.dt).toFixed(2)}` : ""}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-2.5 flex-1 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${Math.min(item.pct, 100)}%`,
+                    backgroundColor: `hsl(var(${colorVar}))`,
+                  }}
+                />
+              </div>
+              <span className="w-12 text-right text-xs font-mono text-muted-foreground">{Math.round(item.pct)}%</span>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function CapabilityRadarCard({ data }: { data: RadarItem[] }) {
+  const size = 320;
+  const center = size / 2;
+  const radius = 112;
+  const levels = 5;
+  const maxValue = 10;
+
+  const eurofitPoints = data
+    .map((item, index) => pointForValue(index, data.length, item.eurofit, maxValue, center, radius))
+    .join(" ");
+  const cfsPoints = data
+    .map((item, index) => pointForValue(index, data.length, item.cfs, maxValue, center, radius))
+    .join(" ");
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-display text-base">Comparativa de capacidades (Eurofit vs CFS)</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_220px] items-center">
+        <div className="mx-auto w-full max-w-[360px]">
+          <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-auto" role="img" aria-label="Comparativa de capacidades Eurofit y CFS">
+            {Array.from({ length: levels }, (_, levelIndex) => {
+              const currentRadius = (radius * (levelIndex + 1)) / levels;
+              const polygon = data
+                .map((_, index) => pointForRadius(index, data.length, center, currentRadius))
+                .join(" ");
+
+              return (
+                <polygon
+                  key={currentRadius}
+                  points={polygon}
+                  fill="none"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+              );
+            })}
+
+            {data.map((item, index) => {
+              const [x, y] = pointTuple(index, data.length, center, radius + 24);
+              return (
+                <g key={item.capacidad}>
+                  <line
+                    x1={center}
+                    y1={center}
+                    x2={pointTuple(index, data.length, center, radius)[0]}
+                    y2={pointTuple(index, data.length, center, radius)[1]}
+                    stroke="hsl(var(--border))"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={x}
+                    y={y}
+                    textAnchor={x < center - 8 ? "end" : x > center + 8 ? "start" : "middle"}
+                    dominantBaseline={y < center ? "auto" : "hanging"}
+                    fontSize="12"
+                    fill="hsl(var(--muted-foreground))"
+                  >
+                    {item.capacidad}
+                  </text>
+                </g>
+              );
+            })}
+
+            <polygon
+              points={eurofitPoints}
+              fill="hsl(var(--primary))"
+              fillOpacity="0.22"
+              stroke="hsl(var(--primary))"
+              strokeWidth="2"
+            />
+            <polygon
+              points={cfsPoints}
+              fill="hsl(var(--secondary))"
+              fillOpacity="0.22"
+              stroke="hsl(var(--secondary))"
+              strokeWidth="2"
+            />
+          </svg>
+        </div>
+
+        <div className="space-y-3">
+          <LegendItem label="Eurofit" colorVar="--primary" />
+          <LegendItem label="CFS" colorVar="--secondary" />
+          <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+            {data.map((item) => (
+              <div key={item.capacidad} className="grid grid-cols-[1fr_auto_auto] items-center gap-2 text-xs">
+                <span className="text-foreground">{item.capacidad}</span>
+                <span className="font-mono" style={{ color: "hsl(var(--primary))" }}>{item.eurofit.toFixed(1)}</span>
+                <span className="font-mono" style={{ color: "hsl(var(--secondary))" }}>{item.cfs.toFixed(1)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LegendItem({ label, colorVar }: { label: string; colorVar: "--primary" | "--secondary" }) {
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span
+        className="h-3 w-3 rounded-sm"
+        style={{ backgroundColor: `hsl(var(${colorVar}))` }}
+        aria-hidden="true"
+      />
+      <span className="text-foreground">{label}</span>
+    </div>
+  );
+}
+
+function pointForValue(
+  index: number,
+  total: number,
+  value: number,
+  maxValue: number,
+  center: number,
+  radius: number,
+) {
+  const [x, y] = pointTuple(index, total, center, (radius * value) / maxValue);
+  return `${x},${y}`;
+}
+
+function pointForRadius(index: number, total: number, center: number, radius: number) {
+  const [x, y] = pointTuple(index, total, center, radius);
+  return `${x},${y}`;
+}
+
+function pointTuple(index: number, total: number, center: number, radius: number): [number, number] {
+  const angle = (Math.PI * 2 * index) / total - Math.PI / 2;
+  return [center + Math.cos(angle) * radius, center + Math.sin(angle) * radius];
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function Stat({ label, value, dt }: { label: string; value: any; dt?: any }) {
   return (
     <div>
@@ -227,14 +393,11 @@ function Stat({ label, value, dt }: { label: string; value: any; dt?: any }) {
   );
 }
 
-function NotaGlobalCard({ titulo, nota, color }: { titulo: string; nota: any; color: "primary" | "secondary" }) {
+function NotaGlobalCard({ titulo, nota, colorVar }: { titulo: string; nota: any; colorVar: "--primary" | "--secondary" }) {
   const n = nota != null ? Number(nota) : null;
   const pct = n != null ? Math.max(0, Math.min(100, (n / 10) * 100)) : 0;
-  const calificacion = n == null ? "—"
-    : n >= 9 ? "Excelente"
-    : n >= 7 ? "Notable"
-    : n >= 5 ? "Aprobado"
-    : "Mejorable";
+  const calificacion = n == null ? "—" : n >= 9 ? "Excelente" : n >= 7 ? "Notable" : n >= 5 ? "Aprobado" : "Mejorable";
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-2">
@@ -242,7 +405,7 @@ function NotaGlobalCard({ titulo, nota, color }: { titulo: string; nota: any; co
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-baseline gap-3">
-          <span className={`font-display text-5xl font-bold text-${color}`}>
+          <span className="font-display text-5xl font-bold" style={{ color: `hsl(var(${colorVar}))` }}>
             {n != null ? n.toFixed(2) : "—"}
           </span>
           <span className="text-muted-foreground text-sm">/ 10</span>
@@ -250,8 +413,8 @@ function NotaGlobalCard({ titulo, nota, color }: { titulo: string; nota: any; co
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className={`h-full bg-${color} transition-all`}
-            style={{ width: `${pct}%` }}
+            className="h-full transition-all"
+            style={{ width: `${pct}%`, backgroundColor: `hsl(var(${colorVar}))` }}
           />
         </div>
         <p className="text-xs text-muted-foreground">
