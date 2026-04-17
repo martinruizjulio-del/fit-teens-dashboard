@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ManualDialog } from "./ManualDialog";
 import { Button } from "@/components/ui/button";
 import { LogOut, User as UserIcon } from "lucide-react";
 
@@ -26,6 +27,7 @@ export function PublicHeader() {
           <Link to="/alumno">
             <Button variant="ghost" size="sm">{t("nav.studentAccess")}</Button>
           </Link>
+          <ManualDialog />
           <LanguageSwitcher />
           {user ? (
             <>

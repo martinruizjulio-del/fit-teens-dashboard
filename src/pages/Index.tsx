@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Logo } from "@/components/Logo";
 import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight } from "lucide-react";
 
@@ -72,12 +73,7 @@ const Index = () => {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">{t("app.name")}</p>
-          <p className="mt-1">{t("app.tagline")}</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 };

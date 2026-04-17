@@ -114,5 +114,57 @@
     "myGrupos": "My groups",
     "myAlumnos": "My students",
     "quickActions": "Quick actions"
+  },
+  "manual": {
+    "button": "User manual",
+    "title": "Application user manual",
+    "subtitle": "Quick guide to get the most out of APF in your PE classes.",
+    "footnote": "For further questions, contact the administrator or check the full documentation in the admin panel.",
+    "sections": [
+      {
+        "title": "Getting started",
+        "items": [
+          "Create your teacher account with your email and verify the two-factor code you receive by email.",
+          "Accept the privacy policy and register (or select) your school.",
+          "Choose whether your school appears with its real name or with an anonymous code in public statistics."
+        ]
+      },
+      {
+        "title": "Create groups and students",
+        "items": [
+          "From 'Groups', add your classes (year, letter and academic year).",
+          "Inside each group, add your students: first name, surnames, date of birth, sex and classroom number.",
+          "Every student automatically receives a personal code to check their results without needing an account."
+        ]
+      },
+      {
+        "title": "Record the tests",
+        "items": [
+          "Choose the battery: Eurofit (6 tests) or CFS (6 tests).",
+          "Enter the value of each test; scores are computed automatically by age and sex using the official scales.",
+          "Record the Omni-Res perceived exertion (0-10) after each test to truly track the workload."
+        ]
+      },
+      {
+        "title": "Reports and statistics",
+        "items": [
+          "Generate individual PDF reports per student with all their tests, scores and progress charts.",
+          "Open the group dashboard to see averages, dispersion and comparison against the whole community.",
+          "Students can sign in with their personal code from 'Student access' to privately view their results."
+        ]
+      },
+      {
+        "title": "Best practices",
+        "items": [
+          "Run a standardised warm-up before any battery.",
+          "Keep the same conditions (space, equipment, time of day) between rounds so the comparison is reliable.",
+          "Share with students the formative purpose of the tests: it is not about competing, but about improving."
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "developedBy": "Application developed by",
+    "rights": "All rights reserved"
   }
 }

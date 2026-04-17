@@ -114,5 +114,57 @@
     "myGrupos": "Els meus grups",
     "myAlumnos": "Els meus alumnes",
     "quickActions": "Accions ràpides"
+  },
+  "manual": {
+    "button": "Manual d'ús",
+    "title": "Manual d'ús de l'aplicació",
+    "subtitle": "Guia ràpida per traure el màxim partit a CFA a les teues classes.",
+    "footnote": "Per a dubtes addicionals, contacta amb l'administrador o consulta la documentació completa al panell d'administració.",
+    "sections": [
+      {
+        "title": "Primers passos",
+        "items": [
+          "Crea el teu compte de professor amb el teu correu i verifica el codi de doble factor que rebràs per email.",
+          "Accepta la política de privacitat i registra (o selecciona) el teu centre educatiu.",
+          "Indica si vols que el teu centre aparega amb el seu nom real o amb un codi anònim en les estadístiques públiques."
+        ]
+      },
+      {
+        "title": "Crea grups i alumnes",
+        "items": [
+          "Des de 'Grups' afig les teues classes (curs, lletra i any escolar).",
+          "Dins de cada grup, dóna d'alta el teu alumnat: nom, cognoms, data de naixement, sexe i nº d'aula.",
+          "Cada alumne rep automàticament un codi personal per consultar els seus resultats sense necessitat de compte."
+        ]
+      },
+      {
+        "title": "Registra les proves",
+        "items": [
+          "Tria la bateria: Eurofit (6 proves) o CFS (6 proves).",
+          "Introdueix els valors de cada prova; les notes es calculen automàticament per edat i sexe segons els barems oficials.",
+          "Anota la percepció de l'esforç Omni-Res (0-10) després de cada prova per fer un seguiment real de la càrrega."
+        ]
+      },
+      {
+        "title": "Informes i estadístiques",
+        "items": [
+          "Genera informes PDF individuals per alumne amb totes les seues proves, notes i gràfiques d'evolució.",
+          "Consulta el dashboard del grup per veure mitjanes, dispersió i comparativa amb la comunitat.",
+          "L'alumnat pot accedir amb el seu codi personal des d''Accés alumnes' per veure els seus resultats de forma privada."
+        ]
+      },
+      {
+        "title": "Bones pràctiques",
+        "items": [
+          "Realitza un escalfament estandarditzat abans de qualsevol bateria.",
+          "Mantín les mateixes condicions (espai, material, hora) entre preses perquè la comparació siga fiable.",
+          "Comparteix amb l'alumnat el sentit formatiu de les proves: no es tracta de competir, sinó de millorar."
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "developedBy": "Aplicació desenvolupada per",
+    "rights": "Tots els drets reservats"
   }
 }
