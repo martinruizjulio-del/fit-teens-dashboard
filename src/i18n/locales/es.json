@@ -1,0 +1,118 @@
+{
+  "app": {
+    "name": "Condición Física Adolescentes",
+    "short": "CFA",
+    "tagline": "Evaluación de la condición física en Educación Secundaria"
+  },
+  "nav": {
+    "home": "Inicio",
+    "public": "Estadísticas públicas",
+    "login": "Acceso profesores",
+    "studentAccess": "Acceso alumnos",
+    "dashboard": "Panel",
+    "centros": "Centros",
+    "grupos": "Grupos",
+    "alumnos": "Alumnos",
+    "baterias": "Baterías",
+    "admin": "Administración",
+    "logout": "Cerrar sesión"
+  },
+  "landing": {
+    "heroTitle": "Mide, evalúa y mejora la condición física de tus alumnos",
+    "heroSubtitle": "Plataforma educativa para profesores de Educación Física en Secundaria. Baterías Eurofit y CFS con baremos oficiales, percepción del esfuerzo Omni-Res, informes PDF y estadísticas comparativas.",
+    "ctaTeacher": "Entrar como profesor",
+    "ctaStudent": "Acceso de alumno",
+    "ctaPublic": "Ver estadísticas públicas",
+    "feature1Title": "Dos baterías validadas",
+    "feature1Desc": "Eurofit y CFS con 6 pruebas cada una. Notas calculadas automáticamente por edad y sexo.",
+    "feature2Title": "Acceso seguro con doble factor",
+    "feature2Desc": "Verificación en dos pasos por código de email — sin apps adicionales, accesible para todo el profesorado.",
+    "feature3Title": "Cada alumno, su código",
+    "feature3Desc": "Cada estudiante puede consultar sus propios resultados con un código personal, sin necesidad de cuenta.",
+    "feature4Title": "Estadísticas anónimas",
+    "feature4Desc": "Compara tu centro y tu grupo con resultados agregados de toda la comunidad educativa."
+  },
+  "auth": {
+    "title": "Acceso profesorado",
+    "tabSignIn": "Iniciar sesión",
+    "tabSignUp": "Crear cuenta",
+    "fullName": "Nombre completo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordHint": "Mínimo 8 caracteres",
+    "signIn": "Entrar",
+    "signUp": "Crear cuenta",
+    "otpTitle": "Verificación en dos pasos",
+    "otpDesc": "Hemos enviado un código de 6 dígitos a tu correo. Introdúcelo para completar el acceso.",
+    "otpCode": "Código de verificación",
+    "otpVerify": "Verificar",
+    "otpResend": "Reenviar código",
+    "checkEmail": "Revisa tu correo para confirmar la cuenta y luego inicia sesión.",
+    "signOutOk": "Sesión cerrada",
+    "errors": {
+      "generic": "Ha ocurrido un error. Inténtalo de nuevo.",
+      "invalidCreds": "Email o contraseña incorrectos.",
+      "weakPassword": "La contraseña debe tener al menos 8 caracteres.",
+      "invalidOtp": "Código incorrecto o caducado."
+    }
+  },
+  "studentLogin": {
+    "title": "Acceso del alumno",
+    "subtitle": "Introduce tu código personal para ver tus resultados",
+    "code": "Código personal",
+    "enter": "Ver mis resultados",
+    "notFound": "No se ha encontrado ningún alumno con ese código."
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Volver",
+    "loading": "Cargando…",
+    "noData": "Sin datos",
+    "actions": "Acciones",
+    "search": "Buscar",
+    "yes": "Sí",
+    "no": "No",
+    "male": "Chico",
+    "female": "Chica",
+    "select": "Selecciona…"
+  },
+  "centros": {
+    "title": "Centros educativos",
+    "subtitle": "Selecciona un centro existente o registra uno nuevo",
+    "selectExisting": "Centro existente",
+    "createNew": "Registrar nuevo centro",
+    "name": "Nombre del centro",
+    "address": "Dirección",
+    "postalCode": "Código postal",
+    "city": "Ciudad",
+    "province": "Provincia",
+    "email": "Email",
+    "phone": "Teléfono",
+    "createdOk": "Centro registrado correctamente",
+    "updatedOk": "Centro actualizado",
+    "noCentros": "Aún no hay centros registrados"
+  },
+  "grupos": {
+    "title": "Grupos de clase",
+    "newGroup": "Nuevo grupo",
+    "centro": "Centro",
+    "curso": "Curso",
+    "letra": "Letra",
+    "anio": "Año escolar",
+    "students": "alumnos",
+    "createdOk": "Grupo creado",
+    "noGrupos": "Aún no tienes grupos. Crea el primero para empezar."
+  },
+  "dashboard": {
+    "title": "Panel del profesor",
+    "welcome": "Hola",
+    "myCentros": "Mis centros",
+    "myGrupos": "Mis grupos",
+    "myAlumnos": "Mis alumnos",
+    "quickActions": "Acciones rápidas"
+  }
+}
