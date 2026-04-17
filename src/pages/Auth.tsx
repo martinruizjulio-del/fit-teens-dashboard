@@ -326,6 +326,7 @@ export default function Auth() {
           </CardContent>
         </Card>
       </main>
+      <SiteFooter />
     </div>
   );
 }
