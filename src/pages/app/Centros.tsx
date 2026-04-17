@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { PROVINCIAS_ES } from "@/lib/constants";
-import { Building2, Plus, MapPin, Mail, Phone } from "lucide-react";
+import { Building2, Plus, MapPin, Mail, Phone, EyeOff } from "lucide-react";
 
 interface Centro {
   id: string;
@@ -22,6 +23,9 @@ interface Centro {
   email: string | null;
   telefono: string | null;
   created_by: string | null;
+  anonimo: boolean;
+  codigo_anonimo: string | null;
+  mostrar_publico: boolean;
 }
 
 export default function Centros() {
