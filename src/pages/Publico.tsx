@@ -226,3 +226,38 @@ function Stat({ label, value, dt }: { label: string; value: any; dt?: any }) {
     </div>
   );
 }
+
+function NotaGlobalCard({ titulo, nota, color }: { titulo: string; nota: any; color: "primary" | "secondary" }) {
+  const n = nota != null ? Number(nota) : null;
+  const pct = n != null ? Math.max(0, Math.min(100, (n / 10) * 100)) : 0;
+  const calificacion = n == null ? "—"
+    : n >= 9 ? "Excelente"
+    : n >= 7 ? "Notable"
+    : n >= 5 ? "Aprobado"
+    : "Mejorable";
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="font-display text-base">{titulo}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-baseline gap-3">
+          <span className={`font-display text-5xl font-bold text-${color}`}>
+            {n != null ? n.toFixed(2) : "—"}
+          </span>
+          <span className="text-muted-foreground text-sm">/ 10</span>
+          <span className="ml-auto text-xs font-medium px-2 py-1 rounded-md bg-muted">{calificacion}</span>
+        </div>
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div
+            className={`h-full bg-${color} transition-all`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Media de las notas (1-10) de cada prueba realizada, calculadas según baremos por edad y sexo.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
