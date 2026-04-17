@@ -138,7 +138,9 @@ export type Database = {
       }
       centros: {
         Row: {
+          anonimo: boolean
           ciudad: string | null
+          codigo_anonimo: string | null
           codigo_postal: string | null
           created_at: string
           created_by: string | null
@@ -146,13 +148,16 @@ export type Database = {
           email: string | null
           id: string
           is_demo: boolean
+          mostrar_publico: boolean
           nombre: string
           provincia: string
           telefono: string | null
           updated_at: string
         }
         Insert: {
+          anonimo?: boolean
           ciudad?: string | null
+          codigo_anonimo?: string | null
           codigo_postal?: string | null
           created_at?: string
           created_by?: string | null
@@ -160,13 +165,16 @@ export type Database = {
           email?: string | null
           id?: string
           is_demo?: boolean
+          mostrar_publico?: boolean
           nombre: string
           provincia: string
           telefono?: string | null
           updated_at?: string
         }
         Update: {
+          anonimo?: boolean
           ciudad?: string | null
+          codigo_anonimo?: string | null
           codigo_postal?: string | null
           created_at?: string
           created_by?: string | null
@@ -174,6 +182,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_demo?: boolean
+          mostrar_publico?: boolean
           nombre?: string
           provincia?: string
           telefono?: string | null
@@ -183,34 +192,76 @@ export type Database = {
       }
       config_publica: {
         Row: {
+          autores: string
           id: string
           idioma_default: string
+          manual_uso_md: string
           mostrar_antropometria: boolean
           mostrar_cfs: boolean
           mostrar_eurofit: boolean
           mostrar_por_curso: boolean
           mostrar_por_sexo: boolean
+          politica_privacidad_md: string
           updated_at: string
+          video_manual_url: string | null
         }
         Insert: {
+          autores?: string
           id?: string
           idioma_default?: string
+          manual_uso_md?: string
           mostrar_antropometria?: boolean
           mostrar_cfs?: boolean
           mostrar_eurofit?: boolean
           mostrar_por_curso?: boolean
           mostrar_por_sexo?: boolean
+          politica_privacidad_md?: string
           updated_at?: string
+          video_manual_url?: string | null
         }
         Update: {
+          autores?: string
           id?: string
           idioma_default?: string
+          manual_uso_md?: string
           mostrar_antropometria?: boolean
           mostrar_cfs?: boolean
           mostrar_eurofit?: boolean
           mostrar_por_curso?: boolean
           mostrar_por_sexo?: boolean
+          politica_privacidad_md?: string
           updated_at?: string
+          video_manual_url?: string | null
+        }
+        Relationships: []
+      }
+      consentimientos: {
+        Row: {
+          aceptado: boolean
+          created_at: string
+          id: string
+          ip: string | null
+          tipo: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          aceptado?: boolean
+          created_at?: string
+          id?: string
+          ip?: string | null
+          tipo: string
+          user_id: string
+          version?: string
+        }
+        Update: {
+          aceptado?: boolean
+          created_at?: string
+          id?: string
+          ip?: string | null
+          tipo?: string
+          user_id?: string
+          version?: string
         }
         Relationships: []
       }
@@ -480,6 +531,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      solicitudes_implantacion: {
+        Row: {
+          centro_nombre: string
+          ciudad: string | null
+          created_at: string
+          email_solicitante: string
+          estado: string
+          id: string
+          mensaje: string | null
+          nombre_solicitante: string
+          notas_admin: string | null
+          provincia: string | null
+          updated_at: string
+        }
+        Insert: {
+          centro_nombre: string
+          ciudad?: string | null
+          created_at?: string
+          email_solicitante: string
+          estado?: string
+          id?: string
+          mensaje?: string | null
+          nombre_solicitante: string
+          notas_admin?: string | null
+          provincia?: string | null
+          updated_at?: string
+        }
+        Update: {
+          centro_nombre?: string
+          ciudad?: string | null
+          created_at?: string
+          email_solicitante?: string
+          estado?: string
+          id?: string
+          mensaje?: string | null
+          nombre_solicitante?: string
+          notas_admin?: string | null
+          provincia?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
