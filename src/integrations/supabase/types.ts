@@ -615,6 +615,10 @@ export type Database = {
       }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
       get_stats_publicas: { Args: never; Returns: Json }
+      get_stats_publicas_filtradas: {
+        Args: { _curso?: string; _sexo?: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
