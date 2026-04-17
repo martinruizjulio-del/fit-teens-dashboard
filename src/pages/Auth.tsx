@@ -9,11 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { PrivacyPolicyDialog } from "@/components/PrivacyPolicyDialog";
+import { ImplantacionDialog } from "@/components/ImplantacionDialog";
+import { ShieldCheck, ArrowLeft, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const signUpSchema = z.object({
@@ -43,6 +46,10 @@ export default function Auth() {
   const [suEmail, setSuEmail] = useState("");
   const [suPassword, setSuPassword] = useState("");
 
+  // Gating
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+  const [implantacionSent, setImplantacionSent] = useState(false);
+
   // OTP
   const [otp, setOtp] = useState("");
 
@@ -54,14 +61,11 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Paso 1: validar contraseña
       const { error: pwError } = await supabase.auth.signInWithPassword({
         email: siEmail.trim(),
         password: siPassword,
       });
       if (pwError) throw pwError;
-
-      // Cierra sesión inmediatamente y exige OTP por email para 2FA
       await supabase.auth.signOut();
 
       const { error: otpError } = await supabase.auth.signInWithOtp({
@@ -86,6 +90,14 @@ export default function Auth() {
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
+    if (!acceptPrivacy) {
+      toast({ variant: "destructive", title: t("auth.consent.errorPrivacy") });
+      return;
+    }
+    if (!implantacionSent) {
+      toast({ variant: "destructive", title: t("auth.consent.errorImplantacion") });
+      return;
+    }
     setLoading(true);
     try {
       const parsed = signUpSchema.safeParse({ fullName: suName, email: suEmail, password: suPassword });
@@ -97,7 +109,7 @@ export default function Auth() {
       }
 
       const redirectUrl = `${window.location.origin}/app`;
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
         options: {
@@ -106,6 +118,14 @@ export default function Auth() {
         },
       });
       if (error) throw error;
+
+      // Registrar consentimientos
+      if (data.user) {
+        await supabase.from("consentimientos").insert([
+          { user_id: data.user.id, tipo: "privacidad", version: "v1", aceptado: true },
+          { user_id: data.user.id, tipo: "implantacion", version: "v1", aceptado: true },
+        ]);
+      }
 
       toast({ title: t("auth.tabSignUp"), description: t("auth.checkEmail") });
     } catch (err: any) {
@@ -236,7 +256,66 @@ export default function Auth() {
                       <Input id="su-pwd" type="password" required value={suPassword} onChange={(e) => setSuPassword(e.target.value)} minLength={8} autoComplete="new-password" />
                       <p className="text-xs text-muted-foreground">{t("auth.passwordHint")}</p>
                     </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
+
+                    {/* Gating: implantación */}
+                    <div className="rounded-md border border-border/70 bg-muted/40 p-3 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          id="implantacion"
+                          checked={implantacionSent}
+                          disabled={implantacionSent}
+                          onCheckedChange={() => { /* solo se marca al enviar el formulario */ }}
+                        />
+                        <div className="flex-1">
+                          <Label htmlFor="implantacion" className="text-sm leading-snug cursor-pointer">
+                            {t("auth.consent.implantacionLabel")}
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {t("auth.consent.implantacionHelp")}
+                          </p>
+                          {!implantacionSent && (
+                            <ImplantacionDialog
+                              defaultEmail={suEmail}
+                              defaultName={suName}
+                              onSubmitted={() => setImplantacionSent(true)}
+                              trigger={
+                                <Button type="button" size="sm" variant="outline" className="mt-2">
+                                  <Building2 className="h-3.5 w-3.5 mr-1.5" />
+                                  {t("auth.consent.implantacionCta")}
+                                </Button>
+                              }
+                            />
+                          )}
+                          {implantacionSent && (
+                            <p className="text-xs text-primary mt-1 font-medium">
+                              ✓ {t("implantacion.successTitle")}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Gating: privacidad */}
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="privacy"
+                        checked={acceptPrivacy}
+                        onCheckedChange={(v) => setAcceptPrivacy(v === true)}
+                      />
+                      <Label htmlFor="privacy" className="text-sm leading-snug cursor-pointer">
+                        {t("auth.consent.privacyLabel")}{" "}
+                        <PrivacyPolicyDialog
+                          trigger={
+                            <button type="button" className="underline text-primary hover:text-primary/80">
+                              {t("auth.consent.privacyLink")}
+                            </button>
+                          }
+                        />
+                        .
+                      </Label>
+                    </div>
+
+                    <Button type="submit" className="w-full" disabled={loading || !acceptPrivacy || !implantacionSent}>
                       {t("auth.signUp")}
                     </Button>
                   </form>

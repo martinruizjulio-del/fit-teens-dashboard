@@ -1,9 +1,18 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink } from "lucide-react";
 
 export function SiteFooter() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
+  const [autores, setAutores] = useState<string>("Julio Martín-Ruiz");
+
+  useEffect(() => {
+    void supabase.from("config_publica").select("autores").maybeSingle().then(({ data }) => {
+      if (data?.autores) setAutores(data.autores);
+    });
+  }, []);
 
   return (
     <footer className="border-t border-border/50 bg-muted/30 mt-auto">
@@ -12,7 +21,7 @@ export function SiteFooter() {
           <p className="font-semibold text-foreground">{t("app.name")}</p>
           <p className="mt-1">
             {t("footer.developedBy")}{" "}
-            <span className="font-medium text-foreground">Julio Martín-Ruiz</span>
+            <span className="font-medium text-foreground">{autores}</span>
           </p>
         </div>
         <div className="text-sm text-muted-foreground flex flex-col items-center md:items-end gap-1">

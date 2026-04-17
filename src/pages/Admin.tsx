@@ -50,6 +50,17 @@ export default function Admin() {
     else toast({ title: "Configuración guardada" });
   }
 
+  async function guardarAutoresYPolitica() {
+    if (!config) return;
+    const { error } = await supabase.from("config_publica").update({
+      autores: config.autores,
+      politica_privacidad_md: config.politica_privacidad_md,
+      manual_uso_md: config.manual_uso_md,
+    }).eq("id", config.id);
+    if (error) toast({ variant: "destructive", title: error.message });
+    else toast({ title: "Autores y política guardados" });
+  }
+
   async function generarDemo() {
     if (!confirm("Esto creará el centro IES Demo Lovable y 100 alumnos demo. ¿Continuar?")) return;
     setBusy(true);
@@ -102,6 +113,7 @@ export default function Admin() {
         <TabsList>
           <TabsTrigger value="demo"><Database className="h-4 w-4 mr-1.5" /> Datos demo</TabsTrigger>
           <TabsTrigger value="config">Página pública</TabsTrigger>
+          <TabsTrigger value="autores">Autores y política</TabsTrigger>
           <TabsTrigger value="baremos">Baremos</TabsTrigger>
           <TabsTrigger value="procs"><BookOpen className="h-4 w-4 mr-1.5" /> Procedimientos</TabsTrigger>
         </TabsList>
@@ -149,6 +161,49 @@ export default function Admin() {
                     </Select>
                   </div>
                   <Button onClick={guardarConfig}><Save className="h-4 w-4 mr-1.5" /> Guardar</Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="autores" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display text-base">Autores y política de privacidad</CardTitle>
+              <p className="text-xs text-muted-foreground">El nombre de los autores aparece en el footer y en el certificado del PDF de evidencias.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {config && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label>Autor / autores de la aplicación</Label>
+                    <Input
+                      value={config.autores ?? ""}
+                      onChange={(e) => setConfig({ ...config, autores: e.target.value })}
+                      placeholder="Julio Martín-Ruiz"
+                      maxLength={300}
+                    />
+                    <p className="text-xs text-muted-foreground">Aparece en el footer público y en los informes oficiales.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Política de privacidad (Markdown)</Label>
+                    <Textarea
+                      rows={10}
+                      value={config.politica_privacidad_md ?? ""}
+                      onChange={(e) => setConfig({ ...config, politica_privacidad_md: e.target.value })}
+                    />
+                    <p className="text-xs text-muted-foreground">Se muestra en el popup al registrarse y en el enlace del consentimiento.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Manual de uso (Markdown — solo backup interno)</Label>
+                    <Textarea
+                      rows={6}
+                      value={config.manual_uso_md ?? ""}
+                      onChange={(e) => setConfig({ ...config, manual_uso_md: e.target.value })}
+                    />
+                  </div>
+                  <Button onClick={guardarAutoresYPolitica}><Save className="h-4 w-4 mr-1.5" /> Guardar</Button>
                 </>
               )}
             </CardContent>

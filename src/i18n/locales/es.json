@@ -54,7 +54,41 @@
       "invalidCreds": "Email o contraseña incorrectos.",
       "weakPassword": "La contraseña debe tener al menos 8 caracteres.",
       "invalidOtp": "Código incorrecto o caducado."
+    },
+    "consent": {
+      "privacyLabel": "He leído y acepto la",
+      "privacyLink": "política de privacidad",
+      "implantacionLabel": "Solicito la implantación de mi centro en CFA.",
+      "implantacionHelp": "Es solo una formalidad para que los datos agregados (nunca individuales ni identificables) puedan formar parte de las estadísticas de la comunidad. Toda la información personal queda oculta.",
+      "implantacionCta": "Rellenar solicitud de implantación",
+      "errorPrivacy": "Debes aceptar la política de privacidad.",
+      "errorImplantacion": "Debes enviar la solicitud de implantación de tu centro."
     }
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "subtitle": "Información sobre el tratamiento de los datos en CFA."
+  },
+  "implantacion": {
+    "title": "Solicitud de implantación de centro",
+    "desc": "Necesitamos unos datos básicos para registrar tu centro. La información personal de alumnos siempre queda oculta en las estadísticas públicas.",
+    "fullName": "Tu nombre",
+    "email": "Tu email",
+    "school": "Nombre del centro",
+    "message": "Mensaje (opcional)",
+    "messagePh": "Cuéntanos brevemente cuántos grupos tienes, en qué etapa, etc.",
+    "note": "Al enviar la solicitud aceptas que los datos agregados de tu centro puedan aparecer en las estadísticas públicas de forma anónima o nominal según tu elección.",
+    "submit": "Enviar solicitud",
+    "successTitle": "Solicitud enviada",
+    "successDesc": "Hemos recibido tu solicitud. Ya puedes continuar con el registro."
+  },
+  "publico": {
+    "summary": "Estadísticas anónimas agregadas — {{count}} alumnos en la muestra.",
+    "filters": "Filtros",
+    "filterSex": "Sexo",
+    "filterGrade": "Curso",
+    "all": "Todos",
+    "noResults": "No hay resultados para los filtros seleccionados."
   },
   "studentLogin": {
     "title": "Acceso del alumno",
@@ -94,7 +128,12 @@
     "phone": "Teléfono",
     "createdOk": "Centro registrado correctamente",
     "updatedOk": "Centro actualizado",
-    "noCentros": "Aún no hay centros registrados"
+    "noCentros": "Aún no hay centros registrados",
+    "anonimoLabel": "Mostrar mi centro de forma anónima",
+    "anonimoHelp": "Si lo activas, en las estadísticas públicas tu centro aparecerá únicamente con un código (p. ej. CFA-A1B2C). El nombre real solo será visible para ti.",
+    "mostrarPublicoLabel": "Aparecer en estadísticas públicas",
+    "mostrarPublicoHelp": "Permite que los datos agregados (siempre anónimos a nivel de alumno) de tu centro contribuyan a las estadísticas comparativas de la comunidad.",
+    "publicAs": "Público como"
   },
   "grupos": {
     "title": "Grupos de clase",
