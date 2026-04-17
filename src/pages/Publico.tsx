@@ -126,30 +126,46 @@ export default function Publico() {
           <>
             <div className="grid gap-4 lg:grid-cols-2">
               <Card>
-                <CardHeader><CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle></CardHeader>
-                <CardContent style={{ height: 280 }}>
+                <CardHeader>
+                  <CardTitle className="font-display text-base">Medias batería Eurofit</CardTitle>
+                  <p className="text-xs text-muted-foreground">Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real en el tooltip.</p>
+                </CardHeader>
+                <CardContent style={{ height: 320 }}>
                   <ResponsiveContainer>
-                    <BarChart data={eurofitData}>
+                    <BarChart data={eurofitData} margin={{ top: 10, right: 10, left: 0, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
-                      <YAxis />
-                      <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
-                      <Bar dataKey="media" fill="hsl(var(--primary))" />
+                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
+                      <YAxis domain={[0, 120]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10 }} />
+                      <Tooltip
+                        formatter={(_v: any, _n, p) => {
+                          const d: any = p.payload;
+                          return [`${Number(d.media ?? 0).toFixed(2)} ${d.unidad} (${Number(d.pct).toFixed(0)}% ref ${d.ref})`, "Media"];
+                        }}
+                      />
+                      <Bar dataKey="pct" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader><CardTitle className="font-display text-base">Medias batería CFS</CardTitle></CardHeader>
-                <CardContent style={{ height: 280 }}>
+                <CardHeader>
+                  <CardTitle className="font-display text-base">Medias batería CFS</CardTitle>
+                  <p className="text-xs text-muted-foreground">Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real en el tooltip.</p>
+                </CardHeader>
+                <CardContent style={{ height: 320 }}>
                   <ResponsiveContainer>
-                    <BarChart data={cfsData}>
+                    <BarChart data={cfsData} margin={{ top: 10, right: 10, left: 0, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} />
-                      <YAxis />
-                      <Tooltip formatter={(v: any, _, p) => `${Number(v).toFixed(2)} ${(p.payload as any).unidad}`} />
-                      <Bar dataKey="media" fill="hsl(var(--secondary))" />
+                      <XAxis dataKey="prueba" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
+                      <YAxis domain={[0, 120]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10 }} />
+                      <Tooltip
+                        formatter={(_v: any, _n, p) => {
+                          const d: any = p.payload;
+                          return [`${Number(d.media ?? 0).toFixed(2)} ${d.unidad} (${Number(d.pct).toFixed(0)}% ref ${d.ref})`, "Media"];
+                        }}
+                      />
+                      <Bar dataKey="pct" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
