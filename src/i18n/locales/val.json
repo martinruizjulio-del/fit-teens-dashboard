@@ -54,7 +54,41 @@
       "invalidCreds": "Correu o contrasenya incorrectes.",
       "weakPassword": "La contrasenya ha de tindre almenys 8 caràcters.",
       "invalidOtp": "Codi incorrecte o caducat."
+    },
+    "consent": {
+      "privacyLabel": "He llegit i accepte la",
+      "privacyLink": "política de privacitat",
+      "implantacionLabel": "Sol·licite la implantació del meu centre en CFA.",
+      "implantacionHelp": "És només una formalitat perquè les dades agregades (mai individuals ni identificables) puguen formar part de les estadístiques de la comunitat. Tota la informació personal queda oculta.",
+      "implantacionCta": "Omplir sol·licitud d'implantació",
+      "errorPrivacy": "Has d'acceptar la política de privacitat.",
+      "errorImplantacion": "Has d'enviar la sol·licitud d'implantació del teu centre."
     }
+  },
+  "privacy": {
+    "title": "Política de privacitat",
+    "subtitle": "Informació sobre el tractament de les dades en CFA."
+  },
+  "implantacion": {
+    "title": "Sol·licitud d'implantació de centre",
+    "desc": "Necessitem unes dades bàsiques per registrar el teu centre. La informació personal de l'alumnat sempre queda oculta en les estadístiques públiques.",
+    "fullName": "El teu nom",
+    "email": "El teu email",
+    "school": "Nom del centre",
+    "message": "Missatge (opcional)",
+    "messagePh": "Conta'ns breument quants grups tens, en quina etapa, etc.",
+    "note": "En enviar la sol·licitud acceptes que les dades agregades del teu centre puguen aparéixer en les estadístiques públiques de forma anònima o nominal segons la teua elecció.",
+    "submit": "Enviar sol·licitud",
+    "successTitle": "Sol·licitud enviada",
+    "successDesc": "Hem rebut la teua sol·licitud. Ja pots continuar amb el registre."
+  },
+  "publico": {
+    "summary": "Estadístiques anònimes agregades — {{count}} alumnes en la mostra.",
+    "filters": "Filtres",
+    "filterSex": "Sexe",
+    "filterGrade": "Curs",
+    "all": "Tots",
+    "noResults": "No hi ha resultats per als filtres seleccionats."
   },
   "studentLogin": {
     "title": "Accés de l'alumne",

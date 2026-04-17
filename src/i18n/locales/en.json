@@ -54,7 +54,41 @@
       "invalidCreds": "Wrong email or password.",
       "weakPassword": "Password must be at least 8 characters.",
       "invalidOtp": "Wrong or expired code."
+    },
+    "consent": {
+      "privacyLabel": "I have read and accept the",
+      "privacyLink": "privacy policy",
+      "implantacionLabel": "I request that my school be onboarded into APF.",
+      "implantacionHelp": "This is just a formality so that aggregated data (never individual or identifiable) can become part of community statistics. All personal information stays hidden.",
+      "implantacionCta": "Fill in the school request",
+      "errorPrivacy": "You must accept the privacy policy.",
+      "errorImplantacion": "You must submit your school's onboarding request."
     }
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "subtitle": "Information on how APF processes your data."
+  },
+  "implantacion": {
+    "title": "School onboarding request",
+    "desc": "We need a few basic details to onboard your school. Students' personal information is always hidden in public statistics.",
+    "fullName": "Your name",
+    "email": "Your email",
+    "school": "School name",
+    "message": "Message (optional)",
+    "messagePh": "Tell us briefly how many groups you have, which year, etc.",
+    "note": "By submitting this request you agree that your school's aggregated data may appear in public statistics, anonymously or by name depending on your choice.",
+    "submit": "Send request",
+    "successTitle": "Request sent",
+    "successDesc": "We have received your request. You can now continue with sign-up."
+  },
+  "publico": {
+    "summary": "Aggregated anonymous statistics — {{count}} students in the sample.",
+    "filters": "Filters",
+    "filterSex": "Sex",
+    "filterGrade": "Year",
+    "all": "All",
+    "noResults": "No results for the selected filters."
   },
   "studentLogin": {
     "title": "Student access",
