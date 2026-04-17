@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2, ClipboardList, KeyRound, Copy, Search } from "lucide-react";
 import { calcularEdad } from "@/lib/pruebas";
+import { ImportarAlumnosDialog } from "@/components/ImportarAlumnosDialog";
 
 interface Alumno {
   id: string; grupo_id: string; id_aula: number;
