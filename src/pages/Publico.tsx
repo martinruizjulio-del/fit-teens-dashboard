@@ -38,24 +38,31 @@ export default function Publico() {
     );
   }
 
-  const eurofitData = [
-    { prueba: "Wells", media: stats.eurofit?.wells, dt: stats.eurofit?.wells_dt, unidad: "cm" },
-    { prueba: "Salto vertical", media: stats.eurofit?.salto, dt: stats.eurofit?.salto_dt, unidad: "cm" },
-    { prueba: "Abdominales", media: stats.eurofit?.abdo, dt: stats.eurofit?.abdo_dt, unidad: "n" },
-    { prueba: "Lanz. hombros", media: stats.eurofit?.lanz, dt: stats.eurofit?.lanz_dt, unidad: "m" },
-    { prueba: "Sprint 50m", media: stats.eurofit?.sprint, dt: stats.eurofit?.sprint_dt, unidad: "s" },
-    { prueba: "Cooper", media: stats.eurofit?.cooper, dt: stats.eurofit?.cooper_dt, unidad: "m" },
+  // Valor de referencia (≈ percentil alto esperable) para normalizar cada prueba a una escala 0-100.
+  // Así pruebas con escalas dispares (Cooper en m, Wells en cm, Sprint en s...) se ven comparables.
+  const eurofitRaw = [
+    { prueba: "Wells",         media: stats.eurofit?.wells,   dt: stats.eurofit?.wells_dt,   unidad: "cm",  ref: 30 },
+    { prueba: "Salto vertical",media: stats.eurofit?.salto,   dt: stats.eurofit?.salto_dt,   unidad: "cm",  ref: 40 },
+    { prueba: "Abdominales",   media: stats.eurofit?.abdo,    dt: stats.eurofit?.abdo_dt,    unidad: "reps",ref: 40 },
+    { prueba: "Lanz. hombros", media: stats.eurofit?.lanz,    dt: stats.eurofit?.lanz_dt,    unidad: "m",   ref: 8 },
+    { prueba: "Sprint 50m",    media: stats.eurofit?.sprint,  dt: stats.eurofit?.sprint_dt,  unidad: "s",   ref: 10 },
+    { prueba: "Cooper",        media: stats.eurofit?.cooper,  dt: stats.eurofit?.cooper_dt,  unidad: "m",   ref: 2500 },
   ];
-
-  const cfsData = [
-    { prueba: "Thomas", media: stats.cfs?.thomas, dt: stats.cfs?.thomas_dt, unidad: "°" },
-    { prueba: "Biering-S.", media: stats.cfs?.biering, dt: stats.cfs?.biering_dt, unidad: "s" },
-    { prueba: "SJ", media: stats.cfs?.sj, dt: stats.cfs?.sj_dt, unidad: "cm" },
-    { prueba: "CMJ", media: stats.cfs?.cmj, dt: stats.cfs?.cmj_dt, unidad: "cm" },
-    { prueba: "Lanz. der.", media: stats.cfs?.lanz_der, dt: stats.cfs?.lanz_der_dt, unidad: "m" },
-    { prueba: "Sprint 30m", media: stats.cfs?.sprint30, dt: stats.cfs?.sprint30_dt, unidad: "s" },
-    { prueba: "Rockport", media: stats.cfs?.rockport, dt: stats.cfs?.rockport_dt, unidad: "min" },
+  const cfsRaw = [
+    { prueba: "Thomas",     media: stats.cfs?.thomas,    dt: stats.cfs?.thomas_dt,    unidad: "°",  ref: 20 },
+    { prueba: "Biering-S.", media: stats.cfs?.biering,   dt: stats.cfs?.biering_dt,   unidad: "s",  ref: 180 },
+    { prueba: "SJ",         media: stats.cfs?.sj,        dt: stats.cfs?.sj_dt,        unidad: "cm", ref: 35 },
+    { prueba: "CMJ",        media: stats.cfs?.cmj,       dt: stats.cfs?.cmj_dt,        unidad: "cm", ref: 40 },
+    { prueba: "Lanz. der.", media: stats.cfs?.lanz_der,  dt: stats.cfs?.lanz_der_dt,  unidad: "m",  ref: 8 },
+    { prueba: "Sprint 30m", media: stats.cfs?.sprint30,  dt: stats.cfs?.sprint30_dt,  unidad: "s",  ref: 6 },
+    { prueba: "Rockport",   media: stats.cfs?.rockport,  dt: stats.cfs?.rockport_dt,  unidad: "min",ref: 18 },
   ];
+  const normaliza = (d: any) => ({
+    ...d,
+    pct: d.media != null ? Math.min(120, (Number(d.media) / d.ref) * 100) : 0,
+  });
+  const eurofitData = eurofitRaw.map(normaliza);
+  const cfsData = cfsRaw.map(normaliza);
 
   const radar = [
     { capacidad: "Flexibilidad", eurofit: (stats.eurofit?.wells ?? 0) / 4, cfs: 10 - (stats.cfs?.thomas ?? 0) / 3 },
