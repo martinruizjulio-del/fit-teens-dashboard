@@ -9,6 +9,7 @@
     "public": "Estadísticas públicas",
     "centrosPublico": "Centros adheridos",
     "login": "Acceso profesores",
+    "loginTeacherAdmin": "Profesor / Admin",
     "studentAccess": "Acceso alumnos",
     "dashboard": "Panel",
     "centros": "Centros",
@@ -31,7 +32,19 @@
     "feature3Title": "Cada alumno, su código",
     "feature3Desc": "Cada estudiante puede consultar sus propios resultados con un código personal, sin necesidad de cuenta.",
     "feature4Title": "Estadísticas anónimas",
-    "feature4Desc": "Compara tu centro y tu grupo con resultados agregados de toda la comunidad educativa."
+    "feature4Desc": "Compara tu centro y tu grupo con resultados agregados de toda la comunidad educativa.",
+    "accessTitle": "Accede al sistema",
+    "accessSubtitle": "Tres formas de entrar según tu rol. Profesores y administradores comparten el mismo acceso: el rol se asigna automáticamente según el correo.",
+    "accessTeacherTitle": "Soy profesor/a",
+    "accessTeacherDesc": "Crea tu cuenta o inicia sesión con tu correo profesional. Tendrás tu propio panel para gestionar centros, grupos, alumnos y pruebas.",
+    "accessTeacherCta": "Entrar / Crear cuenta",
+    "accessStudentTitle": "Soy alumno/a",
+    "accessStudentDesc": "Consulta tus resultados con el código personal que te ha entregado tu profesor/a. No necesitas cuenta.",
+    "accessStudentCta": "Acceder con código",
+    "accessAdminBadge": "Solo personal autorizado",
+    "accessAdminTitle": "Soy administrador",
+    "accessAdminDesc": "Inicia sesión en /auth con el correo julio.martin@ucv.es. El rol de administración se asigna automáticamente. Una vez dentro, accede al panel desde la barra lateral o yendo a /admin.",
+    "accessAdminCta": "Ir al acceso"
   },
   "auth": {
     "title": "Acceso profesorado",

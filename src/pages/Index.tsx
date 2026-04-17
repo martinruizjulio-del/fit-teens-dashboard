@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Logo } from "@/components/Logo";
-import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight } from "lucide-react";
+import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight, GraduationCap, User, ShieldAlert } from "lucide-react";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -55,8 +55,59 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Access section */}
+      <section className="container py-12 md:py-16">
+        <div className="text-center mb-10">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("landing.accessTitle")}</h2>
+          <p className="text-muted-foreground mt-2 text-sm md:text-base max-w-2xl mx-auto">{t("landing.accessSubtitle")}</p>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          <Card className="p-6 border-border/50 hover:shadow-elevated transition-smooth bg-card flex flex-col">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-primary text-primary-foreground mb-4 shadow-glow self-start">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <h3 className="font-display font-semibold text-lg text-foreground mb-1">{t("landing.accessTeacherTitle")}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">{t("landing.accessTeacherDesc")}</p>
+            <Link to="/auth">
+              <Button className="w-full bg-gradient-energy text-secondary-foreground shadow-energy hover:opacity-95">
+                {t("landing.accessTeacherCta")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </Card>
+
+          <Card className="p-6 border-border/50 hover:shadow-elevated transition-smooth bg-card flex flex-col">
+            <div className="inline-flex p-3 rounded-lg bg-gradient-primary text-primary-foreground mb-4 shadow-glow self-start">
+              <User className="h-5 w-5" />
+            </div>
+            <h3 className="font-display font-semibold text-lg text-foreground mb-1">{t("landing.accessStudentTitle")}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">{t("landing.accessStudentDesc")}</p>
+            <Link to="/alumno">
+              <Button variant="outline" className="w-full">
+                {t("landing.accessStudentCta")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </Card>
+
+          <Card className="p-6 border-2 border-secondary/40 hover:shadow-elevated transition-smooth bg-card flex flex-col relative">
+            <div className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-2 py-0.5 rounded">
+              {t("landing.accessAdminBadge")}
+            </div>
+            <div className="inline-flex p-3 rounded-lg bg-secondary text-secondary-foreground mb-4 shadow-energy self-start">
+              <ShieldAlert className="h-5 w-5" />
+            </div>
+            <h3 className="font-display font-semibold text-lg text-foreground mb-1">{t("landing.accessAdminTitle")}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 whitespace-pre-line">{t("landing.accessAdminDesc")}</p>
+            <Link to="/auth">
+              <Button variant="secondary" className="w-full">
+                {t("landing.accessAdminCta")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </Card>
+        </div>
+      </section>
+
       {/* Features */}
-      <section className="container py-16 md:py-24">
+      <section className="container py-12 md:py-20 border-t border-border/40">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <Card

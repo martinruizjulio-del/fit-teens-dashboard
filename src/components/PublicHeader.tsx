@@ -44,7 +44,7 @@ export function PublicHeader() {
           ) : (
             <Link to="/auth">
               <Button size="sm" className="bg-gradient-energy text-secondary-foreground shadow-energy hover:opacity-95">
-                {t("nav.login")}
+                <UserIcon className="h-4 w-4 mr-1.5" /> {t("nav.loginTeacherAdmin")}
               </Button>
             </Link>
           )}
