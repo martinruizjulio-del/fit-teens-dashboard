@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { BarChart3, Filter } from "lucide-react";
 
@@ -61,12 +61,18 @@ export default function Publico() {
   const cfsData = useMemo<StatItem[]>(() => {
     if (!stats) return [];
 
+    const lanzDer = stats.cfs?.lanz_der;
+    const lanzIzq = stats.cfs?.lanz_izq;
+    const lanzMedia =
+      lanzDer != null && lanzIzq != null
+        ? (Number(lanzDer) + Number(lanzIzq)) / 2
+        : lanzDer ?? lanzIzq ?? null;
+
     const raw = [
       { prueba: "Thomas", media: stats.cfs?.thomas, dt: stats.cfs?.thomas_dt, unidad: "°", ref: 20 },
       { prueba: "Biering-S.", media: stats.cfs?.biering, dt: stats.cfs?.biering_dt, unidad: "s", ref: 180 },
-      { prueba: "SJ", media: stats.cfs?.sj, dt: stats.cfs?.sj_dt, unidad: "cm", ref: 35 },
-      { prueba: "CMJ", media: stats.cfs?.cmj, dt: stats.cfs?.cmj_dt, unidad: "cm", ref: 40 },
-      { prueba: "Lanz. der.", media: stats.cfs?.lanz_der, dt: stats.cfs?.lanz_der_dt, unidad: "m", ref: 8 },
+      { prueba: "Índice elástico", media: stats.cfs?.indice_elastico, dt: stats.cfs?.indice_elastico_dt, unidad: "%", ref: 10 },
+      { prueba: "Lanz. unilateral (media)", media: lanzMedia, dt: stats.cfs?.lanz_der_dt, unidad: "m", ref: 8 },
       { prueba: "Sprint 30m", media: stats.cfs?.sprint30, dt: stats.cfs?.sprint30_dt, unidad: "s", ref: 6 },
       { prueba: "Rockport", media: stats.cfs?.rockport, dt: stats.cfs?.rockport_dt, unidad: "min", ref: 18 },
     ];
@@ -117,33 +123,41 @@ export default function Publico() {
         </div>
 
         <Card>
-          <CardContent className="p-4 flex flex-wrap items-end gap-3">
-            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground mr-2">
+          <CardContent className="p-4 flex flex-wrap items-start gap-6">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
               <Filter className="h-4 w-4 text-primary" /> {t("publico.filters")}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label className="text-xs">{t("publico.filterSex")}</Label>
-              <Select value={sexo} onValueChange={setSexo}>
-                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("publico.all")}</SelectItem>
-                  <SelectItem value="M">{t("common.male")}</SelectItem>
-                  <SelectItem value="F">{t("common.female")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <RadioGroup value={sexo} onValueChange={setSexo} className="flex flex-wrap gap-3">
+                {[
+                  { v: "all", l: t("publico.all") },
+                  { v: "M", l: t("common.male") },
+                  { v: "F", l: t("common.female") },
+                ].map((o) => (
+                  <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                    <RadioGroupItem value={o.v} id={`sexo-${o.v}`} />
+                    <span>{o.l}</span>
+                  </label>
+                ))}
+              </RadioGroup>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label className="text-xs">{t("publico.filterGrade")}</Label>
-              <Select value={curso} onValueChange={setCurso}>
-                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("publico.all")}</SelectItem>
-                  <SelectItem value="1ESO">1º ESO</SelectItem>
-                  <SelectItem value="2ESO">2º ESO</SelectItem>
-                  <SelectItem value="3ESO">3º ESO</SelectItem>
-                  <SelectItem value="4ESO">4º ESO</SelectItem>
-                </SelectContent>
-              </Select>
+              <RadioGroup value={curso} onValueChange={setCurso} className="flex flex-wrap gap-3">
+                {[
+                  { v: "all", l: t("publico.all") },
+                  { v: "1ESO", l: "1º ESO" },
+                  { v: "2ESO", l: "2º ESO" },
+                  { v: "3ESO", l: "3º ESO" },
+                  { v: "4ESO", l: "4º ESO" },
+                ].map((o) => (
+                  <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                    <RadioGroupItem value={o.v} id={`curso-${o.v}`} />
+                    <span>{o.l}</span>
+                  </label>
+                ))}
+              </RadioGroup>
             </div>
             {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
