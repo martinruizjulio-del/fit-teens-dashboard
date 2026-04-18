@@ -123,33 +123,41 @@ export default function Publico() {
         </div>
 
         <Card>
-          <CardContent className="p-4 flex flex-wrap items-end gap-3">
-            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground mr-2">
+          <CardContent className="p-4 flex flex-wrap items-start gap-6">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
               <Filter className="h-4 w-4 text-primary" /> {t("publico.filters")}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label className="text-xs">{t("publico.filterSex")}</Label>
-              <Select value={sexo} onValueChange={setSexo}>
-                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("publico.all")}</SelectItem>
-                  <SelectItem value="M">{t("common.male")}</SelectItem>
-                  <SelectItem value="F">{t("common.female")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <RadioGroup value={sexo} onValueChange={setSexo} className="flex flex-wrap gap-3">
+                {[
+                  { v: "all", l: t("publico.all") },
+                  { v: "M", l: t("common.male") },
+                  { v: "F", l: t("common.female") },
+                ].map((o) => (
+                  <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                    <RadioGroupItem value={o.v} id={`sexo-${o.v}`} />
+                    <span>{o.l}</span>
+                  </label>
+                ))}
+              </RadioGroup>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label className="text-xs">{t("publico.filterGrade")}</Label>
-              <Select value={curso} onValueChange={setCurso}>
-                <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("publico.all")}</SelectItem>
-                  <SelectItem value="1ESO">1º ESO</SelectItem>
-                  <SelectItem value="2ESO">2º ESO</SelectItem>
-                  <SelectItem value="3ESO">3º ESO</SelectItem>
-                  <SelectItem value="4ESO">4º ESO</SelectItem>
-                </SelectContent>
-              </Select>
+              <RadioGroup value={curso} onValueChange={setCurso} className="flex flex-wrap gap-3">
+                {[
+                  { v: "all", l: t("publico.all") },
+                  { v: "1ESO", l: "1º ESO" },
+                  { v: "2ESO", l: "2º ESO" },
+                  { v: "3ESO", l: "3º ESO" },
+                  { v: "4ESO", l: "4º ESO" },
+                ].map((o) => (
+                  <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                    <RadioGroupItem value={o.v} id={`curso-${o.v}`} />
+                    <span>{o.l}</span>
+                  </label>
+                ))}
+              </RadioGroup>
             </div>
             {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
