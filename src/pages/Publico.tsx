@@ -61,12 +61,18 @@ export default function Publico() {
   const cfsData = useMemo<StatItem[]>(() => {
     if (!stats) return [];
 
+    const lanzDer = stats.cfs?.lanz_der;
+    const lanzIzq = stats.cfs?.lanz_izq;
+    const lanzMedia =
+      lanzDer != null && lanzIzq != null
+        ? (Number(lanzDer) + Number(lanzIzq)) / 2
+        : lanzDer ?? lanzIzq ?? null;
+
     const raw = [
       { prueba: "Thomas", media: stats.cfs?.thomas, dt: stats.cfs?.thomas_dt, unidad: "°", ref: 20 },
       { prueba: "Biering-S.", media: stats.cfs?.biering, dt: stats.cfs?.biering_dt, unidad: "s", ref: 180 },
-      { prueba: "SJ", media: stats.cfs?.sj, dt: stats.cfs?.sj_dt, unidad: "cm", ref: 35 },
-      { prueba: "CMJ", media: stats.cfs?.cmj, dt: stats.cfs?.cmj_dt, unidad: "cm", ref: 40 },
-      { prueba: "Lanz. der.", media: stats.cfs?.lanz_der, dt: stats.cfs?.lanz_der_dt, unidad: "m", ref: 8 },
+      { prueba: "Índice elástico", media: stats.cfs?.indice_elastico, dt: stats.cfs?.indice_elastico_dt, unidad: "%", ref: 10 },
+      { prueba: "Lanz. unilateral (media)", media: lanzMedia, dt: stats.cfs?.lanz_der_dt, unidad: "m", ref: 8 },
       { prueba: "Sprint 30m", media: stats.cfs?.sprint30, dt: stats.cfs?.sprint30_dt, unidad: "s", ref: 6 },
       { prueba: "Rockport", media: stats.cfs?.rockport, dt: stats.cfs?.rockport_dt, unidad: "min", ref: 18 },
     ];
