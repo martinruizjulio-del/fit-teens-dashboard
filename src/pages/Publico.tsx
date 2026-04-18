@@ -147,20 +147,39 @@ export default function Publico() {
             </div>
             <div className="space-y-2">
               <Label className="text-xs">{t("publico.filterGrade")}</Label>
-              <RadioGroup value={curso} onValueChange={setCurso} className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3">
                 {[
-                  { v: "all", l: t("publico.all") },
                   { v: "1ESO", l: "1º ESO" },
                   { v: "2ESO", l: "2º ESO" },
                   { v: "3ESO", l: "3º ESO" },
                   { v: "4ESO", l: "4º ESO" },
-                ].map((o) => (
-                  <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
-                    <RadioGroupItem value={o.v} id={`curso-${o.v}`} />
-                    <span>{o.l}</span>
-                  </label>
-                ))}
-              </RadioGroup>
+                ].map((o) => {
+                  const checked = cursos.includes(o.v);
+                  return (
+                    <label key={o.v} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                      <Checkbox
+                        id={`curso-${o.v}`}
+                        checked={checked}
+                        onCheckedChange={(v) =>
+                          setCursos((prev) =>
+                            v ? [...prev, o.v] : prev.filter((c) => c !== o.v),
+                          )
+                        }
+                      />
+                      <span>{o.l}</span>
+                    </label>
+                  );
+                })}
+                {cursos.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setCursos([])}
+                    className="text-xs text-muted-foreground underline self-center"
+                  >
+                    {t("publico.all")}
+                  </button>
+                )}
+              </div>
             </div>
             {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
