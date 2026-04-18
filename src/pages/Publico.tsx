@@ -28,18 +28,20 @@ export default function Publico() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<any>(null);
   const [sexo, setSexo] = useState<string>("all");
-  const [curso, setCurso] = useState<string>("all");
+  const [cursos, setCursos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const cursoParam = cursos.length === 0 ? "all" : cursos.join(",");
 
   useEffect(() => {
     setLoading(true);
     supabase
-      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: curso })
+      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam })
       .then(({ data }) => {
         setStats(data);
         setLoading(false);
       });
-  }, [sexo, curso]);
+  }, [sexo, cursoParam]);
 
   const eurofitData = useMemo<StatItem[]>(() => {
     if (!stats) return [];
