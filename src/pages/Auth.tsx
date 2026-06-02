@@ -169,6 +169,30 @@ export default function Auth() {
     }
   }
 
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(siEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({
+        title: "Email enviado",
+        description: "Si la cuenta existe, recibirás un enlace para restablecer tu contraseña. Caduca en 1 hora.",
+      });
+      setStage("credentials");
+    } catch (err: any) {
+      // No revelamos si el email existe
+      toast({
+        title: "Email enviado",
+        description: "Si la cuenta existe, recibirás un enlace para restablecer tu contraseña.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col">
       <header className="container flex items-center justify-between py-4">
