@@ -153,25 +153,48 @@ export default function Grupos() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {grupos.map((g) => (
-            <Link key={g.id} to={`/app/grupos/${g.id}`}>
-              <Card className="hover:shadow-elevated hover:-translate-y-0.5 transition-smooth cursor-pointer h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="font-display text-lg flex items-center justify-between">
-                    <span>{g.curso.replace("ESO", "º ESO")} {g.letra}</span>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1 text-sm text-muted-foreground">
-                  <p className="font-medium text-foreground">{g.centro?.nombre}</p>
-                  <p>{t("grupos.anio")}: {g.anio_escolar}</p>
-                  <p className="flex items-center gap-1.5 pt-1">
-                    <Users className="h-3.5 w-3.5" /> {g.alumno_count ?? 0} {t("grupos.students")}
-                  </p>
-                </CardContent>
+          {grupos.map((g) => {
+            const tieneBP = isBateriaPersonalizadaCompleta(g.bateria_personalizada);
+            const grupoLabel = `${g.curso.replace("ESO", "º ESO")} ${g.letra}`;
+            return (
+              <Card key={g.id} className="hover:shadow-elevated transition-smooth h-full flex flex-col">
+                <Link to={`/app/grupos/${g.id}`} className="flex-1">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="font-display text-lg flex items-center justify-between">
+                      <span>{grupoLabel}</span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">{g.centro?.nombre}</p>
+                    <p>{t("grupos.anio")}: {g.anio_escolar}</p>
+                    <p className="flex items-center gap-1.5 pt-1">
+                      <Users className="h-3.5 w-3.5" /> {g.alumno_count ?? 0} {t("grupos.students")}
+                    </p>
+                  </CardContent>
+                </Link>
+                <div className="px-6 pb-4 pt-2 border-t flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                    <Sliders className="h-3 w-3" />
+                    {tieneBP ? "Batería personalizada activa" : "Solo Eurofit / CFS"}
+                  </span>
+                  <BateriaPersonalizadaDialog
+                    grupoId={g.id}
+                    grupoLabel={grupoLabel}
+                    initial={g.bateria_personalizada ?? null}
+                    onSaved={(sel) => {
+                      setGrupos((prev) => prev.map((x) => x.id === g.id ? { ...x, bateria_personalizada: sel } : x));
+                    }}
+                    trigger={
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">
+                        Configurar
+                      </Button>
+                    }
+                  />
+                </div>
               </Card>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
