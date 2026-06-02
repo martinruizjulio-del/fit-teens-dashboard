@@ -276,6 +276,15 @@ export default function Auth() {
                     <Button type="submit" className="w-full" disabled={loading}>
                       {t("auth.signIn")}
                     </Button>
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => setStage("forgot")}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
                     <p className="text-xs text-muted-foreground text-center">
                       🔒 {t("auth.otpDesc").substring(0, 80)}…
                     </p>
