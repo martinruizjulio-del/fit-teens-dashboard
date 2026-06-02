@@ -13,6 +13,35 @@ import { OmniRes } from "@/components/OmniRes";
 import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, calcularEdad, valorParaBaremo, type PruebaDef } from "@/lib/pruebas";
 import { ArrowLeft, BookOpen, Save, FileDown } from "lucide-react";
 import { generarInformePDF } from "@/lib/pdf";
+import imgWells from "@/assets/procedimientos/wells.png";
+import imgThomas from "@/assets/procedimientos/thomas.png";
+import imgAbdominales from "@/assets/procedimientos/abdominales_60.png";
+import imgBiering from "@/assets/procedimientos/biering_sorensen.png";
+import imgSaltoVertical from "@/assets/procedimientos/salto_vertical.png";
+import imgSjCmj from "@/assets/procedimientos/sj_cmj.png";
+import imgLanzHombros from "@/assets/procedimientos/lanz_hombros.png";
+import imgLanzMed from "@/assets/procedimientos/lanz_med.png";
+import imgSprint from "@/assets/procedimientos/sprint.png";
+import imgCooper from "@/assets/procedimientos/cooper.png";
+import imgRockport from "@/assets/procedimientos/rockport.png";
+
+const IMG_PROCEDIMIENTO: Record<string, string> = {
+  wells: imgWells,
+  thomas: imgThomas,
+  abdominales_60: imgAbdominales,
+  biering_sorensen: imgBiering,
+  salto_vertical: imgSaltoVertical,
+  sj: imgSjCmj,
+  cmj: imgSjCmj,
+  lanz_hombros: imgLanzHombros,
+  lanz_med: imgLanzMed,
+  lanz_med_der: imgLanzMed,
+  lanz_med_izq: imgLanzMed,
+  sprint_50: imgSprint,
+  sprint_30: imgSprint,
+  cooper: imgCooper,
+  rockport: imgRockport,
+};
 
 export default function Pruebas() {
   const { alumnoId } = useParams();
@@ -176,8 +205,16 @@ function PruebaCard({
             <DialogTrigger asChild>
               <Button size="sm" variant="ghost"><BookOpen className="h-4 w-4 mr-1" /> Procedimiento</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle className="font-display">{NOMBRE_PRUEBA[prueba.prueba]}</DialogTitle></DialogHeader>
+              {IMG_PROCEDIMIENTO[prueba.prueba] && (
+                <img
+                  src={IMG_PROCEDIMIENTO[prueba.prueba]}
+                  alt={`Ilustración del procedimiento: ${NOMBRE_PRUEBA[prueba.prueba]}`}
+                  loading="lazy"
+                  className="w-full h-auto rounded-md border bg-white"
+                />
+              )}
               <div className="prose prose-sm max-w-none whitespace-pre-wrap text-sm">{procedimiento.procedimiento_md}</div>
               <p className="text-xs text-muted-foreground border-t pt-2 italic">{procedimiento.referencia_apa}</p>
             </DialogContent>
