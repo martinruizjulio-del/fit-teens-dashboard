@@ -10,9 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen, FileDown, Award, UserCog, ExternalLink, LogIn, Search } from "lucide-react";
+import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen, FileDown, Award, UserCog } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { generarEvidenciasPDF } from "@/lib/evidencias-pdf";
 import { ImpersonationPanel } from "@/components/ImpersonationPanel";
 
