@@ -8,6 +8,7 @@ import "@/i18n";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Publico from "./pages/Publico";
 import AlumnoAcceso from "./pages/AlumnoAcceso";
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/publico" element={<Publico />} />
             <Route path="/centros-publico" element={<CentrosPublico />} />
             <Route path="/alumno" element={<AlumnoAcceso />} />

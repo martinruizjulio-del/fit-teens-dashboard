@@ -26,7 +26,7 @@ const signUpSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-type Stage = "credentials" | "otp";
+type Stage = "credentials" | "otp" | "forgot";
 
 export default function Auth() {
   const { t } = useTranslation();
@@ -169,6 +169,30 @@ export default function Auth() {
     }
   }
 
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(siEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({
+        title: "Email enviado",
+        description: "Si la cuenta existe, recibirás un enlace para restablecer tu contraseña. Caduca en 1 hora.",
+      });
+      setStage("credentials");
+    } catch (err: any) {
+      // No revelamos si el email existe
+      toast({
+        title: "Email enviado",
+        description: "Si la cuenta existe, recibirás un enlace para restablecer tu contraseña.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col">
       <header className="container flex items-center justify-between py-4">
@@ -216,6 +240,22 @@ export default function Auth() {
                   {t("auth.otpResend")}
                 </Button>
               </form>
+            ) : stage === "forgot" ? (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  Introduce tu email y te enviaremos un enlace seguro para restablecer tu contraseña. El enlace caduca en 1 hora.
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fp-email">{t("auth.email")}</Label>
+                  <Input id="fp-email" type="email" required value={siEmail} onChange={(e) => setSiEmail(e.target.value)} autoComplete="email" />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading || !siEmail.trim()}>
+                  Enviar enlace de recuperación
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={() => setStage("credentials")} disabled={loading}>
+                  Volver al inicio de sesión
+                </Button>
+              </form>
             ) : (
               <Tabs defaultValue="signin">
                 <TabsList className="grid grid-cols-2 w-full mb-4">
@@ -236,6 +276,15 @@ export default function Auth() {
                     <Button type="submit" className="w-full" disabled={loading}>
                       {t("auth.signIn")}
                     </Button>
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => setStage("forgot")}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
                     <p className="text-xs text-muted-foreground text-center">
                       🔒 {t("auth.otpDesc").substring(0, 80)}…
                     </p>
