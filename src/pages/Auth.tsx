@@ -26,7 +26,7 @@ const signUpSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-type Stage = "credentials" | "otp";
+type Stage = "credentials" | "otp" | "forgot";
 
 export default function Auth() {
   const { t } = useTranslation();
