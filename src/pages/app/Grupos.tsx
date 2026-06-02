@@ -10,7 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CURSOS, LETRAS, generarAniosEscolares } from "@/lib/constants";
-import { Users, Plus, ArrowRight } from "lucide-react";
+import { Users, Plus, ArrowRight, Sliders } from "lucide-react";
+import { BateriaPersonalizadaDialog } from "@/components/BateriaPersonalizadaDialog";
+import { isBateriaPersonalizadaCompleta, type BateriaPersonalizada } from "@/lib/pruebas";
 
 interface Grupo {
   id: string;
@@ -20,6 +22,7 @@ interface Grupo {
   anio_escolar: string;
   centro?: { nombre: string };
   alumno_count?: number;
+  bateria_personalizada?: BateriaPersonalizada | null;
 }
 
 export default function Grupos() {
