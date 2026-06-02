@@ -1,0 +1,2 @@
+ALTER TABLE public.grupos ADD COLUMN IF NOT EXISTS bateria_personalizada jsonb;
+COMMENT ON COLUMN public.grupos.bateria_personalizada IS 'Selección de 6 pruebas (1 por categoría) mezclando Eurofit y CFS. Formato: {"flexibilidad":"wells","tronco":"biering_sorensen",...}. NULL = sin batería personalizada.';

@@ -268,6 +268,7 @@ export type Database = {
       grupos: {
         Row: {
           anio_escolar: string
+          bateria_personalizada: Json | null
           centro_id: string
           created_at: string
           curso: Database["public"]["Enums"]["curso_enum"]
@@ -279,6 +280,7 @@ export type Database = {
         }
         Insert: {
           anio_escolar: string
+          bateria_personalizada?: Json | null
           centro_id: string
           created_at?: string
           curso: Database["public"]["Enums"]["curso_enum"]
@@ -290,6 +292,7 @@ export type Database = {
         }
         Update: {
           anio_escolar?: string
+          bateria_personalizada?: Json | null
           centro_id?: string
           created_at?: string
           curso?: Database["public"]["Enums"]["curso_enum"]
