@@ -89,7 +89,7 @@ export default function Centros() {
   }
 
   // Centros que el profesor ha creado
-  const myCentros = centros.filter((c) => c.created_by === user?.id);
+  const myCentros = centros.filter((c) => c.created_by === (impersonating?.userId ?? user?.id));
 
   return (
     <div className="space-y-6">
