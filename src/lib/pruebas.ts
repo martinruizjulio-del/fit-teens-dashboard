@@ -89,3 +89,115 @@ export const NOMBRE_PRUEBA: Record<string, string> = {
   sprint_30: "Sprint 30 m",
   rockport: "Rockport (1 milla)",
 };
+
+// ============================================================
+// BATERÍA PERSONALIZADA
+// 6 categorías; una prueba de Eurofit y una de CFS por categoría.
+// CFS "saltos" agrupa SJ + CMJ (se piden ambos).
+// CFS "lanz_med" agrupa derecho + izquierdo (se piden ambos).
+// ============================================================
+
+export type CategoriaKey =
+  | "flexibilidad"
+  | "tronco"
+  | "explosiva_piernas"
+  | "tren_superior"
+  | "velocidad"
+  | "resistencia";
+
+export interface CategoriaOpcion {
+  bateria: Bateria;
+  /** Clave única dentro de la categoría */
+  key: string;
+  label: string;
+  /** Pruebas individuales a registrar para esta opción */
+  pruebas: PruebaDef[];
+}
+
+export interface CategoriaDef {
+  key: CategoriaKey;
+  label: string;
+  opciones: CategoriaOpcion[];
+}
+
+const findEf = (p: string) => PRUEBAS_EUROFIT.find((x) => x.prueba === p)!;
+const findCfs = (p: string) => PRUEBAS_CFS.find((x) => x.prueba === p)!;
+
+export const CATEGORIAS: CategoriaDef[] = [
+  {
+    key: "flexibilidad",
+    label: "Flexibilidad",
+    opciones: [
+      { bateria: "eurofit", key: "wells",  label: "Wells (sit-and-reach)", pruebas: [findEf("wells")] },
+      { bateria: "cfs",     key: "thomas", label: "Thomas modificado",     pruebas: [findCfs("thomas")] },
+    ],
+  },
+  {
+    key: "tronco",
+    label: "Fuerza del tronco",
+    opciones: [
+      { bateria: "eurofit", key: "abdominales_60",   label: "Abdominales 60 s", pruebas: [findEf("abdominales_60")] },
+      { bateria: "cfs",     key: "biering_sorensen", label: "Biering-Sörensen", pruebas: [findCfs("biering_sorensen")] },
+    ],
+  },
+  {
+    key: "explosiva_piernas",
+    label: "Fuerza explosiva de piernas",
+    opciones: [
+      { bateria: "eurofit", key: "salto_vertical", label: "Salto vertical", pruebas: [findEf("salto_vertical")] },
+      { bateria: "cfs",     key: "saltos",         label: "SJ + CMJ",       pruebas: [findCfs("sj"), findCfs("cmj")] },
+    ],
+  },
+  {
+    key: "tren_superior",
+    label: "Fuerza del tren superior",
+    opciones: [
+      { bateria: "eurofit", key: "lanz_hombros", label: "Lanz. balón sobre hombros",     pruebas: [findEf("lanz_hombros")] },
+      { bateria: "cfs",     key: "lanz_med",     label: "Lanz. medicinal (der. + izq.)", pruebas: [findCfs("lanz_med_der"), findCfs("lanz_med_izq")] },
+    ],
+  },
+  {
+    key: "velocidad",
+    label: "Velocidad",
+    opciones: [
+      { bateria: "eurofit", key: "sprint_50", label: "Sprint 50 m", pruebas: [findEf("sprint_50")] },
+      { bateria: "cfs",     key: "sprint_30", label: "Sprint 30 m", pruebas: [findCfs("sprint_30")] },
+    ],
+  },
+  {
+    key: "resistencia",
+    label: "Resistencia aeróbica",
+    opciones: [
+      { bateria: "eurofit", key: "cooper",   label: "Cooper (12 min)",    pruebas: [findEf("cooper")] },
+      { bateria: "cfs",     key: "rockport", label: "Rockport (1 milla)", pruebas: [findCfs("rockport")] },
+    ],
+  },
+];
+
+export type BateriaPersonalizada = Partial<Record<CategoriaKey, string>>;
+
+export const BATERIA_PERSONALIZADA_DEFAULT: BateriaPersonalizada = {
+  flexibilidad: "wells",
+  tronco: "abdominales_60",
+  explosiva_piernas: "salto_vertical",
+  tren_superior: "lanz_hombros",
+  velocidad: "sprint_50",
+  resistencia: "cooper",
+};
+
+/** Devuelve las pruebas a registrar según la selección por categoría */
+export function pruebasDePersonalizada(sel: BateriaPersonalizada): PruebaDef[] {
+  const out: PruebaDef[] = [];
+  for (const cat of CATEGORIAS) {
+    const key = sel[cat.key];
+    if (!key) continue;
+    const opt = cat.opciones.find((o) => o.key === key);
+    if (opt) out.push(...opt.pruebas);
+  }
+  return out;
+}
+
+export function isBateriaPersonalizadaCompleta(sel: BateriaPersonalizada | null | undefined): boolean {
+  if (!sel) return false;
+  return CATEGORIAS.every((c) => !!sel[c.key]);
+}

@@ -10,8 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { OmniRes } from "@/components/OmniRes";
-import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, calcularEdad, valorParaBaremo, type PruebaDef } from "@/lib/pruebas";
-import { ArrowLeft, BookOpen, Save, FileDown } from "lucide-react";
+import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, CATEGORIAS, pruebasDePersonalizada, isBateriaPersonalizadaCompleta, calcularEdad, valorParaBaremo, type PruebaDef, type BateriaPersonalizada } from "@/lib/pruebas";
+import { ArrowLeft, BookOpen, Save, FileDown, Sliders } from "lucide-react";
 import { generarInformePDF } from "@/lib/pdf";
 import imgWells from "@/assets/procedimientos/wells.png";
 import imgThomas from "@/assets/procedimientos/thomas.png";
@@ -47,6 +47,7 @@ export default function Pruebas() {
   const { alumnoId } = useParams();
   const { toast } = useToast();
   const [alumno, setAlumno] = useState<any>(null);
+  const [bateriaPersonalizada, setBateriaPersonalizada] = useState<BateriaPersonalizada | null>(null);
   const [eurofit, setEurofit] = useState<any>({});
   const [cfs, setCfs] = useState<any>({});
   const [notas, setNotas] = useState<Record<string, number | null>>({});
@@ -55,12 +56,13 @@ export default function Pruebas() {
   const cargar = useCallback(async () => {
     if (!alumnoId) return;
     const [{ data: a }, { data: e }, { data: c }, { data: p }] = await Promise.all([
-      supabase.from("alumnos").select("*").eq("id", alumnoId).maybeSingle(),
+      supabase.from("alumnos").select("*, grupo:grupos(bateria_personalizada)").eq("id", alumnoId).maybeSingle(),
       supabase.from("pruebas_eurofit").select("*").eq("alumno_id", alumnoId).maybeSingle(),
       supabase.from("pruebas_cfs").select("*").eq("alumno_id", alumnoId).maybeSingle(),
       supabase.from("procedimientos").select("*"),
     ]);
     setAlumno(a);
+    setBateriaPersonalizada(((a as any)?.grupo?.bateria_personalizada ?? null) as BateriaPersonalizada | null);
     setEurofit(e ?? {});
     setCfs(c ?? {});
     setProcedimientos(p ?? []);
@@ -99,6 +101,26 @@ export default function Pruebas() {
     void cargar();
   }
 
+  async function guardarPersonalizada() {
+    if (!alumnoId || !bateriaPersonalizada) return;
+    const tablas = new Set(pruebasDePersonalizada(bateriaPersonalizada).map((p) => p.bateria));
+    const results = await Promise.all(
+      Array.from(tablas).map((b) => {
+        const tabla = b === "eurofit" ? "pruebas_eurofit" : "pruebas_cfs";
+        const data = b === "eurofit" ? eurofit : cfs;
+        const payload = { ...data, alumno_id: alumnoId, fecha: data.fecha ?? new Date().toISOString().split("T")[0] };
+        delete payload.id;
+        delete payload.created_at;
+        delete payload.updated_at;
+        return supabase.from(tabla).upsert(payload, { onConflict: "alumno_id" });
+      }),
+    );
+    const firstError = results.find((r) => r.error)?.error;
+    if (firstError) { toast({ variant: "destructive", title: firstError.message }); return; }
+    toast({ title: "Batería personalizada guardada" });
+    void cargar();
+  }
+
   async function exportarPDF() {
     if (!alumno) return;
     const notasEurofit: Record<string, number | null> = {};
@@ -107,12 +129,22 @@ export default function Pruebas() {
     PRUEBAS_CFS.forEach((p) => { notasCfs[p.prueba] = notas[p.prueba] ?? null; });
     await generarInformePDF({
       alumno, eurofit, cfs, notasEurofit, notasCfs, procedimientos,
+      bateriaPersonalizada: isBateriaPersonalizadaCompleta(bateriaPersonalizada) ? bateriaPersonalizada : null,
     });
   }
 
   if (!alumno) return <div className="text-muted-foreground">Cargando…</div>;
 
   const edad = calcularEdad(alumno.fecha_nacimiento);
+  const bpActiva = isBateriaPersonalizadaCompleta(bateriaPersonalizada);
+  const pruebasPersonalizadas = bpActiva ? pruebasDePersonalizada(bateriaPersonalizada!) : [];
+
+  // Nota media de la batería personalizada (solo notas presentes)
+  let notaBP: number | null = null;
+  if (bpActiva) {
+    const vals = pruebasPersonalizadas.map((p) => notas[p.prueba]).filter((n): n is number => n != null);
+    if (vals.length) notaBP = Number((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2));
+  }
 
   return (
     <div className="space-y-6">
@@ -129,10 +161,11 @@ export default function Pruebas() {
         </Button>
       </div>
 
-      <Tabs defaultValue="eurofit">
+      <Tabs defaultValue={bpActiva ? "personalizada" : "eurofit"}>
         <TabsList>
           <TabsTrigger value="eurofit">Batería Eurofit</TabsTrigger>
           <TabsTrigger value="cfs">Batería CFS</TabsTrigger>
+          {bpActiva && <TabsTrigger value="personalizada"><Sliders className="h-3.5 w-3.5 mr-1" />Personalizada</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="eurofit" className="space-y-4 mt-4">
@@ -174,6 +207,48 @@ export default function Pruebas() {
             <Save className="h-4 w-4 mr-1.5" /> Guardar CFS
           </Button>
         </TabsContent>
+
+        {bpActiva && (
+          <TabsContent value="personalizada" className="space-y-4 mt-4">
+            <Card className="bg-accent/30">
+              <CardContent className="p-4 text-sm flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  Batería configurada por el profesor del grupo (6 pruebas · una por categoría).
+                </span>
+                {notaBP != null && (
+                  <Badge variant={notaBP >= 7 ? "default" : notaBP >= 5 ? "secondary" : "destructive"}>
+                    Nota media: {notaBP}/10
+                  </Badge>
+                )}
+              </CardContent>
+            </Card>
+
+            {CATEGORIAS.map((cat) => {
+              const optKey = bateriaPersonalizada![cat.key];
+              const opt = cat.opciones.find((o) => o.key === optKey);
+              if (!opt) return null;
+              return (
+                <div key={cat.key} className="space-y-2">
+                  <h3 className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">{cat.label}</h3>
+                  {opt.pruebas.map((p) => (
+                    <PruebaCard
+                      key={p.prueba}
+                      prueba={p}
+                      registro={p.bateria === "eurofit" ? eurofit : cfs}
+                      onChange={p.bateria === "eurofit" ? setEurofit : setCfs}
+                      nota={notas[p.prueba]}
+                      procedimiento={procedimientos.find((x) => x.bateria === p.bateria && x.prueba === (p.prueba.startsWith("lanz_med") ? "lanz_med" : p.prueba))}
+                    />
+                  ))}
+                </div>
+              );
+            })}
+
+            <Button onClick={guardarPersonalizada} className="bg-gradient-energy text-secondary-foreground shadow-energy">
+              <Save className="h-4 w-4 mr-1.5" /> Guardar batería personalizada
+            </Button>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

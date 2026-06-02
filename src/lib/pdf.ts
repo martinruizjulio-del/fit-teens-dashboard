@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
-import { NOMBRE_PRUEBA, PRUEBAS_EUROFIT, PRUEBAS_CFS, formateaValor, valorParaBaremo, calcularEdad, type PruebaDef } from "./pruebas";
+import { NOMBRE_PRUEBA, PRUEBAS_EUROFIT, PRUEBAS_CFS, CATEGORIAS, formateaValor, valorParaBaremo, calcularEdad, type PruebaDef, type BateriaPersonalizada } from "./pruebas";
 
 export interface InformeData {
   alumno: any;
@@ -11,6 +11,7 @@ export interface InformeData {
   notasCfs: Record<string, number | null>;
   procedimientos?: Array<{ bateria: string; prueba: string; procedimiento_md: string; referencia_apa: string }>;
   radarSelector?: string; // CSS selector del radar a capturar
+  bateriaPersonalizada?: BateriaPersonalizada | null;
 }
 
 export async function generarInformePDF(d: InformeData) {
@@ -110,6 +111,54 @@ export async function generarInformePDF(d: InformeData) {
       y += 6;
     }
   }
+
+  // Batería personalizada
+  if (d.bateriaPersonalizada) {
+    if (y > 230) { doc.addPage(); y = 15; }
+    doc.setFont("helvetica", "bold").setFontSize(11);
+    doc.setTextColor(20, 30, 50);
+    doc.text("Batería personalizada (configurada por el profesor)", 14, y);
+    y += 2;
+    const body: any[] = [];
+    const notasBP: number[] = [];
+    for (const cat of CATEGORIAS) {
+      const optKey = d.bateriaPersonalizada[cat.key];
+      if (!optKey) continue;
+      const opt = cat.opciones.find((o) => o.key === optKey);
+      if (!opt) continue;
+      opt.pruebas.forEach((p, i) => {
+        const reg = p.bateria === "eurofit" ? d.eurofit : d.cfs;
+        const nota = (p.bateria === "eurofit" ? d.notasEurofit : d.notasCfs)[p.prueba];
+        if (typeof nota === "number") notasBP.push(nota);
+        body.push([
+          i === 0 ? cat.label : "",
+          NOMBRE_PRUEBA[p.prueba],
+          p.bateria.toUpperCase(),
+          reg ? formateaValor(p, reg) : "—",
+          nota ?? "—",
+        ]);
+      });
+    }
+    autoTable(doc, {
+      startY: y,
+      theme: "striped",
+      headStyles: { fillColor: [80, 50, 150], textColor: 255 },
+      styles: { fontSize: 9 },
+      head: [["Categoría", "Prueba", "Batería", "Resultado", "Nota /10"]],
+      body,
+    });
+    y = (doc as any).lastAutoTable.finalY + 4;
+    if (notasBP.length) {
+      const media = (notasBP.reduce((a, b) => a + b, 0) / notasBP.length).toFixed(2);
+      doc.setFont("helvetica", "bold").setFontSize(10);
+      doc.text(`Nota media batería personalizada: ${media}/10`, 14, y);
+      y += 8;
+    } else {
+      y += 4;
+    }
+  }
+
+
 
   // Radar
   if (d.radarSelector) {
