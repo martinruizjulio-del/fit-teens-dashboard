@@ -193,7 +193,8 @@
       {
         "title": "Registra las pruebas",
         "items": [
-          "Elige la batería: Eurofit (6 pruebas) o CFS (6 pruebas).",
+          "Elige la batería: Eurofit (6 pruebas), CFS (6 pruebas) o Personalizada.",
+          "Configura la batería Personalizada desde cada grupo: elige una prueba por categoría (flexibilidad, tronco, explosiva piernas, tren superior, velocidad y resistencia) combinando libremente Eurofit y CFS.",
           "Introduce los valores de cada prueba; las notas se calculan automáticamente por edad y sexo según los baremos oficiales.",
           "Anota la percepción del esfuerzo Omni-Res (0-10) tras cada prueba para hacer un seguimiento real de la carga.",
           "Cada prueba incluye su procedimiento detallado con ilustraciones que guían la correcta ejecución."
