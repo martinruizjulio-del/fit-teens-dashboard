@@ -195,7 +195,8 @@
         "items": [
           "Choose the battery: Eurofit (6 tests) or CFS (6 tests).",
           "Enter the value of each test; scores are computed automatically by age and sex using the official scales.",
-          "Record the Omni-Res perceived exertion (0-10) after each test to truly track the workload."
+          "Record the Omni-Res perceived exertion (0-10) after each test to truly track the workload.",
+          "Each test includes its detailed procedure with illustrations that guide correct execution."
         ]
       },
       {
