@@ -52,13 +52,11 @@ export function calcularEdad(fechaNacimiento: string): number {
   return edad;
 }
 
-// Para Rockport el "valor" para baremos es el tiempo en minutos (min + seg/60)
+// Para Rockport el "valor" para baremos es el VO2 estimado (calculado por trigger en BD)
 export function valorParaBaremo(prueba: PruebaDef, registro: any): number | null {
   if (prueba.composite === "rockport") {
-    const min = registro.rockport_min;
-    const seg = registro.rockport_seg ?? 0;
-    if (min == null) return null;
-    return Number(min) + Number(seg) / 60;
+    const vo2 = registro.rockport_vo2;
+    return vo2 == null ? null : Number(vo2);
   }
   const v = registro[prueba.campo];
   return v == null ? null : Number(v);
