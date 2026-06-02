@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 export function AppLayout() {
   const { t } = useTranslation();
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, isAdmin, signOut, impersonating, stopImpersonation } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,6 +103,17 @@ export function AppLayout() {
             </Button>
           </div>
         </header>
+
+        {impersonating && (
+          <div className="bg-secondary/15 border-b border-secondary/30 px-4 py-2 text-sm flex items-center justify-between gap-2">
+            <span className="text-foreground">
+              👤 Suplantando a <strong>{impersonating.fullName}</strong> <span className="text-muted-foreground">({impersonating.email})</span>
+            </span>
+            <Button size="sm" variant="outline" onClick={() => { stopImpersonation(); navigate("/admin"); }}>
+              Salir de suplantación
+            </Button>
+          </div>
+        )}
 
         <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto animate-fade-in">
           <Outlet />

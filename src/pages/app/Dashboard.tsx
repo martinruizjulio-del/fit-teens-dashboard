@@ -9,16 +9,16 @@ import { Building2, Users, GraduationCap, ClipboardList, ArrowRight } from "luci
 
 export default function Dashboard() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, effectiveUserId, impersonating } = useAuth();
   const [stats, setStats] = useState({ centros: 0, grupos: 0, alumnos: 0 });
 
   useEffect(() => {
-    if (!user) return;
+    if (!effectiveUserId) return;
     void (async () => {
       const [{ count: cCentros }, { count: cGrupos }, { data: grupos }] = await Promise.all([
-        supabase.from("centros").select("*", { count: "exact", head: true }).eq("created_by", user.id),
-        supabase.from("grupos").select("*", { count: "exact", head: true }).eq("profesor_id", user.id),
-        supabase.from("grupos").select("id").eq("profesor_id", user.id),
+        supabase.from("centros").select("*", { count: "exact", head: true }).eq("created_by", effectiveUserId),
+        supabase.from("grupos").select("*", { count: "exact", head: true }).eq("profesor_id", effectiveUserId),
+        supabase.from("grupos").select("id").eq("profesor_id", effectiveUserId),
       ]);
       let cAlumnos = 0;
       if (grupos && grupos.length > 0) {
@@ -30,12 +30,12 @@ export default function Dashboard() {
       }
       setStats({ centros: cCentros ?? 0, grupos: cGrupos ?? 0, alumnos: cAlumnos });
     })();
-  }, [user]);
+  }, [effectiveUserId]);
 
   const cards = [
     { icon: Building2, label: t("dashboard.myCentros"), value: stats.centros, to: "/app/centros", color: "from-primary to-primary-glow" },
     { icon: Users, label: t("dashboard.myGrupos"), value: stats.grupos, to: "/app/grupos", color: "from-secondary to-orange-600" },
-    { icon: GraduationCap, label: t("dashboard.myAlumnos"), value: stats.alumnos, to: "/app/grupos", color: "from-primary-glow to-primary" },
+    { icon: GraduationCap, label: t("dashboard.myAlumnos"), value: stats.alumnos, to: "/app/alumnos", color: "from-primary-glow to-primary" },
   ];
 
   return (
@@ -71,7 +71,7 @@ export default function Dashboard() {
         <CardContent className="flex flex-wrap gap-2">
           <Link to="/app/centros"><Button variant="outline"><Building2 className="h-4 w-4 mr-2" /> {t("nav.centros")}</Button></Link>
           <Link to="/app/grupos"><Button variant="outline"><Users className="h-4 w-4 mr-2" /> {t("nav.grupos")}</Button></Link>
-          <Link to="/app/baterias"><Button variant="outline"><ClipboardList className="h-4 w-4 mr-2" /> {t("nav.baterias")}</Button></Link>
+          <Link to="/app/alumnos"><Button variant="outline"><GraduationCap className="h-4 w-4 mr-2" /> {t("nav.alumnos")}</Button></Link>
         </CardContent>
       </Card>
 

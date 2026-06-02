@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen, FileDown, Award } from "lucide-react";
+import { ShieldCheck, Database, Trash2, Wand2, Save, BookOpen, FileDown, Award, UserCog } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { generarEvidenciasPDF } from "@/lib/evidencias-pdf";
+import { ImpersonationPanel } from "@/components/ImpersonationPanel";
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -172,8 +173,9 @@ export default function Admin() {
         <p className="text-muted-foreground mt-1 text-sm">Panel de administración global.</p>
       </div>
 
-      <Tabs defaultValue="demo">
-        <TabsList>
+      <Tabs defaultValue="impersonar">
+        <TabsList className="flex-wrap h-auto">
+          <TabsTrigger value="impersonar"><UserCog className="h-4 w-4 mr-1.5" /> Suplantar</TabsTrigger>
           <TabsTrigger value="demo"><Database className="h-4 w-4 mr-1.5" /> Datos demo</TabsTrigger>
           <TabsTrigger value="config">Página pública</TabsTrigger>
           <TabsTrigger value="autores">Autores y política</TabsTrigger>
@@ -181,6 +183,10 @@ export default function Admin() {
           <TabsTrigger value="baremos">Baremos</TabsTrigger>
           <TabsTrigger value="procs"><BookOpen className="h-4 w-4 mr-1.5" /> Procedimientos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="impersonar" className="mt-4">
+          <ImpersonationPanel />
+        </TabsContent>
 
         <TabsContent value="evidencias" className="mt-4">
           <Card>

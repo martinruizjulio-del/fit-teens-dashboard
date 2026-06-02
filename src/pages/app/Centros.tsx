@@ -30,7 +30,7 @@ interface Centro {
 
 export default function Centros() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, impersonating } = useAuth();
   const { toast } = useToast();
   const [centros, setCentros] = useState<Centro[]>([]);
   const [open, setOpen] = useState(false);
@@ -89,7 +89,7 @@ export default function Centros() {
   }
 
   // Centros que el profesor ha creado
-  const myCentros = centros.filter((c) => c.created_by === user?.id);
+  const myCentros = centros.filter((c) => c.created_by === (impersonating?.userId ?? user?.id));
 
   return (
     <div className="space-y-6">
