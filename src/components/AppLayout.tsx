@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 export function AppLayout() {
   const { t } = useTranslation();
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, isAdmin, signOut, impersonating, stopImpersonation } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
