@@ -240,6 +240,22 @@ export default function Auth() {
                   {t("auth.otpResend")}
                 </Button>
               </form>
+            ) : stage === "forgot" ? (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  Introduce tu email y te enviaremos un enlace seguro para restablecer tu contraseña. El enlace caduca en 1 hora.
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="fp-email">{t("auth.email")}</Label>
+                  <Input id="fp-email" type="email" required value={siEmail} onChange={(e) => setSiEmail(e.target.value)} autoComplete="email" />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading || !siEmail.trim()}>
+                  Enviar enlace de recuperación
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={() => setStage("credentials")} disabled={loading}>
+                  Volver al inicio de sesión
+                </Button>
+              </form>
             ) : (
               <Tabs defaultValue="signin">
                 <TabsList className="grid grid-cols-2 w-full mb-4">
