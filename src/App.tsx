@@ -8,6 +8,7 @@ import "@/i18n";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Publico from "./pages/Publico";
 import AlumnoAcceso from "./pages/AlumnoAcceso";
