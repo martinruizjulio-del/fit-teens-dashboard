@@ -30,7 +30,7 @@ interface Centro {
 
 export default function Centros() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, impersonating } = useAuth();
   const { toast } = useToast();
   const [centros, setCentros] = useState<Centro[]>([]);
   const [open, setOpen] = useState(false);
