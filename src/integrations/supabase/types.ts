@@ -396,6 +396,7 @@ export type Database = {
           rockport_fc: number | null
           rockport_min: number | null
           rockport_seg: number | null
+          rockport_vo2: number | null
           sj_cm: number | null
           sprint_30_seg: number | null
           thomas: number | null
@@ -421,6 +422,7 @@ export type Database = {
           rockport_fc?: number | null
           rockport_min?: number | null
           rockport_seg?: number | null
+          rockport_vo2?: number | null
           sj_cm?: number | null
           sprint_30_seg?: number | null
           thomas?: number | null
@@ -446,6 +448,7 @@ export type Database = {
           rockport_fc?: number | null
           rockport_min?: number | null
           rockport_seg?: number | null
+          rockport_vo2?: number | null
           sj_cm?: number | null
           sprint_30_seg?: number | null
           thomas?: number | null
