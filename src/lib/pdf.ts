@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
-import { NOMBRE_PRUEBA, PRUEBAS_EUROFIT, PRUEBAS_CFS, formateaValor, valorParaBaremo, calcularEdad, type PruebaDef } from "./pruebas";
+import { NOMBRE_PRUEBA, PRUEBAS_EUROFIT, PRUEBAS_CFS, CATEGORIAS, formateaValor, valorParaBaremo, calcularEdad, type PruebaDef, type BateriaPersonalizada } from "./pruebas";
 
 export interface InformeData {
   alumno: any;
@@ -11,6 +11,7 @@ export interface InformeData {
   notasCfs: Record<string, number | null>;
   procedimientos?: Array<{ bateria: string; prueba: string; procedimiento_md: string; referencia_apa: string }>;
   radarSelector?: string; // CSS selector del radar a capturar
+  bateriaPersonalizada?: BateriaPersonalizada | null;
 }
 
 export async function generarInformePDF(d: InformeData) {
