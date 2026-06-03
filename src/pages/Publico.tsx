@@ -37,6 +37,7 @@ export default function Publico() {
   const [evalNombres, setEvalNombres] = useState<string[]>([]);
   const [evaluacion, setEvaluacion] = useState<string>("all");
   const [configCargada, setConfigCargada] = useState(false);
+  const [notasGrupos, setNotasGrupos] = useState<{ por_curso: any[]; por_sexo: any[] } | null>(null);
 
   const cursoParam = cursos.length === 0 ? "all" : cursos.join(",");
 
