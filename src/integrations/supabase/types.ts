@@ -193,6 +193,7 @@ export type Database = {
       config_publica: {
         Row: {
           autores: string
+          evaluacion_default_nombre: string | null
           id: string
           idioma_default: string
           manual_uso_md: string
@@ -201,12 +202,15 @@ export type Database = {
           mostrar_eurofit: boolean
           mostrar_por_curso: boolean
           mostrar_por_sexo: boolean
+          periodo_destacado_fecha: string | null
+          periodo_destacado_label: string | null
           politica_privacidad_md: string
           updated_at: string
           video_manual_url: string | null
         }
         Insert: {
           autores?: string
+          evaluacion_default_nombre?: string | null
           id?: string
           idioma_default?: string
           manual_uso_md?: string
@@ -215,12 +219,15 @@ export type Database = {
           mostrar_eurofit?: boolean
           mostrar_por_curso?: boolean
           mostrar_por_sexo?: boolean
+          periodo_destacado_fecha?: string | null
+          periodo_destacado_label?: string | null
           politica_privacidad_md?: string
           updated_at?: string
           video_manual_url?: string | null
         }
         Update: {
           autores?: string
+          evaluacion_default_nombre?: string | null
           id?: string
           idioma_default?: string
           manual_uso_md?: string
@@ -229,6 +236,8 @@ export type Database = {
           mostrar_eurofit?: boolean
           mostrar_por_curso?: boolean
           mostrar_por_sexo?: boolean
+          periodo_destacado_fecha?: string | null
+          periodo_destacado_label?: string | null
           politica_privacidad_md?: string
           updated_at?: string
           video_manual_url?: string | null
@@ -659,12 +668,15 @@ export type Database = {
         Returns: number
       }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
+      get_evaluaciones_nombres: { Args: never; Returns: Json }
       get_landing_public_stats: { Args: never; Returns: Json }
       get_stats_publicas: { Args: never; Returns: Json }
-      get_stats_publicas_filtradas: {
-        Args: { _curso?: string; _sexo?: string }
-        Returns: Json
-      }
+      get_stats_publicas_filtradas:
+        | { Args: { _curso?: string; _sexo?: string }; Returns: Json }
+        | {
+            Args: { _curso?: string; _evaluacion?: string; _sexo?: string }
+            Returns: Json
+          }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

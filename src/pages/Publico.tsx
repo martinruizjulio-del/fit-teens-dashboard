@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { BarChart3, Filter } from "lucide-react";
+import { BarChart3, Filter, CalendarRange } from "lucide-react";
 
 type StatItem = {
   prueba: string;
@@ -30,18 +30,37 @@ export default function Publico() {
   const [sexo, setSexo] = useState<string>("all");
   const [cursos, setCursos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [config, setConfig] = useState<any>(null);
+  const [evalNombres, setEvalNombres] = useState<string[]>([]);
+  const [evaluacion, setEvaluacion] = useState<string>("all");
+  const [configCargada, setConfigCargada] = useState(false);
 
   const cursoParam = cursos.length === 0 ? "all" : cursos.join(",");
 
+  // Cargar config pública + lista de evaluaciones, fijando la evaluación por defecto
   useEffect(() => {
+    void Promise.all([
+      supabase.from("config_publica").select("*").maybeSingle(),
+      supabase.rpc("get_evaluaciones_nombres"),
+    ]).then(([{ data: cfg }, { data: nombres }]) => {
+      setConfig(cfg);
+      setEvalNombres(((nombres as string[]) ?? []));
+      if (cfg?.evaluacion_default_nombre) setEvaluacion(cfg.evaluacion_default_nombre);
+      setConfigCargada(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!configCargada) return;
     setLoading(true);
     supabase
-      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam })
+      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion })
       .then(({ data }) => {
         setStats(data);
         setLoading(false);
       });
-  }, [sexo, cursoParam]);
+  }, [sexo, cursoParam, evaluacion, configCargada]);
+
 
   const eurofitData = useMemo<StatItem[]>(() => {
     if (!stats) return [];
@@ -125,6 +144,32 @@ export default function Publico() {
           <p className="text-muted-foreground mt-1">{t("publico.summary", { count: total })}</p>
         </div>
 
+        {(config?.periodo_destacado_label || config?.periodo_destacado_fecha) && (
+          <Card className="border-primary/40 bg-gradient-primary/10">
+            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <CalendarRange className="h-5 w-5 text-primary" />
+                <div>
+                  {config.periodo_destacado_label && (
+                    <p className="font-display font-semibold text-foreground">{config.periodo_destacado_label}</p>
+                  )}
+                  {config.periodo_destacado_fecha && (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(config.periodo_destacado_fecha).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {config.evaluacion_default_nombre && (
+                <span className="text-xs px-3 py-1 rounded-full bg-primary text-primary-foreground">
+                  Evaluación: {config.evaluacion_default_nombre}
+                </span>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+
         <Card>
           <CardContent className="p-4 flex flex-wrap items-start gap-6">
             <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
@@ -181,9 +226,25 @@ export default function Publico() {
                 )}
               </div>
             </div>
+            {evalNombres.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-xs">Evaluación</Label>
+                <select
+                  value={evaluacion}
+                  onChange={(e) => setEvaluacion(e.target.value)}
+                  className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  <option value="all">Todas (agregadas)</option>
+                  {evalNombres.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
         </Card>
+
 
         {total === 0 ? (
           <Card><CardContent className="p-12 text-center text-muted-foreground">{t("publico.noResults")}</CardContent></Card>

@@ -27,13 +27,17 @@ export default function Admin() {
   const [procs, setProcs] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
 
+  const [evalNombres, setEvalNombres] = useState<string[]>([]);
+
   useEffect(() => {
     void Promise.all([
       supabase.from("config_publica").select("*").maybeSingle().then(({ data }) => setConfig(data)),
       supabase.from("baremos").select("*").order("sexo").order("edad_min").order("nota").then(({ data }) => setBaremos(data ?? [])),
       supabase.from("procedimientos").select("*").order("bateria").order("prueba").then(({ data }) => setProcs(data ?? [])),
+      supabase.rpc("get_evaluaciones_nombres").then(({ data }) => setEvalNombres((data as string[]) ?? [])),
     ]);
   }, []);
+
 
   if (loading) return null;
   if (!isAdmin) return <Navigate to="/app" replace />;
@@ -47,10 +51,14 @@ export default function Admin() {
       mostrar_por_curso: config.mostrar_por_curso,
       mostrar_por_sexo: config.mostrar_por_sexo,
       idioma_default: config.idioma_default,
+      evaluacion_default_nombre: config.evaluacion_default_nombre || null,
+      periodo_destacado_label: config.periodo_destacado_label || null,
+      periodo_destacado_fecha: config.periodo_destacado_fecha || null,
     }).eq("id", config.id);
     if (error) toast({ variant: "destructive", title: error.message });
     else toast({ title: "Configuración guardada" });
   }
+
 
   async function guardarAutoresYPolitica() {
     if (!config) return;
@@ -256,7 +264,51 @@ export default function Admin() {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <div className="border-t pt-4 space-y-3">
+                    <h3 className="text-sm font-semibold">Evaluación destacada</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Filtra las estadísticas de la página pública para que solo agreguen los datos de la evaluación elegida (p. ej. "Final de curso").
+                      Si no eliges ninguna, se mostrarán todas las evaluaciones agregadas.
+                    </p>
+                    <div className="grid gap-3 md:grid-cols-3">
+                      <div className="space-y-1.5">
+                        <Label>Evaluación por defecto</Label>
+                        <Select
+                          value={config.evaluacion_default_nombre ?? "__all__"}
+                          onValueChange={(v) => setConfig({ ...config, evaluacion_default_nombre: v === "__all__" ? null : v })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Todas (agregadas)" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__all__">Todas (agregadas)</SelectItem>
+                            {evalNombres.map((n) => (
+                              <SelectItem key={n} value={n}>{n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Etiqueta del periodo destacado</Label>
+                        <Input
+                          value={config.periodo_destacado_label ?? ""}
+                          onChange={(e) => setConfig({ ...config, periodo_destacado_label: e.target.value })}
+                          placeholder='Ej: "Curso 2025-26 · Evaluación final"'
+                          maxLength={120}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Fecha destacada</Label>
+                        <Input
+                          type="date"
+                          value={config.periodo_destacado_fecha ?? ""}
+                          onChange={(e) => setConfig({ ...config, periodo_destacado_fecha: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <Button onClick={guardarConfig}><Save className="h-4 w-4 mr-1.5" /> Guardar</Button>
+
                 </>
               )}
             </CardContent>
