@@ -574,3 +574,86 @@ function NotaGlobalCard({ titulo, nota, colorVar }: { titulo: string; nota: any;
     </Card>
   );
 }
+
+function ComparativaNotasCard({ notas }: { notas: { por_curso: any[]; por_sexo: any[] } | null }) {
+  const cursoOrder = ["1ESO", "2ESO", "3ESO", "4ESO"];
+  const cursoLabel: Record<string, string> = {
+    "1ESO": "1º ESO", "2ESO": "2º ESO", "3ESO": "3º ESO", "4ESO": "4º ESO",
+  };
+  const sexoLabel: Record<string, string> = { M: "Masculino", F: "Femenino" };
+
+  const dataCurso = (notas?.por_curso ?? [])
+    .slice()
+    .sort((a, b) => cursoOrder.indexOf(a.curso) - cursoOrder.indexOf(b.curso))
+    .map((r) => ({
+      label: cursoLabel[r.curso] ?? r.curso,
+      Eurofit: r.eurofit != null ? Number(r.eurofit) : null,
+      CFS: r.cfs != null ? Number(r.cfs) : null,
+      diff: r.eurofit != null && r.cfs != null ? Number((Number(r.eurofit) - Number(r.cfs)).toFixed(2)) : null,
+    }));
+
+  const dataSexo = (notas?.por_sexo ?? []).map((r) => ({
+    label: sexoLabel[r.sexo] ?? r.sexo,
+    Eurofit: r.eurofit != null ? Number(r.eurofit) : null,
+    CFS: r.cfs != null ? Number(r.cfs) : null,
+    diff: r.eurofit != null && r.cfs != null ? Number((Number(r.eurofit) - Number(r.cfs)).toFixed(2)) : null,
+  }));
+
+  const sinDatos = dataCurso.length === 0 && dataSexo.length === 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-display text-base">Comparativa de notas por batería</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Nota media (1-10) de Eurofit y CFS, y diferencia entre ambas (Eurofit − CFS) por curso y sexo.
+        </p>
+      </CardHeader>
+      <CardContent>
+        {sinDatos ? (
+          <p className="text-sm text-muted-foreground text-center py-8">Sin datos suficientes.</p>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ComparativaChart titulo="Por curso académico" data={dataCurso} />
+            <ComparativaChart titulo="Por sexo" data={dataSexo} />
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ComparativaChart({ titulo, data }: { titulo: string; data: any[] }) {
+  if (data.length === 0) {
+    return (
+      <div>
+        <h4 className="text-sm font-medium mb-2">{titulo}</h4>
+        <p className="text-xs text-muted-foreground py-8 text-center">Sin datos.</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <h4 className="text-sm font-medium mb-2">{titulo}</h4>
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+          <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
+          <Tooltip
+            contentStyle={{
+              background: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: 8,
+              fontSize: 12,
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Bar dataKey="Eurofit" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="CFS" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="diff" name="Diferencia (Eurofit − CFS)" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
