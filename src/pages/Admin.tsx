@@ -27,13 +27,17 @@ export default function Admin() {
   const [procs, setProcs] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
 
+  const [evalNombres, setEvalNombres] = useState<string[]>([]);
+
   useEffect(() => {
     void Promise.all([
       supabase.from("config_publica").select("*").maybeSingle().then(({ data }) => setConfig(data)),
       supabase.from("baremos").select("*").order("sexo").order("edad_min").order("nota").then(({ data }) => setBaremos(data ?? [])),
       supabase.from("procedimientos").select("*").order("bateria").order("prueba").then(({ data }) => setProcs(data ?? [])),
+      supabase.rpc("get_evaluaciones_nombres").then(({ data }) => setEvalNombres((data as string[]) ?? [])),
     ]);
   }, []);
+
 
   if (loading) return null;
   if (!isAdmin) return <Navigate to="/app" replace />;
