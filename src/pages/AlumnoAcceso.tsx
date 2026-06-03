@@ -22,8 +22,14 @@ export default function AlumnoAcceso() {
   const [codigo, setCodigo] = useState(codigoParam ?? "");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
+  const [evalIdx, setEvalIdx] = useState(0);
   const [notas, setNotas] = useState<Record<string, number | null>>({});
   const [procedimientos, setProcedimientos] = useState<any[]>([]);
+
+  const evaluaciones: Array<{ id: string; nombre: string; fecha: string; eurofit: any; cfs: any }> = data?.evaluaciones ?? [];
+  const evActual = evaluaciones[evalIdx];
+  const eurofit = evActual?.eurofit ?? null;
+  const cfs = evActual?.cfs ?? null;
 
   async function handleSubmit(e?: React.FormEvent) {
     e?.preventDefault();
@@ -40,9 +46,9 @@ export default function AlumnoAcceso() {
         return;
       }
       const r = result as any;
-      // Asegurar codigo_acceso para el PDF
       r.alumno.codigo_acceso = codigo.trim().toUpperCase();
       setData(r);
+      setEvalIdx(0);
       const { data: procs } = await supabase.from("procedimientos").select("*");
       setProcedimientos(procs ?? []);
     } catch (err: any) {
@@ -52,13 +58,13 @@ export default function AlumnoAcceso() {
     }
   }
 
-  // Recalcular notas
+  // Recalcular notas para la evaluación seleccionada
   useEffect(() => {
-    if (!data?.alumno) return;
+    if (!data?.alumno || !evActual) { setNotas({}); return; }
     const edad = calcularEdad(data.alumno.fecha_nacimiento);
     const todas = [...PRUEBAS_EUROFIT, ...PRUEBAS_CFS];
     Promise.all(todas.map(async (p) => {
-      const reg = p.bateria === "eurofit" ? data.eurofit : data.cfs;
+      const reg = p.bateria === "eurofit" ? eurofit : cfs;
       if (!reg) return [p.prueba, null] as const;
       const v = valorParaBaremo(p, reg);
       if (v == null) return [p.prueba, null] as const;
@@ -67,7 +73,7 @@ export default function AlumnoAcceso() {
       });
       return [p.prueba, n as number | null] as const;
     })).then((res) => setNotas(Object.fromEntries(res)));
-  }, [data]);
+  }, [data, evActual, eurofit, cfs]);
 
   async function exportar() {
     const notasEurofit: Record<string, number | null> = {};
@@ -75,7 +81,7 @@ export default function AlumnoAcceso() {
     PRUEBAS_EUROFIT.forEach((p) => { notasEurofit[p.prueba] = notas[p.prueba] ?? null; });
     PRUEBAS_CFS.forEach((p) => { notasCfs[p.prueba] = notas[p.prueba] ?? null; });
     await generarInformePDF({
-      alumno: data.alumno, eurofit: data.eurofit, cfs: data.cfs,
+      alumno: data.alumno, eurofit, cfs,
       notasEurofit, notasCfs, procedimientos, radarSelector: "#alumno-radar",
     });
   }
@@ -88,6 +94,7 @@ export default function AlumnoAcceso() {
     { cap: "Core", v: notas.abdominales_60 ?? notas.biering_sorensen ?? 0 },
     { cap: "Resistencia", v: notas.cooper ?? notas.rockport ?? 0 },
   ] : [];
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-soft">
