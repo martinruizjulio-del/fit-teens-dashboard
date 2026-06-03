@@ -155,12 +155,37 @@ export default function AlumnoAcceso() {
               </CardContent>
             </Card>
 
-            {data.eurofit && (
-              <TablaResultados titulo="Batería Eurofit" pruebas={PRUEBAS_EUROFIT} registro={data.eurofit} notas={notas} />
+            {evaluaciones.length === 0 ? (
+              <Card><CardContent className="p-6 text-center text-muted-foreground">Aún no tienes pruebas registradas.</CardContent></Card>
+            ) : (
+              <>
+                {evaluaciones.length > 1 && (
+                  <Card className="bg-muted/30">
+                    <CardContent className="p-3 flex flex-wrap items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Evaluación:</span>
+                      {evaluaciones.map((ev, i) => (
+                        <button
+                          key={ev.id}
+                          onClick={() => setEvalIdx(i)}
+                          className={`text-xs px-3 py-1 rounded-full border transition-smooth ${
+                            i === evalIdx ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted"
+                          }`}
+                        >
+                          {ev.nombre} · {ev.fecha}
+                        </button>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+                {eurofit && (
+                  <TablaResultados titulo="Batería Eurofit" pruebas={PRUEBAS_EUROFIT} registro={eurofit} notas={notas} />
+                )}
+                {cfs && (
+                  <TablaResultados titulo="Batería CFS" pruebas={PRUEBAS_CFS} registro={cfs} notas={notas} />
+                )}
+              </>
             )}
-            {data.cfs && (
-              <TablaResultados titulo="Batería CFS" pruebas={PRUEBAS_CFS} registro={data.cfs} notas={notas} />
-            )}
+
 
             <Card id="alumno-radar">
               <CardHeader><CardTitle className="text-base font-display">Mi perfil de notas</CardTitle></CardHeader>
