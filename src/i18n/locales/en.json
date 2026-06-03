@@ -103,7 +103,11 @@
     "filterSex": "Sex",
     "filterGrade": "Year",
     "all": "All",
-    "noResults": "No results for the selected filters."
+    "noResults": "No results for the selected filters.",
+    "noEvaluationsTitle": "No evaluations available yet",
+    "noEvaluationsDesc": "No evaluations have been registered on the platform yet. 'All (aggregated)' is being used as the default value.",
+    "defaultMissingTitle": "The featured evaluation '{{name}}' is not available",
+    "defaultMissingDesc": "'All (aggregated)' is being used as the default value. You can choose another evaluation in the filters."
   },
   "studentLogin": {
     "title": "Student access",

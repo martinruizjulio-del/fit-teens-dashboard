@@ -103,7 +103,11 @@
     "filterSex": "Sexe",
     "filterGrade": "Curs",
     "all": "Tots",
-    "noResults": "No hi ha resultats per als filtres seleccionats."
+    "noResults": "No hi ha resultats per als filtres seleccionats.",
+    "noEvaluationsTitle": "No hi ha avaluacions disponibles encara",
+    "noEvaluationsDesc": "Encara no s'han registrat avaluacions en la plataforma. S'està utilitzant 'Totes (agregades)' com a valor per defecte.",
+    "defaultMissingTitle": "L'avaluació destacada «{{name}}» no està disponible",
+    "defaultMissingDesc": "S'està utilitzant 'Totes (agregades)' com a valor per defecte. Pots triar una altra avaluació en els filtres."
   },
   "studentLogin": {
     "title": "Accés de l'alumne",
