@@ -264,7 +264,51 @@ export default function Admin() {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <div className="border-t pt-4 space-y-3">
+                    <h3 className="text-sm font-semibold">Evaluación destacada</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Filtra las estadísticas de la página pública para que solo agreguen los datos de la evaluación elegida (p. ej. "Final de curso").
+                      Si no eliges ninguna, se mostrarán todas las evaluaciones agregadas.
+                    </p>
+                    <div className="grid gap-3 md:grid-cols-3">
+                      <div className="space-y-1.5">
+                        <Label>Evaluación por defecto</Label>
+                        <Select
+                          value={config.evaluacion_default_nombre ?? "__all__"}
+                          onValueChange={(v) => setConfig({ ...config, evaluacion_default_nombre: v === "__all__" ? null : v })}
+                        >
+                          <SelectTrigger><SelectValue placeholder="Todas (agregadas)" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__all__">Todas (agregadas)</SelectItem>
+                            {evalNombres.map((n) => (
+                              <SelectItem key={n} value={n}>{n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Etiqueta del periodo destacado</Label>
+                        <Input
+                          value={config.periodo_destacado_label ?? ""}
+                          onChange={(e) => setConfig({ ...config, periodo_destacado_label: e.target.value })}
+                          placeholder='Ej: "Curso 2025-26 · Evaluación final"'
+                          maxLength={120}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Fecha destacada</Label>
+                        <Input
+                          type="date"
+                          value={config.periodo_destacado_fecha ?? ""}
+                          onChange={(e) => setConfig({ ...config, periodo_destacado_fecha: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <Button onClick={guardarConfig}><Save className="h-4 w-4 mr-1.5" /> Guardar</Button>
+
                 </>
               )}
             </CardContent>
