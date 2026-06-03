@@ -230,7 +230,8 @@
     "developedBy": "Aplicació desenvolupada per",
     "rights": "Tots els drets reservats",
     "statsTeachers": "{{count}} professors",
-    "statsStudents": "{{count}} alumnes"
+    "statsStudents": "{{count}} alumnes",
+    "statsVisits": "visites"
   },
   "centrosPublico": {
     "title": "Centres que utilitzen l'aplicació",

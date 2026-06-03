@@ -1,21 +1,36 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { ExternalLink, Users, GraduationCap } from "lucide-react";
+import { ExternalLink, Users, GraduationCap, Eye } from "lucide-react";
+
+type Stats = { profesores: number; alumnos: number; visitas: number };
 
 export function SiteFooter() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
   const [autores, setAutores] = useState<string>("Julio Martín-Ruiz");
-  const [stats, setStats] = useState<{ profesores: number; alumnos: number } | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
     void supabase.from("config_publica").select("autores").maybeSingle().then(({ data }) => {
       if (data?.autores) setAutores(data.autores);
     });
-    void supabase.rpc("get_landing_public_stats").then(({ data }) => {
-      if (data) setStats(data as { profesores: number; alumnos: number });
-    });
+
+    const loadStats = () =>
+      supabase.rpc("get_landing_public_stats").then(({ data }) => {
+        if (data) setStats(data as Stats);
+      });
+
+    // Registrar una visita por sesión y por ruta
+    const key = `visita_${window.location.pathname}`;
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
+      void supabase
+        .rpc("registrar_visita", { _ruta: window.location.pathname })
+        .then(() => loadStats());
+    } else {
+      void loadStats();
+    }
   }, []);
 
   return (
@@ -47,6 +62,15 @@ export function SiteFooter() {
               <div>
                 <p className="font-mono font-semibold text-foreground leading-tight">{stats.alumnos}</p>
                 <p className="text-xs text-muted-foreground">{t("footer.statsStudents", { count: stats.alumnos }).replace(/^\d+\s*/, "")}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex p-2 rounded-md bg-accent/20 text-foreground">
+                <Eye className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-mono font-semibold text-foreground leading-tight">{stats.visitas}</p>
+                <p className="text-xs text-muted-foreground">{t("footer.statsVisits", { defaultValue: "visitas" })}</p>
               </div>
             </div>
           </div>

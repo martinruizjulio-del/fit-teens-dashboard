@@ -649,6 +649,24 @@ export type Database = {
         }
         Relationships: []
       }
+      visitas: {
+        Row: {
+          created_at: string
+          id: string
+          ruta: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ruta?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ruta?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -689,6 +707,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      registrar_visita: { Args: { _ruta?: string }; Returns: undefined }
       seed_demo_alumnos: { Args: never; Returns: string }
     }
     Enums: {
