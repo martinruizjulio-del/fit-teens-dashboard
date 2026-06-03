@@ -213,10 +213,26 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
         okAl++;
       }
 
+      // Crear (o reutilizar) una evaluación para asociar las pruebas importadas
+      let evaluacionId: string | null = null;
+      const hayPruebas = !!wb.Sheets["Eurofit"] || !!wb.Sheets["CFS"];
+      if (hayPruebas) {
+        const { data: evNew, error: evErr } = await supabase
+          .from("evaluaciones")
+          .insert({ grupo_id: grupoId, nombre: `Importación ${new Date().toLocaleDateString()}` })
+          .select("id")
+          .single();
+        if (evErr || !evNew) {
+          errores.push(`Evaluación · ${evErr?.message ?? "no se pudo crear"}`);
+        } else {
+          evaluacionId = evNew.id;
+        }
+      }
+
       // Eurofit
       let okEu = 0;
       const sheetEu = wb.Sheets["Eurofit"];
-      if (sheetEu) {
+      if (sheetEu && evaluacionId) {
         const filasEu = XLSX.utils.sheet_to_json<any>(sheetEu, { defval: null });
         for (const row of filasEu) {
           const id_aula = parseInt0(row.id_aula);
@@ -228,6 +244,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
           }
           const { error } = await supabase.from("pruebas_eurofit").insert({
             alumno_id,
+            evaluacion_id: evaluacionId,
             wells_cm: parseNum(row.wells_cm),
             salto_vertical_cm: parseNum(row.salto_vertical_cm),
             abdominales_60: parseInt0(row.abdominales_60),
@@ -249,7 +266,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
       // CFS
       let okCfs = 0;
       const sheetCfs = wb.Sheets["CFS"];
-      if (sheetCfs) {
+      if (sheetCfs && evaluacionId) {
         const filasCfs = XLSX.utils.sheet_to_json<any>(sheetCfs, { defval: null });
         for (const row of filasCfs) {
           const id_aula = parseInt0(row.id_aula);
@@ -261,6 +278,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
           }
           const { error } = await supabase.from("pruebas_cfs").insert({
             alumno_id,
+            evaluacion_id: evaluacionId,
             thomas: parseInt0(row.thomas),
             biering_sorensen_seg: parseNum(row.biering_sorensen_seg),
             sj_cm: parseNum(row.sj_cm),

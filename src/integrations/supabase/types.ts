@@ -265,6 +265,39 @@ export type Database = {
         }
         Relationships: []
       }
+      evaluaciones: {
+        Row: {
+          anio_escolar: string | null
+          created_at: string
+          fecha: string
+          grupo_id: string
+          id: string
+          is_demo: boolean
+          nombre: string
+          updated_at: string
+        }
+        Insert: {
+          anio_escolar?: string | null
+          created_at?: string
+          fecha?: string
+          grupo_id: string
+          id?: string
+          is_demo?: boolean
+          nombre: string
+          updated_at?: string
+        }
+        Update: {
+          anio_escolar?: string | null
+          created_at?: string
+          fecha?: string
+          grupo_id?: string
+          id?: string
+          is_demo?: boolean
+          nombre?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       grupos: {
         Row: {
           anio_escolar: string
@@ -384,6 +417,7 @@ export type Database = {
           biering_sorensen_seg: number | null
           cmj_cm: number | null
           created_at: string
+          evaluacion_id: string
           fecha: string
           id: string
           indice_elastico: number | null
@@ -410,6 +444,7 @@ export type Database = {
           biering_sorensen_seg?: number | null
           cmj_cm?: number | null
           created_at?: string
+          evaluacion_id: string
           fecha?: string
           id?: string
           indice_elastico?: number | null
@@ -436,6 +471,7 @@ export type Database = {
           biering_sorensen_seg?: number | null
           cmj_cm?: number | null
           created_at?: string
+          evaluacion_id?: string
           fecha?: string
           id?: string
           indice_elastico?: number | null
@@ -461,7 +497,7 @@ export type Database = {
           {
             foreignKeyName: "pruebas_cfs_alumno_id_fkey"
             columns: ["alumno_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "alumnos"
             referencedColumns: ["id"]
           },
@@ -473,6 +509,7 @@ export type Database = {
           alumno_id: string
           cooper_m: number | null
           created_at: string
+          evaluacion_id: string
           fecha: string
           id: string
           is_demo: boolean
@@ -493,6 +530,7 @@ export type Database = {
           alumno_id: string
           cooper_m?: number | null
           created_at?: string
+          evaluacion_id: string
           fecha?: string
           id?: string
           is_demo?: boolean
@@ -513,6 +551,7 @@ export type Database = {
           alumno_id?: string
           cooper_m?: number | null
           created_at?: string
+          evaluacion_id?: string
           fecha?: string
           id?: string
           is_demo?: boolean
@@ -532,7 +571,7 @@ export type Database = {
           {
             foreignKeyName: "pruebas_eurofit_alumno_id_fkey"
             columns: ["alumno_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "alumnos"
             referencedColumns: ["id"]
           },

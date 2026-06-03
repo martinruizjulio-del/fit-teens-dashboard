@@ -10,8 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { OmniRes } from "@/components/OmniRes";
+import { EvaluacionSelector } from "@/components/EvaluacionSelector";
 import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, CATEGORIAS, pruebasDePersonalizada, isBateriaPersonalizadaCompleta, calcularEdad, valorParaBaremo, type PruebaDef, type BateriaPersonalizada } from "@/lib/pruebas";
 import { ArrowLeft, BookOpen, Save, FileDown, Sliders } from "lucide-react";
+
 import { generarInformePDF } from "@/lib/pdf";
 import imgWells from "@/assets/procedimientos/wells.png";
 import imgThomas from "@/assets/procedimientos/thomas.png";
@@ -48,27 +50,38 @@ export default function Pruebas() {
   const { toast } = useToast();
   const [alumno, setAlumno] = useState<any>(null);
   const [bateriaPersonalizada, setBateriaPersonalizada] = useState<BateriaPersonalizada | null>(null);
+  const [evaluacionId, setEvaluacionId] = useState<string | null>(null);
   const [eurofit, setEurofit] = useState<any>({});
   const [cfs, setCfs] = useState<any>({});
   const [notas, setNotas] = useState<Record<string, number | null>>({});
   const [procedimientos, setProcedimientos] = useState<any[]>([]);
 
-  const cargar = useCallback(async () => {
+  // Carga alumno + procedimientos una sola vez
+  const cargarAlumno = useCallback(async () => {
     if (!alumnoId) return;
-    const [{ data: a }, { data: e }, { data: c }, { data: p }] = await Promise.all([
+    const [{ data: a }, { data: p }] = await Promise.all([
       supabase.from("alumnos").select("*, grupo:grupos(bateria_personalizada)").eq("id", alumnoId).maybeSingle(),
-      supabase.from("pruebas_eurofit").select("*").eq("alumno_id", alumnoId).maybeSingle(),
-      supabase.from("pruebas_cfs").select("*").eq("alumno_id", alumnoId).maybeSingle(),
       supabase.from("procedimientos").select("*"),
     ]);
     setAlumno(a);
     setBateriaPersonalizada(((a as any)?.grupo?.bateria_personalizada ?? null) as BateriaPersonalizada | null);
-    setEurofit(e ?? {});
-    setCfs(c ?? {});
     setProcedimientos(p ?? []);
   }, [alumnoId]);
 
-  useEffect(() => { void cargar(); }, [cargar]);
+  useEffect(() => { void cargarAlumno(); }, [cargarAlumno]);
+
+  // Cargar pruebas de la evaluación seleccionada
+  const cargarPruebas = useCallback(async () => {
+    if (!alumnoId || !evaluacionId) { setEurofit({}); setCfs({}); return; }
+    const [{ data: e }, { data: c }] = await Promise.all([
+      supabase.from("pruebas_eurofit").select("*").eq("alumno_id", alumnoId).eq("evaluacion_id", evaluacionId).maybeSingle(),
+      supabase.from("pruebas_cfs").select("*").eq("alumno_id", alumnoId).eq("evaluacion_id", evaluacionId).maybeSingle(),
+    ]);
+    setEurofit(e ?? {});
+    setCfs(c ?? {});
+  }, [alumnoId, evaluacionId]);
+
+  useEffect(() => { void cargarPruebas(); }, [cargarPruebas]);
 
   // Recalcular notas cuando cambien valores
   useEffect(() => {
@@ -88,38 +101,41 @@ export default function Pruebas() {
 
   async function guardar(bateria: "eurofit" | "cfs") {
     if (!alumnoId) return;
+    if (!evaluacionId) { toast({ variant: "destructive", title: "Selecciona o crea una evaluación primero" }); return; }
     const tabla = bateria === "eurofit" ? "pruebas_eurofit" : "pruebas_cfs";
     const data = bateria === "eurofit" ? eurofit : cfs;
-    const payload = { ...data, alumno_id: alumnoId, fecha: data.fecha ?? new Date().toISOString().split("T")[0] };
+    const payload = { ...data, alumno_id: alumnoId, evaluacion_id: evaluacionId, fecha: data.fecha ?? new Date().toISOString().split("T")[0] };
     delete payload.id;
     delete payload.created_at;
     delete payload.updated_at;
 
-    const { error } = await supabase.from(tabla).upsert(payload, { onConflict: "alumno_id" });
+    const { error } = await supabase.from(tabla).upsert(payload, { onConflict: "alumno_id,evaluacion_id" });
     if (error) { toast({ variant: "destructive", title: error.message }); return; }
     toast({ title: `Batería ${bateria.toUpperCase()} guardada` });
-    void cargar();
+    void cargarPruebas();
   }
 
   async function guardarPersonalizada() {
     if (!alumnoId || !bateriaPersonalizada) return;
+    if (!evaluacionId) { toast({ variant: "destructive", title: "Selecciona o crea una evaluación primero" }); return; }
     const tablas = new Set(pruebasDePersonalizada(bateriaPersonalizada).map((p) => p.bateria));
     const results = await Promise.all(
       Array.from(tablas).map((b) => {
         const tabla = b === "eurofit" ? "pruebas_eurofit" : "pruebas_cfs";
         const data = b === "eurofit" ? eurofit : cfs;
-        const payload = { ...data, alumno_id: alumnoId, fecha: data.fecha ?? new Date().toISOString().split("T")[0] };
+        const payload = { ...data, alumno_id: alumnoId, evaluacion_id: evaluacionId, fecha: data.fecha ?? new Date().toISOString().split("T")[0] };
         delete payload.id;
         delete payload.created_at;
         delete payload.updated_at;
-        return supabase.from(tabla).upsert(payload, { onConflict: "alumno_id" });
+        return supabase.from(tabla).upsert(payload, { onConflict: "alumno_id,evaluacion_id" });
       }),
     );
     const firstError = results.find((r) => r.error)?.error;
     if (firstError) { toast({ variant: "destructive", title: firstError.message }); return; }
     toast({ title: "Batería personalizada guardada" });
-    void cargar();
+    void cargarPruebas();
   }
+
 
   async function exportarPDF() {
     if (!alumno) return;
@@ -160,6 +176,23 @@ export default function Pruebas() {
           <FileDown className="h-4 w-4 mr-1.5" /> Descargar PDF
         </Button>
       </div>
+
+      <Card className="bg-muted/30">
+        <CardContent className="p-3">
+          <EvaluacionSelector
+            grupoId={alumno.grupo_id}
+            value={evaluacionId}
+            onChange={setEvaluacionId}
+          />
+          {!evaluacionId && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Crea una evaluación para empezar a registrar pruebas (puedes tener varias a lo largo del curso).
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+
 
       <Tabs defaultValue={bpActiva ? "personalizada" : "eurofit"}>
         <TabsList>
