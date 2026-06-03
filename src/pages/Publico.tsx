@@ -304,6 +304,10 @@ export default function Publico() {
               <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} colorVar="--primary" />
             </div>
 
+            <ComparativaNotasCard notas={notasGrupos} />
+
+
+
             <div className="grid gap-4 lg:grid-cols-2">
               <NormalizedBarsCard
                 title="Medias batería CFS"
