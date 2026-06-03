@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { BarChart3, Filter, CalendarRange } from "lucide-react";
+import { BarChart3, Filter, CalendarRange, AlertTriangle } from "lucide-react";
 
 type StatItem = {
   prueba: string;
