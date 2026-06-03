@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Condició Física Adolescents",
-    "short": "CFA",
+    "name": "Bateria Condició Física Secundària",
+    "short": "BCFS",
     "tagline": "Avaluació de la condició física a Educació Secundària"
   },
   "nav": {
@@ -34,7 +34,7 @@
     "feature4Title": "Estadístiques anònimes",
     "feature4Desc": "Compara el teu centre i el teu grup amb resultats agregats de tota la comunitat educativa.",
     "accessTitle": "Accedeix al sistema",
-    "accessSubtitle": "Tres formes d'entrar segons el teu rol. Professors i administradors comparteixen el mateix accés: el rol s'assigna automàticament segons el correu.",
+    "accessSubtitle": "Dues formes d'entrar segons el teu rol.",
     "accessTeacherTitle": "Soc professor/a",
     "accessTeacherDesc": "Crea el teu compte o inicia sessió amb el teu correu professional. Tindràs el teu propi tauler per gestionar centres, grups, alumnes i proves.",
     "accessTeacherCta": "Entrar / Crear compte",
@@ -44,7 +44,8 @@
     "accessAdminBadge": "Només personal autoritzat",
     "accessAdminTitle": "Soc administrador",
     "accessAdminDesc": "Inicia sessió a /auth amb el correu julio.martin@ucv.es. El rol d'administració s'assigna automàticament. Una vegada dins, accedeix al tauler des de la barra lateral o anant a /admin.",
-    "accessAdminCta": "Anar a l'accés"
+    "accessAdminCta": "Anar a l'accés",
+    "adminAccess": "Accés administració"
   },
   "auth": {
     "title": "Accés professorat",
@@ -72,7 +73,7 @@
     "consent": {
       "privacyLabel": "He llegit i accepte la",
       "privacyLink": "política de privacitat",
-      "implantacionLabel": "Sol·licite la implantació del meu centre en CFA.",
+      "implantacionLabel": "Sol·licite la implantació del meu centre en la plataforma.",
       "implantacionHelp": "És només una formalitat perquè les dades agregades (mai individuals ni identificables) puguen formar part de les estadístiques de la comunitat. Tota la informació personal queda oculta.",
       "implantacionCta": "Omplir sol·licitud d'implantació",
       "errorPrivacy": "Has d'acceptar la política de privacitat.",
@@ -81,7 +82,7 @@
   },
   "privacy": {
     "title": "Política de privacitat",
-    "subtitle": "Informació sobre el tractament de les dades en CFA."
+    "subtitle": "Informació sobre el tractament de les dades en la plataforma."
   },
   "implantacion": {
     "title": "Sol·licitud d'implantació de centre",
@@ -144,7 +145,7 @@
     "updatedOk": "Centre actualitzat",
     "noCentros": "Encara no hi ha centres registrats",
     "anonimoLabel": "Mostrar el meu centre de manera anònima",
-    "anonimoHelp": "Si l'actives, en les estadístiques públiques el teu centre apareixerà només amb un codi (p. ex. CFA-A1B2C). El nom real només serà visible per a tu.",
+    "anonimoHelp": "Si l'actives, en les estadístiques públiques el teu centre apareixerà només amb un codi (p. ex. BCFS-A1B2C). El nom real només serà visible per a tu.",
     "mostrarPublicoLabel": "Aparéixer en les estadístiques públiques",
     "mostrarPublicoHelp": "Permet que les dades agregades (sempre anònimes a nivell d'alumne) del teu centre contribuïsquen a les estadístiques comparatives de la comunitat.",
     "publicAs": "Públic com"
@@ -158,7 +159,8 @@
     "anio": "Any escolar",
     "students": "alumnes",
     "createdOk": "Grup creat",
-    "noGrupos": "Encara no tens grups. Crea el primer per començar."
+    "noGrupos": "Encara no tens grups. Crea el primer per començar.",
+    "exportExcel": "Exportar resultats (Excel)"
   },
   "dashboard": {
     "title": "Tauler del professor",
@@ -171,7 +173,7 @@
   "manual": {
     "button": "Manual d'ús",
     "title": "Manual d'ús de l'aplicació",
-    "subtitle": "Guia ràpida per traure el màxim partit a CFA a les teues classes.",
+    "subtitle": "Guia ràpida per traure el màxim partit a la plataforma a les teues classes.",
     "footnote": "Per a dubtes addicionals, contacta amb l'administrador o consulta la documentació completa al panell d'administració.",
     "sections": [
       {
@@ -187,6 +189,7 @@
         "items": [
           "Des de 'Grups' afig les teues classes (curs, lletra i any escolar).",
           "Dins de cada grup, dóna d'alta el teu alumnat: nom, cognoms, data de naixement, sexe i nº d'aula.",
+          "També pots importar el llistat des d'un Excel: només cal nom i edat per alumne; la resta de camps són opcionals i es poden completar després.",
           "Cada alumne rep automàticament un codi personal per consultar els seus resultats sense necessitat de compte."
         ]
       },
@@ -204,6 +207,7 @@
         "title": "Informes i estadístiques",
         "items": [
           "Genera informes PDF individuals per alumne amb totes les seues proves, notes i gràfiques d'evolució.",
+          "Descarrega un Excel amb els resultats complets del grup, organitzats per prova i bateria.",
           "Consulta el dashboard del grup per veure mitjanes, dispersió i comparativa amb la comunitat.",
           "L'alumnat pot accedir amb el seu codi personal des d''Accés alumnes' per veure els seus resultats de forma privada."
         ]
@@ -220,7 +224,9 @@
   },
   "footer": {
     "developedBy": "Aplicació desenvolupada per",
-    "rights": "Tots els drets reservats"
+    "rights": "Tots els drets reservats",
+    "statsTeachers": "{{count}} professors",
+    "statsStudents": "{{count}} alumnes"
   },
   "centrosPublico": {
     "title": "Centres que utilitzen l'aplicació",

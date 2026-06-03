@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Adolescent Physical Fitness",
-    "short": "APF",
+    "name": "Secondary Physical Fitness Battery",
+    "short": "SPFB",
     "tagline": "Physical fitness assessment in Secondary Education"
   },
   "nav": {
@@ -34,7 +34,7 @@
     "feature4Title": "Anonymous analytics",
     "feature4Desc": "Compare your school and group with aggregated results from the whole community.",
     "accessTitle": "Sign in to the system",
-    "accessSubtitle": "Three ways to access depending on your role. Teachers and administrators share the same login: the role is assigned automatically by email.",
+    "accessSubtitle": "Two ways to access depending on your role.",
     "accessTeacherTitle": "I'm a teacher",
     "accessTeacherDesc": "Create an account or sign in with your professional email. You'll get your own dashboard to manage schools, groups, students and tests.",
     "accessTeacherCta": "Sign in / Sign up",
@@ -44,7 +44,8 @@
     "accessAdminBadge": "Authorised staff only",
     "accessAdminTitle": "I'm an administrator",
     "accessAdminDesc": "Sign in at /auth with the email julio.martin@ucv.es. The admin role is assigned automatically. Once inside, open the panel from the sidebar or go to /admin.",
-    "accessAdminCta": "Go to login"
+    "accessAdminCta": "Go to login",
+    "adminAccess": "Admin access"
   },
   "auth": {
     "title": "Teacher login",
@@ -72,7 +73,7 @@
     "consent": {
       "privacyLabel": "I have read and accept the",
       "privacyLink": "privacy policy",
-      "implantacionLabel": "I request that my school be onboarded into APF.",
+      "implantacionLabel": "I request that my school be onboarded into the platform.",
       "implantacionHelp": "This is just a formality so that aggregated data (never individual or identifiable) can become part of community statistics. All personal information stays hidden.",
       "implantacionCta": "Fill in the school request",
       "errorPrivacy": "You must accept the privacy policy.",
@@ -81,7 +82,7 @@
   },
   "privacy": {
     "title": "Privacy policy",
-    "subtitle": "Information on how APF processes your data."
+    "subtitle": "Information on how the platform processes your data."
   },
   "implantacion": {
     "title": "School onboarding request",
@@ -144,7 +145,7 @@
     "updatedOk": "School updated",
     "noCentros": "No schools registered yet",
     "anonimoLabel": "Show my school anonymously",
-    "anonimoHelp": "When enabled, your school appears in public stats only with an opaque code (e.g. CFA-A1B2C). The real name remains visible only to you.",
+    "anonimoHelp": "When enabled, your school appears in public stats only with an opaque code (e.g. SPFB-A1B2C). The real name remains visible only to you.",
     "mostrarPublicoLabel": "Appear in public statistics",
     "mostrarPublicoHelp": "Allow your school's aggregated data (always anonymised at student level) to contribute to community comparisons.",
     "publicAs": "Public as"
@@ -158,7 +159,8 @@
     "anio": "School year",
     "students": "students",
     "createdOk": "Group created",
-    "noGrupos": "No groups yet. Create your first one to start."
+    "noGrupos": "No groups yet. Create your first one to start.",
+    "exportExcel": "Export results (Excel)"
   },
   "dashboard": {
     "title": "Teacher dashboard",
@@ -171,7 +173,7 @@
   "manual": {
     "button": "User manual",
     "title": "Application user manual",
-    "subtitle": "Quick guide to get the most out of APF in your PE classes.",
+    "subtitle": "Quick guide to get the most out of the platform in your PE classes.",
     "footnote": "For further questions, contact the administrator or check the full documentation in the admin panel.",
     "sections": [
       {
@@ -187,6 +189,7 @@
         "items": [
           "From 'Groups', add your classes (year, letter and academic year).",
           "Inside each group, add your students: first name, surnames, date of birth, sex and classroom number.",
+          "You can also import the list from an Excel file: only name and age per student are required; the other fields are optional and can be filled in later.",
           "Every student automatically receives a personal code to check their results without needing an account."
         ]
       },
@@ -204,6 +207,7 @@
         "title": "Reports and statistics",
         "items": [
           "Generate individual PDF reports per student with all their tests, scores and progress charts.",
+          "Download an Excel file with the full group results, organised by test and battery.",
           "Open the group dashboard to see averages, dispersion and comparison against the whole community.",
           "Students can sign in with their personal code from 'Student access' to privately view their results."
         ]
@@ -220,7 +224,9 @@
   },
   "footer": {
     "developedBy": "Application developed by",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "statsTeachers": "{{count}} teachers",
+    "statsStudents": "{{count}} students"
   },
   "centrosPublico": {
     "title": "Schools using the application",
