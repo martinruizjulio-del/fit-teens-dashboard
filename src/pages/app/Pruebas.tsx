@@ -177,6 +177,23 @@ export default function Pruebas() {
         </Button>
       </div>
 
+      <Card className="bg-muted/30">
+        <CardContent className="p-3">
+          <EvaluacionSelector
+            grupoId={alumno.grupo_id}
+            value={evaluacionId}
+            onChange={setEvaluacionId}
+          />
+          {!evaluacionId && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Crea una evaluación para empezar a registrar pruebas (puedes tener varias a lo largo del curso).
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+
+
       <Tabs defaultValue={bpActiva ? "personalizada" : "eurofit"}>
         <TabsList>
           <TabsTrigger value="eurofit">Batería Eurofit</TabsTrigger>
