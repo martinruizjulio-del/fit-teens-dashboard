@@ -226,9 +226,25 @@ export default function Publico() {
                 )}
               </div>
             </div>
+            {evalNombres.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-xs">Evaluación</Label>
+                <select
+                  value={evaluacion}
+                  onChange={(e) => setEvaluacion(e.target.value)}
+                  className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  <option value="all">Todas (agregadas)</option>
+                  {evalNombres.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {loading && <span className="text-xs text-muted-foreground self-center">{t("common.loading")}</span>}
           </CardContent>
         </Card>
+
 
         {total === 0 ? (
           <Card><CardContent className="p-12 text-center text-muted-foreground">{t("publico.noResults")}</CardContent></Card>
