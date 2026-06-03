@@ -21,16 +21,26 @@ export function SiteFooter() {
         if (data) setStats(data as Stats);
       });
 
-    // Registrar una visita por sesión y por ruta
-    const key = `visita_${window.location.pathname}`;
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, "1");
-      void supabase
-        .rpc("registrar_visita", { _ruta: window.location.pathname })
-        .then(() => loadStats());
+    // Registrar una visita: una vez por usuario (cookie / localStorage) y una vez por sesión y ruta
+    const ruta = window.location.pathname;
+    const cookieKey = `visita_user_${ruta}`;
+    const sessionKey = `visita_${ruta}`;
+
+    const hasCookie = document.cookie.split("; ").some((c) => c.startsWith(`${cookieKey}=`));
+    const hasLocal = localStorage.getItem(cookieKey) === "1";
+    const hasSession = sessionStorage.getItem(sessionKey) === "1";
+
+    if (!hasCookie && !hasLocal && !hasSession) {
+      // Cookie persistente (1 año) + respaldo en localStorage
+      const oneYear = 60 * 60 * 24 * 365;
+      document.cookie = `${cookieKey}=1; max-age=${oneYear}; path=/; SameSite=Lax`;
+      localStorage.setItem(cookieKey, "1");
+      sessionStorage.setItem(sessionKey, "1");
+      void supabase.rpc("registrar_visita", { _ruta: ruta }).then(() => loadStats());
     } else {
       void loadStats();
     }
+
   }, []);
 
   return (
