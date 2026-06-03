@@ -189,6 +189,33 @@ export default function Publico() {
           </Card>
         )}
 
+        {(sinEvaluaciones || defaultInvalido) && (
+          <Card className="border-amber-500/40 bg-amber-50 dark:bg-amber-950/20">
+            <CardContent className="p-4 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-sm">
+                {sinEvaluaciones ? (
+                  <>
+                    <p className="font-medium text-foreground">No hay evaluaciones disponibles todavía</p>
+                    <p className="text-muted-foreground">
+                      Aún no se han registrado evaluaciones en la plataforma. Se muestran los datos agregados disponibles.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-medium text-foreground">
+                      La evaluación destacada «{config?.evaluacion_default_nombre}» no está disponible
+                    </p>
+                    <p className="text-muted-foreground">
+                      Mostrando datos agregados de todas las evaluaciones. Puedes elegir otra evaluación en los filtros.
+                    </p>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
 
         <Card>
           <CardContent className="p-4 flex flex-wrap items-start gap-6">
