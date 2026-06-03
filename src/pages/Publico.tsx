@@ -30,18 +30,37 @@ export default function Publico() {
   const [sexo, setSexo] = useState<string>("all");
   const [cursos, setCursos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [config, setConfig] = useState<any>(null);
+  const [evalNombres, setEvalNombres] = useState<string[]>([]);
+  const [evaluacion, setEvaluacion] = useState<string>("all");
+  const [configCargada, setConfigCargada] = useState(false);
 
   const cursoParam = cursos.length === 0 ? "all" : cursos.join(",");
 
+  // Cargar config pública + lista de evaluaciones, fijando la evaluación por defecto
   useEffect(() => {
+    void Promise.all([
+      supabase.from("config_publica").select("*").maybeSingle(),
+      supabase.rpc("get_evaluaciones_nombres"),
+    ]).then(([{ data: cfg }, { data: nombres }]) => {
+      setConfig(cfg);
+      setEvalNombres(((nombres as string[]) ?? []));
+      if (cfg?.evaluacion_default_nombre) setEvaluacion(cfg.evaluacion_default_nombre);
+      setConfigCargada(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!configCargada) return;
     setLoading(true);
     supabase
-      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam })
+      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion })
       .then(({ data }) => {
         setStats(data);
         setLoading(false);
       });
-  }, [sexo, cursoParam]);
+  }, [sexo, cursoParam, evaluacion, configCargada]);
+
 
   const eurofitData = useMemo<StatItem[]>(() => {
     if (!stats) return [];
