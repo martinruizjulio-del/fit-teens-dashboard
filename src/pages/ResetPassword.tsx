@@ -61,7 +61,7 @@ export default function ResetPassword() {
       <header className="container flex items-center justify-between py-4">
         <Link to="/" className="flex items-center gap-2 text-primary-foreground">
           <Logo size={32} />
-          <span className="font-display font-bold">CFA</span>
+          <span className="font-display font-bold">CFS</span>
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center p-4">

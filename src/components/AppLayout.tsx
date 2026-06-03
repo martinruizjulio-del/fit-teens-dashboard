@@ -40,7 +40,7 @@ export function AppLayout() {
       <aside className="hidden md:flex w-64 flex-col bg-sidebar text-sidebar-foreground">
         <Link to="/app" className="flex items-center gap-2.5 px-6 py-5 border-b border-sidebar-border">
           <Logo size={32} />
-          <span className="font-display font-bold text-lg text-sidebar-foreground">CFA</span>
+          <span className="font-display font-bold text-lg text-sidebar-foreground">CFS</span>
         </Link>
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => (
@@ -94,7 +94,7 @@ export function AppLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="md:hidden flex items-center justify-between px-4 h-14 border-b bg-background">
           <Link to="/app" className="flex items-center gap-2 font-display font-bold text-primary">
-            <Logo size={28} /> CFA
+            <Logo size={28} /> CFS
           </Link>
           <div className="flex items-center gap-1">
             <LanguageSwitcher />

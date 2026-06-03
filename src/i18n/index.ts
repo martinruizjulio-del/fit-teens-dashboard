@@ -26,7 +26,7 @@ void i18n
     detection: {
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],
-      lookupLocalStorage: "cfa_lang",
+      lookupLocalStorage: "cfs_lang",
     },
   });
 
