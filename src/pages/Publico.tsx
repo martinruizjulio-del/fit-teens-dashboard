@@ -190,22 +190,22 @@ export default function Publico() {
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-2">
-              <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} colorVar="--primary" />
               <NotaGlobalCard titulo="Nota global CFS" nota={stats.nota_cfs} colorVar="--secondary" />
+              <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} colorVar="--primary" />
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <NormalizedBarsCard
-                title="Medias batería Eurofit"
-                description="Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real visible junto a cada barra."
-                data={eurofitData}
-                colorVar="--primary"
-              />
               <NormalizedBarsCard
                 title="Medias batería CFS"
                 description="Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real visible junto a cada barra."
                 data={cfsData}
                 colorVar="--secondary"
+              />
+              <NormalizedBarsCard
+                title="Medias batería Eurofit"
+                description="Normalizado (% sobre valor de referencia) para comparar pruebas con escalas distintas. Valor real visible junto a cada barra."
+                data={eurofitData}
+                colorVar="--primary"
               />
             </div>
 

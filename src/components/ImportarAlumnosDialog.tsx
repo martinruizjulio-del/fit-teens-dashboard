@@ -18,8 +18,10 @@ interface Props {
 }
 
 // Encabezados (deben coincidir EXACTAMENTE con los que se generan en la plantilla)
+// OBLIGATORIOS: nombre, edad. El resto son opcionales.
 const COLS_ALUMNOS = [
-  "id_aula", "nombre", "apellidos", "sexo", "fecha_nacimiento",
+  "nombre", "edad",
+  "apellidos", "sexo", "fecha_nacimiento", "id_aula",
   "peso_kg", "talla_m", "envergadura_cm", "biacromial_cm", "longitud_pierna_cm",
   "extraescolar", "horas_extraescolar",
 ];
