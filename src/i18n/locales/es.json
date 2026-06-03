@@ -103,7 +103,11 @@
     "filterSex": "Sexo",
     "filterGrade": "Curso",
     "all": "Todos",
-    "noResults": "No hay resultados para los filtros seleccionados."
+    "noResults": "No hay resultados para los filtros seleccionados.",
+    "noEvaluationsTitle": "No hay evaluaciones disponibles todavía",
+    "noEvaluationsDesc": "Aún no se han registrado evaluaciones en la plataforma. Se está usando 'Todas (agregadas)' como valor por defecto.",
+    "defaultMissingTitle": "La evaluación destacada «{{name}}» no está disponible",
+    "defaultMissingDesc": "Se está usando 'Todas (agregadas)' como valor por defecto. Puedes elegir otra evaluación en los filtros."
   },
   "studentLogin": {
     "title": "Acceso del alumno",
