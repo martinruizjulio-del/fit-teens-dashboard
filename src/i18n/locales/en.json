@@ -230,7 +230,8 @@
     "developedBy": "Application developed by",
     "rights": "All rights reserved",
     "statsTeachers": "{{count}} teachers",
-    "statsStudents": "{{count}} students"
+    "statsStudents": "{{count}} students",
+    "statsVisits": "visitas"
   },
   "centrosPublico": {
     "title": "Schools using the application",

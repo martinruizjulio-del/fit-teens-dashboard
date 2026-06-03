@@ -230,7 +230,8 @@
     "developedBy": "Aplicación desarrollada por",
     "rights": "Todos los derechos reservados",
     "statsTeachers": "{{count}} profesores",
-    "statsStudents": "{{count}} alumnos"
+    "statsStudents": "{{count}} alumnos",
+    "statsVisits": "visitas"
   },
   "centrosPublico": {
     "title": "Centros que utilizan la aplicación",
