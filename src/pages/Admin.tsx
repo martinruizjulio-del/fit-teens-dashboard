@@ -47,10 +47,14 @@ export default function Admin() {
       mostrar_por_curso: config.mostrar_por_curso,
       mostrar_por_sexo: config.mostrar_por_sexo,
       idioma_default: config.idioma_default,
+      evaluacion_default_nombre: config.evaluacion_default_nombre || null,
+      periodo_destacado_label: config.periodo_destacado_label || null,
+      periodo_destacado_fecha: config.periodo_destacado_fecha || null,
     }).eq("id", config.id);
     if (error) toast({ variant: "destructive", title: error.message });
     else toast({ title: "Configuración guardada" });
   }
+
 
   async function guardarAutoresYPolitica() {
     if (!config) return;
