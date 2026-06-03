@@ -10,8 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { OmniRes } from "@/components/OmniRes";
+import { EvaluacionSelector } from "@/components/EvaluacionSelector";
 import { PRUEBAS_EUROFIT, PRUEBAS_CFS, NOMBRE_PRUEBA, CATEGORIAS, pruebasDePersonalizada, isBateriaPersonalizadaCompleta, calcularEdad, valorParaBaremo, type PruebaDef, type BateriaPersonalizada } from "@/lib/pruebas";
 import { ArrowLeft, BookOpen, Save, FileDown, Sliders } from "lucide-react";
+
 import { generarInformePDF } from "@/lib/pdf";
 import imgWells from "@/assets/procedimientos/wells.png";
 import imgThomas from "@/assets/procedimientos/thomas.png";
