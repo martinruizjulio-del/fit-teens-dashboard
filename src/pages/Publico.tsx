@@ -44,11 +44,31 @@ export default function Publico() {
       supabase.rpc("get_evaluaciones_nombres"),
     ]).then(([{ data: cfg }, { data: nombres }]) => {
       setConfig(cfg);
-      setEvalNombres(((nombres as string[]) ?? []));
-      if (cfg?.evaluacion_default_nombre) setEvaluacion(cfg.evaluacion_default_nombre);
+      const lista = ((nombres as string[]) ?? []).filter(Boolean);
+      setEvalNombres(lista);
+      // Validación: usar la evaluación por defecto solo si existe en la lista
+      const def = cfg?.evaluacion_default_nombre;
+      if (def && lista.includes(def)) {
+        setEvaluacion(def);
+      } else {
+        setEvaluacion("all");
+      }
       setConfigCargada(true);
     });
   }, []);
+
+  // Validación: si la evaluación seleccionada deja de existir, volver a "all"
+  useEffect(() => {
+    if (!configCargada) return;
+    if (evaluacion !== "all" && evalNombres.length > 0 && !evalNombres.includes(evaluacion)) {
+      setEvaluacion("all");
+    }
+  }, [evaluacion, evalNombres, configCargada]);
+
+  const defaultInvalido = Boolean(
+    configCargada && config?.evaluacion_default_nombre && !evalNombres.includes(config.evaluacion_default_nombre)
+  );
+  const sinEvaluaciones = configCargada && evalNombres.length === 0;
 
   useEffect(() => {
     if (!configCargada) return;
