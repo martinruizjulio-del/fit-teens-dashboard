@@ -144,6 +144,32 @@ export default function Publico() {
           <p className="text-muted-foreground mt-1">{t("publico.summary", { count: total })}</p>
         </div>
 
+        {(config?.periodo_destacado_label || config?.periodo_destacado_fecha) && (
+          <Card className="border-primary/40 bg-gradient-primary/10">
+            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <CalendarRange className="h-5 w-5 text-primary" />
+                <div>
+                  {config.periodo_destacado_label && (
+                    <p className="font-display font-semibold text-foreground">{config.periodo_destacado_label}</p>
+                  )}
+                  {config.periodo_destacado_fecha && (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(config.periodo_destacado_fecha).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {config.evaluacion_default_nombre && (
+                <span className="text-xs px-3 py-1 rounded-full bg-primary text-primary-foreground">
+                  Evaluación: {config.evaluacion_default_nombre}
+                </span>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+
         <Card>
           <CardContent className="p-4 flex flex-wrap items-start gap-6">
             <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
