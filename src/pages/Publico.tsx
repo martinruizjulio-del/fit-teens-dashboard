@@ -8,6 +8,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { BarChart3, Filter, CalendarRange, AlertTriangle } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+} from "recharts";
 
 type StatItem = {
   prueba: string;
@@ -34,6 +37,7 @@ export default function Publico() {
   const [evalNombres, setEvalNombres] = useState<string[]>([]);
   const [evaluacion, setEvaluacion] = useState<string>("all");
   const [configCargada, setConfigCargada] = useState(false);
+  const [notasGrupos, setNotasGrupos] = useState<{ por_curso: any[]; por_sexo: any[] } | null>(null);
 
   const cursoParam = cursos.length === 0 ? "all" : cursos.join(",");
 
@@ -73,12 +77,14 @@ export default function Publico() {
   useEffect(() => {
     if (!configCargada) return;
     setLoading(true);
-    supabase
-      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion })
-      .then(({ data }) => {
-        setStats(data);
-        setLoading(false);
-      });
+    Promise.all([
+      supabase.rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion }),
+      supabase.rpc("get_notas_por_curso_sexo", { _evaluacion: evaluacion }),
+    ]).then(([{ data: statsData }, { data: notasData }]) => {
+      setStats(statsData);
+      setNotasGrupos(notasData as any);
+      setLoading(false);
+    });
   }, [sexo, cursoParam, evaluacion, configCargada]);
 
 
@@ -297,6 +303,10 @@ export default function Publico() {
               <NotaGlobalCard titulo="Nota global CFS" nota={stats.nota_cfs} colorVar="--secondary" />
               <NotaGlobalCard titulo="Nota global Eurofit" nota={stats.nota_eurofit} colorVar="--primary" />
             </div>
+
+            <ComparativaNotasCard notas={notasGrupos} />
+
+
 
             <div className="grid gap-4 lg:grid-cols-2">
               <NormalizedBarsCard
@@ -562,5 +572,88 @@ function NotaGlobalCard({ titulo, nota, colorVar }: { titulo: string; nota: any;
         </p>
       </CardContent>
     </Card>
+  );
+}
+
+function ComparativaNotasCard({ notas }: { notas: { por_curso: any[]; por_sexo: any[] } | null }) {
+  const cursoOrder = ["1ESO", "2ESO", "3ESO", "4ESO"];
+  const cursoLabel: Record<string, string> = {
+    "1ESO": "1º ESO", "2ESO": "2º ESO", "3ESO": "3º ESO", "4ESO": "4º ESO",
+  };
+  const sexoLabel: Record<string, string> = { M: "Masculino", F: "Femenino" };
+
+  const dataCurso = (notas?.por_curso ?? [])
+    .slice()
+    .sort((a, b) => cursoOrder.indexOf(a.curso) - cursoOrder.indexOf(b.curso))
+    .map((r) => ({
+      label: cursoLabel[r.curso] ?? r.curso,
+      Eurofit: r.eurofit != null ? Number(r.eurofit) : null,
+      CFS: r.cfs != null ? Number(r.cfs) : null,
+      diff: r.eurofit != null && r.cfs != null ? Number((Number(r.eurofit) - Number(r.cfs)).toFixed(2)) : null,
+    }));
+
+  const dataSexo = (notas?.por_sexo ?? []).map((r) => ({
+    label: sexoLabel[r.sexo] ?? r.sexo,
+    Eurofit: r.eurofit != null ? Number(r.eurofit) : null,
+    CFS: r.cfs != null ? Number(r.cfs) : null,
+    diff: r.eurofit != null && r.cfs != null ? Number((Number(r.eurofit) - Number(r.cfs)).toFixed(2)) : null,
+  }));
+
+  const sinDatos = dataCurso.length === 0 && dataSexo.length === 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-display text-base">Comparativa de notas por batería</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Nota media (1-10) de Eurofit y CFS, y diferencia entre ambas (Eurofit − CFS) por curso y sexo.
+        </p>
+      </CardHeader>
+      <CardContent>
+        {sinDatos ? (
+          <p className="text-sm text-muted-foreground text-center py-8">Sin datos suficientes.</p>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ComparativaChart titulo="Por curso académico" data={dataCurso} />
+            <ComparativaChart titulo="Por sexo" data={dataSexo} />
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ComparativaChart({ titulo, data }: { titulo: string; data: any[] }) {
+  if (data.length === 0) {
+    return (
+      <div>
+        <h4 className="text-sm font-medium mb-2">{titulo}</h4>
+        <p className="text-xs text-muted-foreground py-8 text-center">Sin datos.</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <h4 className="text-sm font-medium mb-2">{titulo}</h4>
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+          <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
+          <Tooltip
+            contentStyle={{
+              background: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: 8,
+              fontSize: 12,
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Bar dataKey="Eurofit" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="CFS" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="diff" name="Diferencia (Eurofit − CFS)" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
