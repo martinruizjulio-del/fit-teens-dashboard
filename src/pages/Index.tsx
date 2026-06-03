@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Logo } from "@/components/Logo";
-import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight, GraduationCap, User, ShieldAlert } from "lucide-react";
+import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight, GraduationCap, User, Lock } from "lucide-react";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ const Index = () => {
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{t("landing.accessTitle")}</h2>
           <p className="text-muted-foreground mt-2 text-sm md:text-base max-w-2xl mx-auto">{t("landing.accessSubtitle")}</p>
         </div>
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 max-w-3xl mx-auto">
           <Card className="p-6 border-border/50 hover:shadow-elevated transition-smooth bg-card flex flex-col">
             <div className="inline-flex p-3 rounded-lg bg-gradient-primary text-primary-foreground mb-4 shadow-glow self-start">
               <GraduationCap className="h-5 w-5" />
@@ -87,22 +87,6 @@ const Index = () => {
               </Button>
             </Link>
           </Card>
-
-          <Card className="p-6 border-2 border-secondary/40 hover:shadow-elevated transition-smooth bg-card flex flex-col relative">
-            <div className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-2 py-0.5 rounded">
-              {t("landing.accessAdminBadge")}
-            </div>
-            <div className="inline-flex p-3 rounded-lg bg-secondary text-secondary-foreground mb-4 shadow-energy self-start">
-              <ShieldAlert className="h-5 w-5" />
-            </div>
-            <h3 className="font-display font-semibold text-lg text-foreground mb-1">{t("landing.accessAdminTitle")}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 whitespace-pre-line">{t("landing.accessAdminDesc")}</p>
-            <Link to="/auth">
-              <Button variant="secondary" className="w-full">
-                {t("landing.accessAdminCta")} <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </Card>
         </div>
       </section>
 
@@ -123,6 +107,18 @@ const Index = () => {
           ))}
         </div>
       </section>
+
+      {/* Acceso administrador discreto */}
+      <div className="container pb-8 flex justify-end">
+        <Link
+          to="/auth"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+          aria-label={t("landing.adminAccess")}
+        >
+          <Lock className="h-3 w-3" />
+          {t("landing.adminAccess")}
+        </Link>
+      </div>
 
       <SiteFooter />
     </div>
