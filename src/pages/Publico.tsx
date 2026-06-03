@@ -77,12 +77,14 @@ export default function Publico() {
   useEffect(() => {
     if (!configCargada) return;
     setLoading(true);
-    supabase
-      .rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion })
-      .then(({ data }) => {
-        setStats(data);
-        setLoading(false);
-      });
+    Promise.all([
+      supabase.rpc("get_stats_publicas_filtradas", { _sexo: sexo, _curso: cursoParam, _evaluacion: evaluacion }),
+      supabase.rpc("get_notas_por_curso_sexo", { _evaluacion: evaluacion }),
+    ]).then(([{ data: statsData }, { data: notasData }]) => {
+      setStats(statsData);
+      setNotasGrupos(notasData as any);
+      setLoading(false);
+    });
   }, [sexo, cursoParam, evaluacion, configCargada]);
 
 
