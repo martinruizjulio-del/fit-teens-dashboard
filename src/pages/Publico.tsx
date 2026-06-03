@@ -196,19 +196,15 @@ export default function Publico() {
               <div className="text-sm">
                 {sinEvaluaciones ? (
                   <>
-                    <p className="font-medium text-foreground">No hay evaluaciones disponibles todavía</p>
-                    <p className="text-muted-foreground">
-                      Aún no se han registrado evaluaciones en la plataforma. Se muestran los datos agregados disponibles.
-                    </p>
+                    <p className="font-medium text-foreground">{t("publico.noEvaluationsTitle")}</p>
+                    <p className="text-muted-foreground">{t("publico.noEvaluationsDesc")}</p>
                   </>
                 ) : (
                   <>
                     <p className="font-medium text-foreground">
-                      La evaluación destacada «{config?.evaluacion_default_nombre}» no está disponible
+                      {t("publico.defaultMissingTitle", { name: config?.evaluacion_default_nombre })}
                     </p>
-                    <p className="text-muted-foreground">
-                      Mostrando datos agregados de todas las evaluaciones. Puedes elegir otra evaluación en los filtros.
-                    </p>
+                    <p className="text-muted-foreground">{t("publico.defaultMissingDesc")}</p>
                   </>
                 )}
               </div>
