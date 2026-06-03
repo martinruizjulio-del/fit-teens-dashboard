@@ -17,7 +17,7 @@ export function PublicHeader() {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 font-display font-bold text-primary">
           <Logo size={36} />
-          <span className="hidden sm:inline text-lg">CFA</span>
+          <span className="hidden sm:inline text-lg">CFS</span>
         </Link>
 
         <nav className="flex items-center gap-1 sm:gap-2">

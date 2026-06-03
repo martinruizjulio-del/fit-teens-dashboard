@@ -198,7 +198,7 @@ export default function Auth() {
       <header className="container flex items-center justify-between py-4">
         <Link to="/" className="flex items-center gap-2 text-primary-foreground">
           <Logo size={32} />
-          <span className="font-display font-bold">CFA</span>
+          <span className="font-display font-bold">CFS</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground text-sm flex items-center gap-1">

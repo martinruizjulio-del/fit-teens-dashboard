@@ -4,7 +4,7 @@ interface LogoProps {
 }
 
 /**
- * Logo CFA — silbato + anillo de progreso (sin figuras humanas).
+ * Logo CFS — silbato + anillo de progreso (sin figuras humanas).
  * SVG inline, escalable, hereda colores del tema.
  */
 export function Logo({ className = "", size = 32 }: LogoProps) {
@@ -15,7 +15,7 @@ export function Logo({ className = "", size = 32 }: LogoProps) {
       width={size}
       height={size}
       className={className}
-      aria-label="Logo Condición Física Adolescentes"
+      aria-label="Logo Condición Física Secundaria"
       role="img"
     >
       {/* Anillo de progreso */}
