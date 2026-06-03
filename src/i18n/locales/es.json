@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Condición Física Adolescentes",
-    "short": "CFA",
+    "name": "Batería Condición Física Secundaria",
+    "short": "BCFS",
     "tagline": "Evaluación de la condición física en Educación Secundaria"
   },
   "nav": {
@@ -34,7 +34,7 @@
     "feature4Title": "Estadísticas anónimas",
     "feature4Desc": "Compara tu centro y tu grupo con resultados agregados de toda la comunidad educativa.",
     "accessTitle": "Accede al sistema",
-    "accessSubtitle": "Tres formas de entrar según tu rol. Profesores y administradores comparten el mismo acceso: el rol se asigna automáticamente según el correo.",
+    "accessSubtitle": "Dos formas de entrar según tu rol.",
     "accessTeacherTitle": "Soy profesor/a",
     "accessTeacherDesc": "Crea tu cuenta o inicia sesión con tu correo profesional. Tendrás tu propio panel para gestionar centros, grupos, alumnos y pruebas.",
     "accessTeacherCta": "Entrar / Crear cuenta",
@@ -44,7 +44,8 @@
     "accessAdminBadge": "Solo personal autorizado",
     "accessAdminTitle": "Soy administrador",
     "accessAdminDesc": "Inicia sesión en /auth con el correo julio.martin@ucv.es. El rol de administración se asigna automáticamente. Una vez dentro, accede al panel desde la barra lateral o yendo a /admin.",
-    "accessAdminCta": "Ir al acceso"
+    "accessAdminCta": "Ir al acceso",
+    "adminAccess": "Acceso administración"
   },
   "auth": {
     "title": "Acceso profesorado",
@@ -72,7 +73,7 @@
     "consent": {
       "privacyLabel": "He leído y acepto la",
       "privacyLink": "política de privacidad",
-      "implantacionLabel": "Solicito la implantación de mi centro en CFA.",
+      "implantacionLabel": "Solicito la implantación de mi centro en la plataforma.",
       "implantacionHelp": "Es solo una formalidad para que los datos agregados (nunca individuales ni identificables) puedan formar parte de las estadísticas de la comunidad. Toda la información personal queda oculta.",
       "implantacionCta": "Rellenar solicitud de implantación",
       "errorPrivacy": "Debes aceptar la política de privacidad.",
@@ -81,7 +82,7 @@
   },
   "privacy": {
     "title": "Política de privacidad",
-    "subtitle": "Información sobre el tratamiento de los datos en CFA."
+    "subtitle": "Información sobre el tratamiento de los datos en la plataforma."
   },
   "implantacion": {
     "title": "Solicitud de implantación de centro",
@@ -144,7 +145,7 @@
     "updatedOk": "Centro actualizado",
     "noCentros": "Aún no hay centros registrados",
     "anonimoLabel": "Mostrar mi centro de forma anónima",
-    "anonimoHelp": "Si lo activas, en las estadísticas públicas tu centro aparecerá únicamente con un código (p. ej. CFA-A1B2C). El nombre real solo será visible para ti.",
+    "anonimoHelp": "Si lo activas, en las estadísticas públicas tu centro aparecerá únicamente con un código (p. ej. BCFS-A1B2C). El nombre real solo será visible para ti.",
     "mostrarPublicoLabel": "Aparecer en estadísticas públicas",
     "mostrarPublicoHelp": "Permite que los datos agregados (siempre anónimos a nivel de alumno) de tu centro contribuyan a las estadísticas comparativas de la comunidad.",
     "publicAs": "Público como"
@@ -158,7 +159,8 @@
     "anio": "Año escolar",
     "students": "alumnos",
     "createdOk": "Grupo creado",
-    "noGrupos": "Aún no tienes grupos. Crea el primero para empezar."
+    "noGrupos": "Aún no tienes grupos. Crea el primero para empezar.",
+    "exportExcel": "Exportar resultados (Excel)"
   },
   "dashboard": {
     "title": "Panel del profesor",
@@ -171,7 +173,7 @@
   "manual": {
     "button": "Manual de uso",
     "title": "Manual de uso de la aplicación",
-    "subtitle": "Guía rápida para sacar el máximo partido a CFA en tus clases.",
+    "subtitle": "Guía rápida para sacar el máximo partido a la plataforma en tus clases.",
     "footnote": "Para dudas adicionales, contacta con el administrador o consulta la documentación completa en el panel de administración.",
     "sections": [
       {
@@ -187,6 +189,7 @@
         "items": [
           "Desde 'Grupos' añade tus clases (curso, letra y año escolar).",
           "Dentro de cada grupo, da de alta a tus alumnos: nombre, apellidos, fecha de nacimiento, sexo y nº de aula.",
+          "También puedes importar el listado desde un Excel: basta con nombre y edad por alumno; el resto de campos son opcionales y se pueden completar después.",
           "Cada alumno recibe automáticamente un código personal para consultar sus resultados sin necesidad de cuenta."
         ]
       },
@@ -204,6 +207,7 @@
         "title": "Informes y estadísticas",
         "items": [
           "Genera informes PDF individuales por alumno con todas sus pruebas, notas y gráficas de evolución.",
+          "Descarga un Excel con los resultados completos del grupo, organizados por prueba y batería.",
           "Consulta el dashboard del grupo para ver medias, dispersión y comparativa con la comunidad.",
           "El alumnado puede acceder con su código personal desde 'Acceso alumnos' para ver sus resultados de forma privada."
         ]
@@ -220,7 +224,9 @@
   },
   "footer": {
     "developedBy": "Aplicación desarrollada por",
-    "rights": "Todos los derechos reservados"
+    "rights": "Todos los derechos reservados",
+    "statsTeachers": "{{count}} profesores",
+    "statsStudents": "{{count}} alumnos"
   },
   "centrosPublico": {
     "title": "Centros que utilizan la aplicación",

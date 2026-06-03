@@ -18,8 +18,10 @@ interface Props {
 }
 
 // Encabezados (deben coincidir EXACTAMENTE con los que se generan en la plantilla)
+// OBLIGATORIOS: nombre, edad. El resto son opcionales.
 const COLS_ALUMNOS = [
-  "id_aula", "nombre", "apellidos", "sexo", "fecha_nacimiento",
+  "nombre", "edad",
+  "apellidos", "sexo", "fecha_nacimiento", "id_aula",
   "peso_kg", "talla_m", "envergadura_cm", "biacromial_cm", "longitud_pierna_cm",
   "extraescolar", "horas_extraescolar",
 ];
@@ -46,10 +48,11 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
     const wb = XLSX.utils.book_new();
 
     // Hoja Alumnos con encabezados + 2 filas de ejemplo
+    // Solo nombre y edad son obligatorios; el resto se puede dejar en blanco.
     const alumnosRows = [
       COLS_ALUMNOS,
-      [1, "Lucía", "García López", "F", "2011-09-15", 48.5, 1.58, 158, 35, 75, "sí", 3],
-      [2, "Marc", "Sánchez Ruiz", "M", "2011-03-22", 52.0, 1.62, 162, 37, 78, "no", ""],
+      ["Lucía", 13, "García López", "F", "2011-09-15", 1, 48.5, 1.58, 158, 35, 75, "sí", 3],
+      ["Marc",  14, "", "", "", "", "", "", "", "", "", "", ""],
     ];
     const wsAlumnos = XLSX.utils.aoa_to_sheet(alumnosRows);
     wsAlumnos["!cols"] = COLS_ALUMNOS.map(() => ({ wch: 16 }));
@@ -77,13 +80,16 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
     const inst = [
       ["INSTRUCCIONES"],
       [""],
-      ["1. Rellena la hoja 'Alumnos' con un alumno por fila. id_aula es el número correlativo dentro del grupo."],
-      ["2. (Opcional) Rellena la hoja 'Eurofit' con las pruebas de cada alumno, usando el mismo id_aula."],
-      ["3. (Opcional) Rellena la hoja 'CFS' con las pruebas CFS de cada alumno, usando el mismo id_aula."],
+      ["1. CAMPOS OBLIGATORIOS: solo 'nombre' y 'edad'. El resto se pueden completar después desde la aplicación."],
+      ["2. Si dejas 'id_aula' en blanco, se asignará automáticamente un número correlativo."],
+      ["3. Si dejas 'sexo' en blanco, se asignará 'M' por defecto (puedes editarlo después)."],
+      ["4. Si dejas 'fecha_nacimiento' en blanco pero rellenas 'edad', se calculará una fecha aproximada (1 de septiembre del año correspondiente)."],
+      ["5. (Opcional) Rellena las hojas 'Eurofit' y 'CFS' con las pruebas, usando el mismo id_aula."],
       [""],
       ["FORMATOS"],
-      ["- sexo: M o F"],
-      ["- fecha_nacimiento: AAAA-MM-DD (ej. 2011-09-15)"],
+      ["- edad: número en años (ej. 13)"],
+      ["- sexo: M o F (opcional, por defecto M)"],
+      ["- fecha_nacimiento: AAAA-MM-DD (ej. 2011-09-15) — opcional si rellenas 'edad'"],
       ["- extraescolar: 'sí' / 'no' (o true/false, 1/0)"],
       ["- decimales con punto (ej. 1.58) o coma (ej. 1,58)"],
       ["- thomas: 1 (sí limitado) o 2 (no limitado)"],
@@ -97,7 +103,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
     XLSX.utils.book_append_sheet(wb, wsInst, "Instrucciones");
 
     XLSX.writeFile(wb, "plantilla_importacion_alumnos.xlsx");
-    toast({ title: "Plantilla descargada", description: "Rellénala y vuelve para subirla." });
+    toast({ title: "Plantilla descargada", description: "Rellénala (solo nombre y edad son obligatorios) y vuelve para subirla." });
   }
 
   function parseBool(v: any): boolean {
@@ -147,18 +153,37 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
 
       // Mapa id_aula -> alumno_id (uuid) tras insertar
       const idMap = new Map<number, string>();
+      let autoAula = 0;
 
       let okAl = 0;
       for (const row of filasAl) {
-        const id_aula = parseInt0(row.id_aula);
         const nombre = String(row.nombre ?? "").trim();
-        const apellidos = String(row.apellidos ?? "").trim();
-        const sexoRaw = String(row.sexo ?? "").trim().toUpperCase();
-        const fecha = parseFecha(row.fecha_nacimiento);
-        if (!id_aula || !nombre || !apellidos || !["M", "F"].includes(sexoRaw) || !fecha) {
-          errores.push(`Alumnos · fila inválida (id_aula=${row.id_aula}): faltan campos obligatorios o sexo/fecha mal formados.`);
+        if (!nombre) {
+          continue; // fila vacía, ignorar
+        }
+        const edadNum = parseInt0(row.edad);
+        const fechaProvista = parseFecha(row.fecha_nacimiento);
+        if (!edadNum && !fechaProvista) {
+          errores.push(`Alumnos · "${nombre}": falta 'edad' o 'fecha_nacimiento' (al menos uno es obligatorio).`);
           continue;
         }
+        // Derivar fecha de nacimiento aproximada si solo viene edad
+        let fecha = fechaProvista;
+        if (!fecha && edadNum) {
+          const año = new Date().getFullYear() - edadNum;
+          fecha = `${año}-09-01`;
+        }
+        // id_aula: si viene, úsalo; si no, autoincremental
+        autoAula += 1;
+        const id_aula = parseInt0(row.id_aula) ?? autoAula;
+
+        // Sexo: opcional, por defecto M
+        const sexoRaw = String(row.sexo ?? "M").trim().toUpperCase();
+        const sexo = ["M", "F"].includes(sexoRaw) ? sexoRaw : "M";
+
+        // Apellidos opcionales
+        const apellidos = String(row.apellidos ?? "").trim() || "—";
+
         const peso = parseNum(row.peso_kg);
         const talla = parseNum(row.talla_m);
         const bia = parseNum(row.biacromial_cm);
@@ -167,7 +192,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
           id_aula,
           nombre,
           apellidos,
-          sexo: sexoRaw,
+          sexo,
           fecha_nacimiento: fecha,
           peso_kg: peso,
           talla_m: talla,
@@ -181,7 +206,7 @@ export function ImportarAlumnosDialog({ grupoId, grupoNombre, onImported }: Prop
         };
         const { data, error } = await supabase.from("alumnos").insert(payload).select("id, id_aula").single();
         if (error) {
-          errores.push(`Alumnos · id_aula ${id_aula}: ${error.message}`);
+          errores.push(`Alumnos · "${nombre}" (id_aula ${id_aula}): ${error.message}`);
           continue;
         }
         idMap.set(id_aula, data.id);

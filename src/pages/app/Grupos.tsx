@@ -10,9 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CURSOS, LETRAS, generarAniosEscolares } from "@/lib/constants";
-import { Users, Plus, ArrowRight, Sliders } from "lucide-react";
+import { Users, Plus, ArrowRight, Sliders, FileSpreadsheet } from "lucide-react";
 import { BateriaPersonalizadaDialog } from "@/components/BateriaPersonalizadaDialog";
 import { isBateriaPersonalizadaCompleta, type BateriaPersonalizada } from "@/lib/pruebas";
+import { exportarResultadosGrupo } from "@/lib/exportResultados";
 
 interface Grupo {
   id: string;
@@ -173,24 +174,42 @@ export default function Grupos() {
                     </p>
                   </CardContent>
                 </Link>
-                <div className="px-6 pb-4 pt-2 border-t flex items-center justify-between gap-2">
+                <div className="px-6 pb-4 pt-2 border-t flex items-center justify-between gap-2 flex-wrap">
                   <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
                     <Sliders className="h-3 w-3" />
                     {tieneBP ? "Batería personalizada activa" : "Solo Eurofit / CFS"}
                   </span>
-                  <BateriaPersonalizadaDialog
-                    grupoId={g.id}
-                    grupoLabel={grupoLabel}
-                    initial={g.bateria_personalizada ?? null}
-                    onSaved={(sel) => {
-                      setGrupos((prev) => prev.map((x) => x.id === g.id ? { ...x, bateria_personalizada: sel } : x));
-                    }}
-                    trigger={
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">
-                        Configurar
-                      </Button>
-                    }
-                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2 text-xs"
+                      title={t("grupos.exportExcel")}
+                      onClick={async () => {
+                        try {
+                          await exportarResultadosGrupo(g.id, grupoLabel);
+                          toast({ title: t("grupos.exportExcel") });
+                        } catch (err: any) {
+                          toast({ variant: "destructive", title: err.message });
+                        }
+                      }}
+                    >
+                      <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Excel
+                    </Button>
+                    <BateriaPersonalizadaDialog
+                      grupoId={g.id}
+                      grupoLabel={grupoLabel}
+                      initial={g.bateria_personalizada ?? null}
+                      onSaved={(sel) => {
+                        setGrupos((prev) => prev.map((x) => x.id === g.id ? { ...x, bateria_personalizada: sel } : x));
+                      }}
+                      trigger={
+                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">
+                          Configurar
+                        </Button>
+                      }
+                    />
+                  </div>
                 </div>
               </Card>
             );

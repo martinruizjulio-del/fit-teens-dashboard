@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Users, GraduationCap } from "lucide-react";
 
 export function SiteFooter() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
   const [autores, setAutores] = useState<string>("Julio Martín-Ruiz");
+  const [stats, setStats] = useState<{ profesores: number; alumnos: number } | null>(null);
 
   useEffect(() => {
     void supabase.from("config_publica").select("autores").maybeSingle().then(({ data }) => {
       if (data?.autores) setAutores(data.autores);
+    });
+    void supabase.rpc("get_landing_public_stats").then(({ data }) => {
+      if (data) setStats(data as { profesores: number; alumnos: number });
     });
   }, []);
 
@@ -24,6 +28,30 @@ export function SiteFooter() {
             <span className="font-medium text-foreground">{autores}</span>
           </p>
         </div>
+
+        {stats && (
+          <div className="flex items-center gap-5 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="inline-flex p-2 rounded-md bg-primary/10 text-primary">
+                <Users className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-mono font-semibold text-foreground leading-tight">{stats.profesores}</p>
+                <p className="text-xs text-muted-foreground">{t("footer.statsTeachers", { count: stats.profesores }).replace(/^\d+\s*/, "")}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex p-2 rounded-md bg-secondary/10 text-secondary">
+                <GraduationCap className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-mono font-semibold text-foreground leading-tight">{stats.alumnos}</p>
+                <p className="text-xs text-muted-foreground">{t("footer.statsStudents", { count: stats.alumnos }).replace(/^\d+\s*/, "")}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="text-sm text-muted-foreground flex flex-col items-center md:items-end gap-1">
           <a
             href="https://giepafs.net"

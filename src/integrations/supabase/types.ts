@@ -620,6 +620,7 @@ export type Database = {
         Returns: number
       }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
+      get_landing_public_stats: { Args: never; Returns: Json }
       get_stats_publicas: { Args: never; Returns: Json }
       get_stats_publicas_filtradas: {
         Args: { _curso?: string; _sexo?: string }
