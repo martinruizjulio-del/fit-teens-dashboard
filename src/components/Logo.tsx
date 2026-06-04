@@ -4,8 +4,8 @@ interface LogoProps {
 }
 
 /**
- * Logo CFS — silbato + anillo de progreso (sin figuras humanas).
- * SVG inline, escalable, hereda colores del tema.
+ * Logo CFS — cronómetro con onda ECG (pulso).
+ * Evoca medición + actividad física, sin clichés de gimnasio.
  */
 export function Logo({ className = "", size = 32 }: LogoProps) {
   return (
@@ -18,37 +18,56 @@ export function Logo({ className = "", size = 32 }: LogoProps) {
       aria-label="Logo Condición Física Secundaria"
       role="img"
     >
-      {/* Anillo de progreso */}
+      {/* Botón superior del cronómetro */}
+      <rect
+        x="28"
+        y="4"
+        width="8"
+        height="5"
+        rx="1.5"
+        fill="hsl(var(--primary))"
+      />
+      {/* Asas laterales */}
+      <rect x="22" y="7" width="4" height="3" rx="1" fill="hsl(var(--primary))" />
+      <rect x="38" y="7" width="4" height="3" rx="1" fill="hsl(var(--primary))" />
+
+      {/* Cuerpo del cronómetro */}
       <circle
         cx="32"
-        cy="32"
-        r="27"
+        cy="36"
+        r="23"
         fill="none"
         stroke="hsl(var(--primary))"
-        strokeOpacity="0.18"
-        strokeWidth="4"
+        strokeWidth="3"
       />
+      {/* Anillo de progreso (acento) */}
       <circle
         cx="32"
-        cy="32"
-        r="27"
+        cy="36"
+        r="23"
         fill="none"
         stroke="hsl(var(--secondary))"
-        strokeWidth="4"
+        strokeWidth="3"
         strokeLinecap="round"
-        strokeDasharray="127 170"
-        transform="rotate(-90 32 32)"
+        strokeDasharray="40 200"
+        transform="rotate(-90 32 36)"
       />
-      {/* Silbato estilizado */}
-      <g transform="translate(14 22)">
-        <rect x="0" y="4" width="22" height="14" rx="3" fill="hsl(var(--primary))" />
-        <rect x="22" y="7" width="8" height="8" rx="1.5" fill="hsl(var(--primary))" />
-        <circle cx="6" cy="11" r="2.2" fill="hsl(var(--background))" />
-        <path
-          d="M30 11 L36 8 L36 14 Z"
-          fill="hsl(var(--secondary))"
-        />
-      </g>
+
+      {/* Marcas horarias 12 / 3 / 6 / 9 */}
+      <line x1="32" y1="15" x2="32" y2="18" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" />
+      <line x1="53" y1="36" x2="50" y2="36" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" />
+      <line x1="32" y1="57" x2="32" y2="54" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" />
+      <line x1="11" y1="36" x2="14" y2="36" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" />
+
+      {/* Onda ECG / pulso atravesando el centro */}
+      <polyline
+        points="14,36 22,36 26,36 28,30 31,42 34,24 37,42 40,36 50,36"
+        fill="none"
+        stroke="hsl(var(--secondary))"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
