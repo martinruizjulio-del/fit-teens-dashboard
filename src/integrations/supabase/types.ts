@@ -361,6 +361,7 @@ export type Database = {
           created_at: string
           id: string
           idioma: string
+          imagen_url: string | null
           procedimiento_md: string
           prueba: string
           referencia_apa: string
@@ -372,6 +373,7 @@ export type Database = {
           created_at?: string
           id?: string
           idioma?: string
+          imagen_url?: string | null
           procedimiento_md: string
           prueba: string
           referencia_apa: string
@@ -383,6 +385,7 @@ export type Database = {
           created_at?: string
           id?: string
           idioma?: string
+          imagen_url?: string | null
           procedimiento_md?: string
           prueba?: string
           referencia_apa?: string
