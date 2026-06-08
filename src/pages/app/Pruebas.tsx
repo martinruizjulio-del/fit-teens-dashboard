@@ -291,7 +291,7 @@ function PruebaCard({
   prueba, registro, onChange, nota, procedimiento,
 }: {
   prueba: PruebaDef; registro: any; onChange: (r: any) => void; nota: number | null | undefined;
-  procedimiento?: { procedimiento_md: string; referencia_apa: string };
+  procedimiento?: { procedimiento_md: string; referencia_apa: string; imagen_url?: string | null };
 }) {
   function setVal(campo: string, v: string) {
     onChange({ ...registro, [campo]: v === "" ? null : Number(v) });
