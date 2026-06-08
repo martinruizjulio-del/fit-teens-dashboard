@@ -315,9 +315,9 @@ function PruebaCard({
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle className="font-display">{NOMBRE_PRUEBA[prueba.prueba]}</DialogTitle></DialogHeader>
-              {IMG_PROCEDIMIENTO[prueba.prueba] && (
+              {(procedimiento.imagen_url || IMG_PROCEDIMIENTO[prueba.prueba]) && (
                 <img
-                  src={IMG_PROCEDIMIENTO[prueba.prueba]}
+                  src={procedimiento.imagen_url || IMG_PROCEDIMIENTO[prueba.prueba]}
                   alt={`Ilustración del procedimiento: ${NOMBRE_PRUEBA[prueba.prueba]}`}
                   loading="lazy"
                   className="w-full h-auto rounded-md border bg-white"

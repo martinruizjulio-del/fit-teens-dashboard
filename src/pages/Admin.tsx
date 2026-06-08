@@ -166,10 +166,34 @@ export default function Admin() {
 
   async function guardarProc(p: any) {
     const { error } = await supabase.from("procedimientos").update({
-      procedimiento_md: p.procedimiento_md, referencia_apa: p.referencia_apa,
+      procedimiento_md: p.procedimiento_md, referencia_apa: p.referencia_apa, imagen_url: p.imagen_url ?? null,
     }).eq("id", p.id);
     if (error) toast({ variant: "destructive", title: error.message });
     else toast({ title: "Procedimiento guardado" });
+  }
+
+  async function subirImagenProc(p: any, file: File) {
+    if (file.size > 800 * 1024) {
+      toast({ variant: "destructive", title: "Imagen demasiado grande", description: "Máximo 800 KB. Comprime la imagen antes de subirla." });
+      return;
+    }
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+    const { error } = await supabase.from("procedimientos").update({ imagen_url: dataUrl }).eq("id", p.id);
+    if (error) { toast({ variant: "destructive", title: error.message }); return; }
+    setProcs((prev) => prev.map((x) => x.id === p.id ? { ...x, imagen_url: dataUrl } : x));
+    toast({ title: "Imagen actualizada" });
+  }
+
+  async function quitarImagenProc(p: any) {
+    const { error } = await supabase.from("procedimientos").update({ imagen_url: null }).eq("id", p.id);
+    if (error) { toast({ variant: "destructive", title: error.message }); return; }
+    setProcs((prev) => prev.map((x) => x.id === p.id ? { ...x, imagen_url: null } : x));
+    toast({ title: "Imagen eliminada" });
   }
 
   return (
@@ -416,7 +440,28 @@ export default function Admin() {
                   <Label>Referencia APA</Label>
                   <Textarea defaultValue={p.referencia_apa} rows={2} onBlur={(e) => { p.referencia_apa = e.target.value; }} />
                 </div>
-                <Button size="sm" onClick={() => guardarProc(p)}><Save className="h-3.5 w-3.5 mr-1" /> Guardar</Button>
+                <div className="space-y-1.5">
+                  <Label>Imagen ilustrativa (máx. 800 KB)</Label>
+                  {p.imagen_url && (
+                    <div className="flex items-start gap-3">
+                      <img src={p.imagen_url} alt={`Imagen del procedimiento ${p.prueba}`} className="h-24 w-auto rounded border bg-white object-contain" />
+                      <Button size="sm" variant="outline" onClick={() => quitarImagenProc(p)}>
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Quitar imagen
+                      </Button>
+                    </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) void subirImagenProc(p, f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">La imagen se mostrará en el diálogo de procedimiento de la prueba.</p>
+                </div>
+                <Button size="sm" onClick={() => guardarProc(p)}><Save className="h-3.5 w-3.5 mr-1" /> Guardar texto</Button>
               </CardContent>
             </Card>
           ))}
