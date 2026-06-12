@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { Users, Plus, ArrowRight, Sliders, FileSpreadsheet } from "lucide-react"
 import { BateriaPersonalizadaDialog } from "@/components/BateriaPersonalizadaDialog";
 import { isBateriaPersonalizadaCompleta, type BateriaPersonalizada } from "@/lib/pruebas";
 import { exportarResultadosGrupo } from "@/lib/exportResultados";
+import { db } from "@/offline/db";
+import { createGrupo } from "@/offline/repo";
 
 interface Grupo {
   id: string;
@@ -21,60 +23,57 @@ interface Grupo {
   curso: string;
   letra: string;
   anio_escolar: string;
-  centro?: { nombre: string };
-  alumno_count?: number;
   bateria_personalizada?: BateriaPersonalizada | null;
 }
+interface Centro { id: string; nombre: string }
 
 export default function Grupos() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [grupos, setGrupos] = useState<Grupo[]>([]);
-  const [centros, setCentros] = useState<Array<{ id: string; nombre: string }>>([]);
   const [open, setOpen] = useState(false);
 
-  const [form, setForm] = useState({ centro_id: "", curso: "", letra: "", anio_escolar: generarAniosEscolares()[0] });
-
-  useEffect(() => { void load(); }, []);
-
-  async function load() {
-    const [{ data: g }, { data: c }] = await Promise.all([
-      supabase.from("grupos").select("*, centro:centros(nombre)").order("created_at", { ascending: false }),
-      supabase.from("centros").select("id, nombre").order("nombre"),
+  const data = useLiveQuery(async () => {
+    const [grupos, centros, alumnos] = await Promise.all([
+      db.grupos.toArray(),
+      db.centros.toArray(),
+      db.alumnos.toArray(),
     ]);
-
-    // Conteo de alumnos
-    const grupos = (g ?? []) as Grupo[];
-    if (grupos.length > 0) {
-      const ids = grupos.map((x) => x.id);
-      const { data: alumnos } = await supabase.from("alumnos").select("grupo_id").in("grupo_id", ids);
-      const counts: Record<string, number> = {};
-      (alumnos ?? []).forEach((a: any) => { counts[a.grupo_id] = (counts[a.grupo_id] || 0) + 1; });
-      grupos.forEach((gr) => { gr.alumno_count = counts[gr.id] || 0; });
+    const counts: Record<string, number> = {};
+    for (const a of alumnos) {
+      const gid = (a as { grupo_id?: string }).grupo_id;
+      if (gid) counts[gid] = (counts[gid] ?? 0) + 1;
     }
-    setGrupos(grupos);
-    setCentros((c ?? []) as Array<{ id: string; nombre: string }>);
-  }
+    return {
+      grupos: (grupos as unknown as Grupo[]).slice().sort((a, b) => (b as unknown as { created_at?: string }).created_at?.localeCompare((a as unknown as { created_at?: string }).created_at ?? "") ?? 0),
+      centros: (centros as unknown as Centro[]).slice().sort((a, b) => a.nombre.localeCompare(b.nombre)),
+      counts,
+    };
+  }, [], { grupos: [] as Grupo[], centros: [] as Centro[], counts: {} as Record<string, number> });
+
+  const grupos = data?.grupos ?? [];
+  const centros = data?.centros ?? [];
+  const counts = data?.counts ?? {};
+
+  const [form, setForm] = useState({ centro_id: "", curso: "", letra: "", anio_escolar: generarAniosEscolares()[0] });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    const { error } = await supabase.from("grupos").insert({
-      centro_id: form.centro_id,
-      curso: form.curso as any,
-      letra: form.letra,
-      anio_escolar: form.anio_escolar,
-      profesor_id: user.id,
-    });
-    if (error) {
-      toast({ variant: "destructive", title: error.message });
-      return;
+    try {
+      await createGrupo({
+        centro_id: form.centro_id,
+        curso: form.curso,
+        letra: form.letra,
+        anio_escolar: form.anio_escolar,
+        profesor_id: user.id,
+      });
+      toast({ title: t("grupos.createdOk") });
+      setOpen(false);
+      setForm({ centro_id: "", curso: "", letra: "", anio_escolar: generarAniosEscolares()[0] });
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
     }
-    toast({ title: t("grupos.createdOk") });
-    setOpen(false);
-    setForm({ centro_id: "", curso: "", letra: "", anio_escolar: generarAniosEscolares()[0] });
-    void load();
   }
 
   return (
@@ -157,9 +156,10 @@ export default function Grupos() {
           {grupos.map((g) => {
             const tieneBP = isBateriaPersonalizadaCompleta(g.bateria_personalizada);
             const grupoLabel = `${g.curso.replace("ESO", "º ESO")} ${g.letra}`;
+            const centro = centros.find((c) => c.id === g.centro_id);
             return (
               <Card key={g.id} className="hover:shadow-elevated transition-smooth h-full flex flex-col">
-                <Link to={`/app/grupos/${g.id}`} className="flex-1">
+                <Link to={`/app/alumnos?grupo=${g.id}`} className="flex-1">
                   <CardHeader className="pb-2">
                     <CardTitle className="font-display text-lg flex items-center justify-between">
                       <span>{grupoLabel}</span>
@@ -167,10 +167,10 @@ export default function Grupos() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-1 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">{g.centro?.nombre}</p>
+                    <p className="font-medium text-foreground">{centro?.nombre ?? "—"}</p>
                     <p>{t("grupos.anio")}: {g.anio_escolar}</p>
                     <p className="flex items-center gap-1.5 pt-1">
-                      <Users className="h-3.5 w-3.5" /> {g.alumno_count ?? 0} {t("grupos.students")}
+                      <Users className="h-3.5 w-3.5" /> {counts[g.id] ?? 0} {t("grupos.students")}
                     </p>
                   </CardContent>
                 </Link>
@@ -189,8 +189,8 @@ export default function Grupos() {
                         try {
                           await exportarResultadosGrupo(g.id, grupoLabel);
                           toast({ title: t("grupos.exportExcel") });
-                        } catch (err: any) {
-                          toast({ variant: "destructive", title: err.message });
+                        } catch (err) {
+                          toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
                         }
                       }}
                     >
@@ -200,9 +200,7 @@ export default function Grupos() {
                       grupoId={g.id}
                       grupoLabel={grupoLabel}
                       initial={g.bateria_personalizada ?? null}
-                      onSaved={(sel) => {
-                        setGrupos((prev) => prev.map((x) => x.id === g.id ? { ...x, bateria_personalizada: sel } : x));
-                      }}
+                      onSaved={() => { /* Dexie live query will refresh */ }}
                       trigger={
                         <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">
                           Configurar

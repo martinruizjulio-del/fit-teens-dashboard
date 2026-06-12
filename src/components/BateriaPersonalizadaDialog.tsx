@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { updateGrupoBateria } from "@/offline/repo";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -33,15 +33,16 @@ export function BateriaPersonalizadaDialog({ grupoId, grupoLabel, initial, onSav
 
   async function guardar(payload: BateriaPersonalizada | null) {
     setSaving(true);
-    const { error } = await supabase
-      .from("grupos")
-      .update({ bateria_personalizada: payload as any })
-      .eq("id", grupoId);
-    setSaving(false);
-    if (error) { toast({ variant: "destructive", title: error.message }); return; }
-    toast({ title: payload ? "Batería personalizada guardada" : "Batería personalizada eliminada" });
-    onSaved(payload);
-    setOpen(false);
+    try {
+      await updateGrupoBateria(grupoId, payload);
+      toast({ title: payload ? "Batería personalizada guardada" : "Batería personalizada eliminada" });
+      onSaved(payload);
+      setOpen(false);
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setSaving(false);
+    }
   }
 
   const completa = isBateriaPersonalizadaCompleta(sel);
