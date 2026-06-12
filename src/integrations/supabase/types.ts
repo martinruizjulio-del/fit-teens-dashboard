@@ -352,6 +352,13 @@ export type Database = {
             referencedRelation: "centros"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "grupos_centro_id_fkey"
+            columns: ["centro_id"]
+            isOneToOne: false
+            referencedRelation: "centros_publicos"
+            referencedColumns: ["id"]
+          },
         ]
       }
       procedimientos: {
@@ -672,7 +679,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      centros_publicos: {
+        Row: {
+          anonimo: boolean | null
+          ciudad: string | null
+          codigo_anonimo: string | null
+          id: string | null
+          mostrar_publico: boolean | null
+          nombre: string | null
+          provincia: string | null
+        }
+        Insert: {
+          anonimo?: boolean | null
+          ciudad?: never
+          codigo_anonimo?: string | null
+          id?: string | null
+          mostrar_publico?: boolean | null
+          nombre?: never
+          provincia?: string | null
+        }
+        Update: {
+          anonimo?: boolean | null
+          ciudad?: never
+          codigo_anonimo?: string | null
+          id?: string | null
+          mostrar_publico?: boolean | null
+          nombre?: never
+          provincia?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_borrar_demo: { Args: never; Returns: string }
