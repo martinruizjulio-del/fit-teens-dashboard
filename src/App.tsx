@@ -14,6 +14,7 @@ import Publico from "./pages/Publico";
 import AlumnoAcceso from "./pages/AlumnoAcceso";
 import Admin from "./pages/Admin";
 import CentrosPublico from "./pages/CentrosPublico";
+import Instalar from "./pages/Instalar";
 
 import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/publico" element={<Publico />} />
             <Route path="/centros-publico" element={<CentrosPublico />} />
+            <Route path="/instalar" element={<Instalar />} />
             <Route path="/alumno" element={<AlumnoAcceso />} />
             <Route path="/alumno/:codigo" element={<AlumnoAcceso />} />
 
