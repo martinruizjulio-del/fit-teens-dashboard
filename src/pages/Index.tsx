@@ -6,6 +6,8 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Logo } from "@/components/Logo";
 import { Activity, ShieldCheck, KeyRound, BarChart3, ArrowRight, GraduationCap, User, Lock } from "lucide-react";
+import heroDesktop from "@/assets/hero-cfa.webp.asset.json";
+import heroMobile from "@/assets/hero-cfa-960.webp.asset.json";
 
 const Index = () => {
   const { t } = useTranslation();
