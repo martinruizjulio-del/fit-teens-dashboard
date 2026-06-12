@@ -22,16 +22,10 @@ export default function CentrosPublico() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("centros")
-      .select("id, nombre, provincia, ciudad, anonimo, codigo_anonimo")
-      .eq("mostrar_publico", true)
-      .order("provincia", { ascending: true })
-      .order("nombre", { ascending: true })
-      .then(({ data }) => {
-        setCentros((data ?? []) as CentroRow[]);
-        setLoading(false);
-      });
+    supabase.rpc("get_centros_publicos").then(({ data }) => {
+      setCentros((data ?? []) as CentroRow[]);
+      setLoading(false);
+    });
   }, []);
 
   const porProvincia = useMemo(() => {
