@@ -689,6 +689,17 @@ export type Database = {
         Returns: number
       }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
+      get_centros_publicos: {
+        Args: never
+        Returns: {
+          anonimo: boolean
+          ciudad: string
+          codigo_anonimo: string
+          id: string
+          nombre: string
+          provincia: string
+        }[]
+      }
       get_evaluaciones_nombres: { Args: never; Returns: Json }
       get_landing_public_stats: { Args: never; Returns: Json }
       get_notas_por_curso_sexo: {
