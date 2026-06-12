@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -54,10 +54,9 @@ export default function Alumnos() {
 
   const [grupoId, setGrupoId] = useState<string>(params.get("grupo") ?? "");
 
-  // If no grupo selected, default to first
-  if (!grupoId && grupos.length > 0) {
-    setGrupoId(grupos[0].id);
-  }
+  useEffect(() => {
+    if (!grupoId && grupos.length > 0) setGrupoId(grupos[0].id);
+  }, [grupos, grupoId]);
 
   const alumnos = (useLiveQuery(
     async () => {
