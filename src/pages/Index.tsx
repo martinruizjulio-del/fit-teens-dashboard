@@ -26,6 +26,19 @@ const Index = () => {
       <main className="flex-1">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
+        <picture>
+          <source media="(max-width: 767px)" srcSet={heroMobile.url} type="image/webp" />
+          <img
+            src={heroDesktop.url}
+            alt=""
+            width={1600}
+            height={896}
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover opacity-25"
+          />
+        </picture>
+        <div className="absolute inset-0 bg-gradient-hero opacity-80" aria-hidden="true" />
         <div className="absolute inset-0 opacity-10" aria-hidden="true">
           <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-secondary blur-3xl" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-primary-glow blur-3xl" />
