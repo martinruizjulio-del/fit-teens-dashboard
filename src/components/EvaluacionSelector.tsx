@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CalendarRange, Plus, Trash2 } from "lucide-react";
+import { db } from "@/offline/db";
+import { createEvaluacion } from "@/offline/repo";
+import { notifyLocalMutation } from "@/offline/sync";
 
 export type Evaluacion = {
   id: string;
@@ -26,49 +29,55 @@ interface Props {
 
 export function EvaluacionSelector({ grupoId, value, onChange, onListChanged, allowDelete = true }: Props) {
   const { toast } = useToast();
-  const [list, setList] = useState<Evaluacion[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ nombre: "", fecha: new Date().toISOString().slice(0, 10) });
 
-  async function load() {
-    const { data } = await supabase
-      .from("evaluaciones")
-      .select("*")
-      .eq("grupo_id", grupoId)
-      .order("fecha", { ascending: false });
-    const arr = (data ?? []) as Evaluacion[];
-    setList(arr);
+  const list = (useLiveQuery(async () => {
+    if (!grupoId) return [] as Evaluacion[];
+    const rs = await db.evaluaciones.where("grupo_id").equals(grupoId).toArray();
+    const arr = (rs as unknown as Evaluacion[]).slice().sort((a, b) => (b.fecha ?? "").localeCompare(a.fecha ?? ""));
     onListChanged?.(arr);
     if (!value && arr.length > 0) onChange(arr[0].id);
-  }
-
-  useEffect(() => { void load(); /* eslint-disable-next-line */ }, [grupoId]);
+    return arr;
+  }, [grupoId], [] as Evaluacion[])) ?? [];
 
   async function crear() {
     if (!form.nombre.trim()) return;
-    const { data, error } = await supabase
-      .from("evaluaciones")
-      .insert({ grupo_id: grupoId, nombre: form.nombre.trim(), fecha: form.fecha })
-      .select("*")
-      .single();
-    if (error) { toast({ variant: "destructive", title: error.message }); return; }
-    setOpen(false);
-    setForm({ nombre: "", fecha: new Date().toISOString().slice(0, 10) });
-    toast({ title: "Evaluación creada" });
-    await load();
-    if (data) onChange((data as Evaluacion).id);
+    try {
+      // anio_escolar: take from the grupo
+      const grupo = await db.grupos.get(grupoId);
+      const anio = (grupo as { anio_escolar?: string } | undefined)?.anio_escolar ?? "";
+      const newId = await createEvaluacion({ grupo_id: grupoId, nombre: form.nombre.trim(), fecha: form.fecha, anio_escolar: anio });
+      setOpen(false);
+      setForm({ nombre: "", fecha: new Date().toISOString().slice(0, 10) });
+      toast({ title: "Evaluación creada" });
+      onChange(newId);
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
+    }
   }
 
   async function borrar(id: string) {
     if (!confirm("¿Eliminar esta evaluación y todas sus pruebas asociadas?")) return;
-    // Borrar pruebas asociadas primero (no hay ON DELETE CASCADE)
-    await supabase.from("pruebas_eurofit").delete().eq("evaluacion_id", id);
-    await supabase.from("pruebas_cfs").delete().eq("evaluacion_id", id);
-    const { error } = await supabase.from("evaluaciones").delete().eq("id", id);
-    if (error) { toast({ variant: "destructive", title: error.message }); return; }
-    toast({ title: "Evaluación eliminada" });
-    if (value === id) onChange(null);
-    await load();
+    try {
+      // Local cascade
+      const e = await db.pruebas_eurofit.where("evaluacion_id").equals(id).primaryKeys();
+      const c = await db.pruebas_cfs.where("evaluacion_id").equals(id).primaryKeys();
+      await db.pruebas_eurofit.bulkDelete(e);
+      await db.pruebas_cfs.bulkDelete(c);
+      await db.evaluaciones.delete(id);
+      // Queue deletes
+      await db.sync_queue.bulkAdd([
+        ...e.map((rid) => ({ table: "pruebas_eurofit" as const, op: "delete" as const, rowId: rid, payload: null, createdAt: Date.now(), attempts: 0 })),
+        ...c.map((rid) => ({ table: "pruebas_cfs" as const, op: "delete" as const, rowId: rid, payload: null, createdAt: Date.now(), attempts: 0 })),
+        { table: "evaluaciones" as const, op: "delete" as const, rowId: id, payload: null, createdAt: Date.now(), attempts: 0 },
+      ]);
+      void notifyLocalMutation();
+      toast({ title: "Evaluación eliminada" });
+      if (value === id) onChange(null);
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
+    }
   }
 
   const actual = list.find((e) => e.id === value);
