@@ -128,7 +128,7 @@ export async function updateAlumno(id: string, patch: Partial<AlumnoInput>): Pro
   const ts = nowIso();
   const existing = await db.alumnos.get(id);
   if (!existing) return;
-  const merged = withDerivedAlumno({ ...(existing as never), ...patch });
+  const merged = withDerivedAlumno({ ...(existing as Record<string, unknown>), ...patch } as AlumnoInput);
   const updated = { ...merged, id, updated_at: ts, _dirty: 1 as const };
   await db.alumnos.put(updated as never);
   await enqueue({ table: "alumnos", op: "update", rowId: id, payload: stripLocal(updated) });
