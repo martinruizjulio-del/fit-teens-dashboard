@@ -141,7 +141,7 @@ export default function Pruebas() {
     PRUEBAS_EUROFIT.forEach((p) => { notasEurofit[p.prueba] = notas[p.prueba] ?? null; });
     PRUEBAS_CFS.forEach((p) => { notasCfs[p.prueba] = notas[p.prueba] ?? null; });
     await generarInformePDF({
-      alumno: ctx.alumno, eurofit, cfs, notasEurofit, notasCfs, procedimientos,
+      alumno: ctx.alumno, eurofit, cfs, notasEurofit, notasCfs, procedimientos: procedimientos as never,
       bateriaPersonalizada: isBateriaPersonalizadaCompleta(ctx.bateriaPersonalizada) ? ctx.bateriaPersonalizada : null,
     });
   }
