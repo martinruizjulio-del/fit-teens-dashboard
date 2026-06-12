@@ -37,11 +37,10 @@ export default function Centros() {
   const [open, setOpen] = useState(false);
   const [selectedExisting, setSelectedExisting] = useState<string>("");
 
-  const centros = (useLiveQuery(
-    () => db.centros.orderBy("id").toArray().then((rs) => rs.slice().sort((a, b) => String((a as Centro).nombre ?? "").localeCompare(String((b as Centro).nombre ?? "")))),
-    [],
-    [] as unknown[],
-  ) as unknown as Centro[]) ?? [];
+  const centrosRaw = useLiveQuery(() => db.centros.toArray(), [], []);
+  const centros = ((centrosRaw ?? []) as unknown as Centro[])
+    .slice()
+    .sort((a, b) => (a.nombre ?? "").localeCompare(b.nombre ?? ""));
 
   const [form, setForm] = useState({
     nombre: "", direccion: "", codigo_postal: "", ciudad: "",
