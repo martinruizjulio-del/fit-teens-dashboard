@@ -21,6 +21,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
 
+      <main className="flex-1">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
         <div className="absolute inset-0 opacity-10" aria-hidden="true">
@@ -119,6 +120,8 @@ const Index = () => {
           {t("landing.adminAccess")}
         </Link>
       </div>
+
+      </main>
 
       <SiteFooter />
     </div>

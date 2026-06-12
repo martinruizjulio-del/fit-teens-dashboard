@@ -1,0 +1,17 @@
+# Condición Física Adolescentes
+
+> Plataforma educativa para profesores de Educación Física en Secundaria. Evalúa la condición física del alumnado con las baterías Eurofit y CFS, aplica baremos oficiales y muestra estadísticas agregadas.
+
+La aplicación permite a docentes registrar centros, grupos y alumnos, introducir resultados de pruebas físicas (Eurofit y CFS) y obtener notas calculadas automáticamente. Incluye un panel público con estadísticas anonimizadas por curso y sexo, y un directorio de centros adheridos al proyecto.
+
+## Pages
+
+- [Inicio](/): Presentación de la plataforma para profesores y alumnos.
+- [Estadísticas públicas](/publico): Datos agregados anonimizados de condición física en Secundaria, filtrables por sexo y curso.
+- [Centros adheridos](/centros-publico): Directorio público de centros educativos participantes.
+- [Acceso de alumnos](/alumno): Consulta de resultados personales mediante código anónimo.
+- [Acceso de profesores](/auth): Inicio de sesión para docentes.
+
+## Optional
+
+- [Recuperar contraseña](/reset-password): Restablecimiento de acceso para profesores.
