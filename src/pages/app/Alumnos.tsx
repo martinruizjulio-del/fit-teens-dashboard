@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -9,23 +9,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2, ClipboardList, KeyRound, Copy, Search } from "lucide-react";
 import { calcularEdad } from "@/lib/pruebas";
 import { ImportarAlumnosDialog } from "@/components/ImportarAlumnosDialog";
+import { db } from "@/offline/db";
+import { createAlumno, updateAlumno, deleteAlumno } from "@/offline/repo";
 
 interface Alumno {
   id: string; grupo_id: string; id_aula: number;
   nombre: string; apellidos: string; sexo: "M" | "F"; fecha_nacimiento: string;
   peso_kg: number | null; talla_m: number | null; imc: number | null;
-  envergadura_cm: number | null; biacromial_cm: number | null; biacromial_15_cm: number | null;
+  envergadura_cm: number | null; biacromial_cm: number | null;
   longitud_pierna_cm: number | null; extraescolar: boolean; horas_extraescolar: number | null;
   codigo_acceso: string;
 }
 
-interface Grupo { id: string; curso: string; letra: string; centro?: { nombre: string } }
+interface Grupo { id: string; centro_id: string; curso: string; letra: string }
+interface Centro { id: string; nombre: string }
 
 const emptyForm = {
   nombre: "", apellidos: "", sexo: "M" as "M" | "F", fecha_nacimiento: "", id_aula: 1,
@@ -39,28 +42,41 @@ export default function Alumnos() {
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
 
-  const [grupos, setGrupos] = useState<Grupo[]>([]);
-  const [grupoId, setGrupoId] = useState<string>(params.get("grupo") ?? "");
-  const [alumnos, setAlumnos] = useState<Alumno[]>([]);
-  const [search, setSearch] = useState("");
+  const data = useLiveQuery(async () => {
+    const [grupos, centros] = await Promise.all([db.grupos.toArray(), db.centros.toArray()]);
+    return {
+      grupos: (grupos as unknown as Grupo[]).slice().sort((a, b) => a.curso.localeCompare(b.curso)),
+      centros: centros as unknown as Centro[],
+    };
+  }, [], { grupos: [] as Grupo[], centros: [] as Centro[] });
+  const grupos = data?.grupos ?? [];
+  const centros = data?.centros ?? [];
 
+  const [grupoId, setGrupoId] = useState<string>(params.get("grupo") ?? "");
+
+  // If no grupo selected, default to first
+  if (!grupoId && grupos.length > 0) {
+    setGrupoId(grupos[0].id);
+  }
+
+  const alumnos = (useLiveQuery(
+    async () => {
+      if (!grupoId) return [] as Alumno[];
+      const rs = await db.alumnos.where("grupo_id").equals(grupoId).toArray();
+      return (rs as unknown as Alumno[]).slice().sort((a, b) => (a.id_aula ?? 0) - (b.id_aula ?? 0));
+    },
+    [grupoId],
+    [] as Alumno[],
+  )) ?? [];
+
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
 
-  useEffect(() => { void cargarGrupos(); }, []);
-  useEffect(() => { if (grupoId) { setParams({ grupo: grupoId }); void cargarAlumnos(); } }, [grupoId]);
-
-  async function cargarGrupos() {
-    const { data } = await supabase.from("grupos").select("id, curso, letra, centro:centros(nombre)").order("curso");
-    const list = (data ?? []) as Grupo[];
-    setGrupos(list);
-    if (!grupoId && list.length) setGrupoId(list[0].id);
-  }
-
-  async function cargarAlumnos() {
-    const { data } = await supabase.from("alumnos").select("*").eq("grupo_id", grupoId).order("id_aula");
-    setAlumnos((data ?? []) as Alumno[]);
+  function changeGrupo(v: string) {
+    setGrupoId(v);
+    setParams({ grupo: v });
   }
 
   function openNew() {
@@ -86,7 +102,7 @@ export default function Alumnos() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user || !grupoId) return;
-    const payload: any = {
+    const payload = {
       grupo_id: grupoId,
       id_aula: Number(form.id_aula),
       nombre: form.nombre.trim(),
@@ -101,25 +117,24 @@ export default function Alumnos() {
       extraescolar: form.extraescolar,
       horas_extraescolar: form.horas_extraescolar ? Number(form.horas_extraescolar) : null,
     };
-    // IMC y biacromial×1.5 calculados en cliente para feedback inmediato (la BD también puede recalcular si añades trigger)
-    if (payload.peso_kg && payload.talla_m) payload.imc = Number((payload.peso_kg / (payload.talla_m ** 2)).toFixed(2));
-    if (payload.biacromial_cm) payload.biacromial_15_cm = Number((payload.biacromial_cm * 1.5).toFixed(1));
-
-    const { error } = editId
-      ? await supabase.from("alumnos").update(payload).eq("id", editId)
-      : await supabase.from("alumnos").insert(payload);
-    if (error) { toast({ variant: "destructive", title: error.message }); return; }
-    toast({ title: editId ? "Alumno actualizado" : "Alumno creado" });
-    setOpen(false);
-    void cargarAlumnos();
+    try {
+      if (editId) await updateAlumno(editId, payload);
+      else await createAlumno(payload);
+      toast({ title: editId ? "Alumno actualizado" : "Alumno creado" });
+      setOpen(false);
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
+    }
   }
 
   async function borrar(id: string) {
     if (!confirm("¿Eliminar este alumno y todos sus datos?")) return;
-    const { error } = await supabase.from("alumnos").delete().eq("id", id);
-    if (error) { toast({ variant: "destructive", title: error.message }); return; }
-    toast({ title: "Eliminado" });
-    void cargarAlumnos();
+    try {
+      await deleteAlumno(id);
+      toast({ title: "Eliminado" });
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
+    }
   }
 
   function copiar(codigo: string) {
@@ -135,6 +150,11 @@ export default function Alumnos() {
     );
   }, [alumnos, search]);
 
+  function grupoNombre(g: Grupo): string {
+    const c = centros.find((x) => x.id === g.centro_id);
+    return `${g.curso.replace("ESO", "º ESO")} ${g.letra}${c ? " — " + c.nombre : ""}`;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -143,20 +163,21 @@ export default function Alumnos() {
           <p className="text-muted-foreground mt-1 text-sm">Gestiona la lista de alumnos por grupo y registra sus pruebas.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={grupoId} onValueChange={setGrupoId}>
+          <Select value={grupoId} onValueChange={changeGrupo}>
             <SelectTrigger className="w-[260px]"><SelectValue placeholder="Selecciona grupo" /></SelectTrigger>
             <SelectContent>
               {grupos.map((g) => (
-                <SelectItem key={g.id} value={g.id}>
-                  {g.curso.replace("ESO", "º ESO")} {g.letra} — {g.centro?.nombre}
-                </SelectItem>
+                <SelectItem key={g.id} value={g.id}>{grupoNombre(g)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <ImportarAlumnosDialog
             grupoId={grupoId || null}
-            grupoNombre={grupos.find((g) => g.id === grupoId) ? `${grupos.find((g) => g.id === grupoId)!.curso.replace("ESO", "º ESO")} ${grupos.find((g) => g.id === grupoId)!.letra}` : undefined}
-            onImported={() => void cargarAlumnos()}
+            grupoNombre={(() => {
+              const g = grupos.find((x) => x.id === grupoId);
+              return g ? `${g.curso.replace("ESO", "º ESO")} ${g.letra}` : undefined;
+            })()}
+            onImported={() => { /* live query refreshes after pull */ }}
           />
           <Button onClick={openNew} disabled={!grupoId} className="bg-gradient-energy text-secondary-foreground shadow-energy hover:opacity-95">
             <Plus className="h-4 w-4 mr-1" /> Nuevo alumno
