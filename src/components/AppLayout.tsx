@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { OfflineIndicator } from "./OfflineIndicator";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Building2, Users, GraduationCap, ShieldCheck, LogOut,
@@ -77,8 +78,9 @@ export function AppLayout() {
           )}
         </nav>
         <div className="border-t border-sidebar-border p-3 space-y-1">
-          <div className="px-3 py-1.5">
+          <div className="px-3 py-1.5 flex items-center justify-between gap-2">
             <LanguageSwitcher />
+            <OfflineIndicator />
           </div>
           <Button
             variant="ghost"
@@ -97,6 +99,7 @@ export function AppLayout() {
             <Logo size={28} /> CFS
           </Link>
           <div className="flex items-center gap-1">
+            <OfflineIndicator />
             <LanguageSwitcher />
             <Button variant="ghost" size="icon" onClick={() => { void signOut(); navigate("/"); }}>
               <LogOut className="h-4 w-4" />

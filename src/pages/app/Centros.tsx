@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { PROVINCIAS_ES } from "@/lib/constants";
 import { Building2, Plus, MapPin, Mail, Phone, EyeOff } from "lucide-react";
+import { db } from "@/offline/db";
+import { createCentro } from "@/offline/repo";
 
 interface Centro {
   id: string;
@@ -32,27 +34,19 @@ export default function Centros() {
   const { t } = useTranslation();
   const { user, impersonating } = useAuth();
   const { toast } = useToast();
-  const [centros, setCentros] = useState<Centro[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedExisting, setSelectedExisting] = useState<string>("");
 
-  // form
+  const centrosRaw = useLiveQuery(() => db.centros.toArray(), [], []);
+  const centros = ((centrosRaw ?? []) as unknown as Centro[])
+    .slice()
+    .sort((a, b) => (a.nombre ?? "").localeCompare(b.nombre ?? ""));
+
   const [form, setForm] = useState({
     nombre: "", direccion: "", codigo_postal: "", ciudad: "",
     provincia: "", email: "", telefono: "",
     anonimo: false, mostrar_publico: true,
   });
-
-  useEffect(() => { void load(); }, []);
-
-  async function load() {
-    const { data, error } = await supabase.from("centros").select("*").order("nombre");
-    if (error) {
-      toast({ variant: "destructive", title: error.message });
-      return;
-    }
-    setCentros((data ?? []) as Centro[]);
-  }
 
   function loadFromExisting(id: string) {
     setSelectedExisting(id);
@@ -75,20 +69,28 @@ export default function Centros() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    const payload = { ...form, created_by: user.id };
-    const { error } = await supabase.from("centros").insert(payload);
-    if (error) {
-      toast({ variant: "destructive", title: error.message });
-      return;
+    try {
+      await createCentro({
+        nombre: form.nombre,
+        direccion: form.direccion || null,
+        codigo_postal: form.codigo_postal || null,
+        ciudad: form.ciudad || null,
+        provincia: form.provincia,
+        email: form.email || null,
+        telefono: form.telefono || null,
+        anonimo: form.anonimo,
+        mostrar_publico: form.mostrar_publico,
+        created_by: user.id,
+      });
+      toast({ title: t("centros.createdOk") });
+      setOpen(false);
+      setForm({ nombre: "", direccion: "", codigo_postal: "", ciudad: "", provincia: "", email: "", telefono: "", anonimo: false, mostrar_publico: true });
+      setSelectedExisting("");
+    } catch (err) {
+      toast({ variant: "destructive", title: err instanceof Error ? err.message : String(err) });
     }
-    toast({ title: t("centros.createdOk") });
-    setOpen(false);
-    setForm({ nombre: "", direccion: "", codigo_postal: "", ciudad: "", provincia: "", email: "", telefono: "", anonimo: false, mostrar_publico: true });
-    setSelectedExisting("");
-    void load();
   }
 
-  // Centros que el profesor ha creado
   const myCentros = centros.filter((c) => c.created_by === (impersonating?.userId ?? user?.id));
 
   return (
@@ -110,7 +112,6 @@ export default function Centros() {
               <DialogTitle className="font-display">{t("centros.createNew")}</DialogTitle>
             </DialogHeader>
 
-            {/* Reutilizar centro existente */}
             {centros.length > 0 && (
               <div className="space-y-1.5 pb-3 border-b">
                 <Label>{t("centros.selectExisting")}</Label>

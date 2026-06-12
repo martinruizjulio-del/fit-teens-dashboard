@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
+import { startSync, stopAndReset } from "@/offline/sync";
 
 const IMPERSONATE_KEY = "cfa.impersonate";
 
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
         setTimeout(() => { void checkAdmin(newSession.user.id); }, 0);
+        startSync();
       } else {
         setIsAdmin(false);
       }
@@ -50,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) void checkAdmin(s.user.id);
+      if (s?.user) { void checkAdmin(s.user.id); startSync(); }
       setLoading(false);
     });
 
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signOut() {
     stopImpersonation();
     await supabase.auth.signOut();
+    await stopAndReset();
     setUser(null);
     setSession(null);
     setIsAdmin(false);
