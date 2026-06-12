@@ -193,7 +193,7 @@ export async function savePrueba(tabla: PruebaTabla, payload: Record<string, unk
   }
 
   const merged: Record<string, unknown> = {
-    ...(existing ?? {}),
+    ...((existing ?? {}) as Record<string, unknown>),
     ...payload,
     ...derived,
     id,
@@ -201,10 +201,7 @@ export async function savePrueba(tabla: PruebaTabla, payload: Record<string, unk
     evaluacion_id: evaluacionId,
     updated_at: ts,
     created_at: existing?.created_at ?? ts,
-    _dirty: 1,
   };
-  // strip control fields the server doesn't accept
-  delete (merged as Record<string, unknown>)._dirty;
   const stored = { ...merged, _dirty: 1 as const };
   await table.put(stored as never);
 
