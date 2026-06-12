@@ -352,13 +352,6 @@ export type Database = {
             referencedRelation: "centros"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "grupos_centro_id_fkey"
-            columns: ["centro_id"]
-            isOneToOne: false
-            referencedRelation: "centros_publicos"
-            referencedColumns: ["id"]
-          },
         ]
       }
       procedimientos: {
@@ -679,36 +672,7 @@ export type Database = {
       }
     }
     Views: {
-      centros_publicos: {
-        Row: {
-          anonimo: boolean | null
-          ciudad: string | null
-          codigo_anonimo: string | null
-          id: string | null
-          mostrar_publico: boolean | null
-          nombre: string | null
-          provincia: string | null
-        }
-        Insert: {
-          anonimo?: boolean | null
-          ciudad?: never
-          codigo_anonimo?: string | null
-          id?: string | null
-          mostrar_publico?: boolean | null
-          nombre?: never
-          provincia?: string | null
-        }
-        Update: {
-          anonimo?: boolean | null
-          ciudad?: never
-          codigo_anonimo?: string | null
-          id?: string | null
-          mostrar_publico?: boolean | null
-          nombre?: never
-          provincia?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_borrar_demo: { Args: never; Returns: string }
@@ -725,6 +689,17 @@ export type Database = {
         Returns: number
       }
       get_alumno_by_codigo: { Args: { _codigo: string }; Returns: Json }
+      get_centros_publicos: {
+        Args: never
+        Returns: {
+          anonimo: boolean
+          ciudad: string
+          codigo_anonimo: string
+          id: string
+          nombre: string
+          provincia: string
+        }[]
+      }
       get_evaluaciones_nombres: { Args: never; Returns: Json }
       get_landing_public_stats: { Args: never; Returns: Json }
       get_notas_por_curso_sexo: {
