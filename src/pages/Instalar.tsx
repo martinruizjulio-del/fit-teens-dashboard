@@ -22,7 +22,8 @@ export default function Instalar() {
     window.addEventListener("appinstalled", onInstalled);
     const unsubscribe = subscribeInstallPrompt(() => setCanPromptInstall(Boolean(getInstallPrompt())));
 
-    if (window.matchMedia("(display-mode: standalone)").matches || ("standalone" in navigator && navigator.standalone)) {
+    const iosStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (window.matchMedia("(display-mode: standalone)").matches || iosStandalone) {
       setInstalled(true);
     }
 
