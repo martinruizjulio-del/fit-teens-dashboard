@@ -3,15 +3,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
+import { getInstallPrompt, promptInstall, subscribeInstallPrompt } from "@/pwa/installPrompt";
 import { Download, Share, Plus, MoreVertical, Smartphone, Apple, Monitor } from "lucide-react";
 
-type BIPEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
-
 export default function Instalar() {
-  const [deferred, setDeferred] = useState<BIPEvent | null>(null);
+  const [canPromptInstall, setCanPromptInstall] = useState(() => Boolean(getInstallPrompt()));
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
@@ -22,27 +18,24 @@ export default function Instalar() {
       "Instala CFS en tu móvil u ordenador para usarla como una app nativa: acceso desde el icono del dispositivo y soporte sin conexión.",
     );
 
-    const onBIP = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as BIPEvent);
-    };
     const onInstalled = () => setInstalled(true);
-    window.addEventListener("beforeinstallprompt", onBIP);
     window.addEventListener("appinstalled", onInstalled);
+    const unsubscribe = subscribeInstallPrompt(() => setCanPromptInstall(Boolean(getInstallPrompt())));
 
-    if (window.matchMedia("(display-mode: standalone)").matches) setInstalled(true);
+    if (window.matchMedia("(display-mode: standalone)").matches || ("standalone" in navigator && navigator.standalone)) {
+      setInstalled(true);
+    }
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", onBIP);
       window.removeEventListener("appinstalled", onInstalled);
+      unsubscribe();
     };
   }, []);
 
   const handleInstall = async () => {
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
+    const outcome = await promptInstall();
+    setCanPromptInstall(false);
+    if (outcome === "accepted") setInstalled(true);
   };
 
   return (
@@ -72,7 +65,7 @@ export default function Instalar() {
             <div className="inline-flex items-center gap-2 rounded-md bg-secondary/15 text-secondary-foreground px-4 py-2 text-sm">
               ✅ La app ya está instalada en este dispositivo
             </div>
-          ) : deferred ? (
+          ) : canPromptInstall ? (
             <Button size="lg" onClick={handleInstall} className="gap-2">
               <Download className="h-4 w-4" /> Instalar app
             </Button>
