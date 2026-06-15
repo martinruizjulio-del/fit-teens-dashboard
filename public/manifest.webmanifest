@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Condición Física Secundaria",
+  "short_name": "CFS",
+  "description": "Plataforma educativa para evaluar la condición física en alumnos de Secundaria con baterías Eurofit y CFS.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#ffffff",
+  "theme_color": "#0E2E5C",
+  "orientation": "portrait-primary",
+  "categories": ["education", "health", "sports"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
