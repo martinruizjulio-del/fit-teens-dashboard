@@ -20,7 +20,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-
+- name: Preparar Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - name: Instalar dependencias
         run: npm install
 
