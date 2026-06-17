@@ -40,5 +40,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./dist/
-          server-dir: /httpdocs/cfs/
+          server-dir: /cfs.actividadfisica.app/
           dangerous-clean-slate: true
