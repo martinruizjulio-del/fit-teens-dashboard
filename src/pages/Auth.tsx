@@ -26,6 +26,15 @@ const signUpSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
+const PRODUCTION_ORIGIN = "https://cfs.actividadfisica.app";
+
+function getAuthRedirectUrl(path: "/app" | "/reset-password") {
+  const isLocalDev = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+  const origin = isLocalDev ? window.location.origin : PRODUCTION_ORIGIN;
+
+  return `${origin}${path}`;
+}
+
 type Stage = "credentials" | "otp" | "forgot";
 
 export default function Auth() {
@@ -73,7 +82,7 @@ export default function Auth() {
         email: siEmail.trim(),
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${window.location.origin}/app`,
+          emailRedirectTo: getAuthRedirectUrl("/app"),
         },
       });
       if (otpError) throw otpError;
@@ -112,7 +121,7 @@ export default function Auth() {
         throw new Error(msg);
       }
 
-      const redirectUrl = `${window.location.origin}/app`;
+      const redirectUrl = getAuthRedirectUrl("/app");
       const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
@@ -169,7 +178,7 @@ export default function Auth() {
         email: emailForOtp,
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${window.location.origin}/app`,
+          emailRedirectTo: getAuthRedirectUrl("/app"),
         },
       });
       toast({ title: t("auth.otpResend") });
@@ -183,7 +192,7 @@ export default function Auth() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(siEmail.trim(), {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: getAuthRedirectUrl("/reset-password"),
       });
       if (error) throw error;
       toast({
