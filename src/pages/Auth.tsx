@@ -71,7 +71,10 @@ export default function Auth() {
 
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: siEmail.trim(),
-        options: { shouldCreateUser: false },
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/app`,
+        },
       });
       if (otpError) throw otpError;
 
