@@ -165,7 +165,13 @@ export default function Auth() {
   async function resendOtp() {
     setLoading(true);
     try {
-      await supabase.auth.signInWithOtp({ email: emailForOtp, options: { shouldCreateUser: false } });
+      await supabase.auth.signInWithOtp({
+        email: emailForOtp,
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/app`,
+        },
+      });
       toast({ title: t("auth.otpResend") });
     } finally {
       setLoading(false);
