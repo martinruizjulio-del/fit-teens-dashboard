@@ -4,8 +4,8 @@ import "./index.css";
 import { setupInstallPromptCapture } from "./pwa/installPrompt";
 import { registerServiceWorker } from "./pwa/registerSW";
 
-const CANONICAL_ORIGIN = "https://cfs.actividadfisica.app";
-const LEGACY_AUTH_HOSTS = new Set(["fit-stride-stats.lovable.app"]);
+const CANONICAL_ORIGIN = "https://fit-stride-stats.lovable.app";
+const LEGACY_AUTH_HOSTS = new Set<string>([]);
 
 function redirectLegacyAuthHost() {
   if (!LEGACY_AUTH_HOSTS.has(window.location.hostname)) return;

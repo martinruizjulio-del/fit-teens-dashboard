@@ -26,7 +26,7 @@ const signUpSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-const PRODUCTION_ORIGIN = "https://cfs.actividadfisica.app";
+const PRODUCTION_ORIGIN = "https://fit-stride-stats.lovable.app";
 
 function getAuthRedirectUrl(path: "/app" | "/reset-password") {
   const isLocalDev = ["localhost", "127.0.0.1"].includes(window.location.hostname);
